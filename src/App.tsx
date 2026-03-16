@@ -10,6 +10,7 @@ import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminMembers from "./pages/AdminMembers.tsx";
 import AdminAnalytics from "./pages/AdminAnalytics.tsx";
 import AdminAnnouncements from "./pages/AdminAnnouncements.tsx";
+import AdminSettings from "./pages/AdminSettings.tsx";
 import Events from "./pages/Events.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
