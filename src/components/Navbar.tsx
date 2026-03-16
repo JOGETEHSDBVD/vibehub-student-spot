@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, User } from "lucide-react";
 import SignInModal from "./SignInModal";
 import JoinModal from "./JoinModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = ["Home", "About", "Events", "MBTI Test", "Admin"];
 
@@ -9,6 +10,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [signInOpen, setSignInOpen] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
 
   const switchToJoin = () => { setSignInOpen(false); setJoinOpen(true); };
   const switchToSignIn = () => { setJoinOpen(false); setSignInOpen(true); };
@@ -31,8 +33,23 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <button onClick={() => setSignInOpen(true)} className="rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary/5">Sign In</button>
-            <button onClick={() => setJoinOpen(true)} className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90">Join Club</button>
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <User size={18} className="text-primary" />
+                  <span className="font-medium">{profile?.full_name || user.email}</span>
+                </div>
+                <button onClick={signOut} className="flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground hover:bg-secondary">
+                  <LogOut size={16} />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => setSignInOpen(true)} className="rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary/5">Sign In</button>
+                <button onClick={() => setJoinOpen(true)} className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90">Join Club</button>
+              </>
+            )}
           </div>
 
           <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -46,8 +63,20 @@ const Navbar = () => {
               <a key={link} href="#" className={`block py-2 text-sm font-medium ${i === 0 ? "text-primary" : "text-muted-foreground"}`}>{link}</a>
             ))}
             <div className="mt-3 flex flex-col gap-2">
-              <button onClick={() => { setMobileOpen(false); setSignInOpen(true); }} className="rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary">Sign In</button>
-              <button onClick={() => { setMobileOpen(false); setJoinOpen(true); }} className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground">Join Club</button>
+              {user ? (
+                <>
+                  <div className="flex items-center gap-2 py-2 text-sm text-foreground">
+                    <User size={18} className="text-primary" />
+                    <span className="font-medium">{profile?.full_name || user.email}</span>
+                  </div>
+                  <button onClick={() => { setMobileOpen(false); signOut(); }} className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted-foreground">Sign Out</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => { setMobileOpen(false); setSignInOpen(true); }} className="rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary">Sign In</button>
+                  <button onClick={() => { setMobileOpen(false); setJoinOpen(true); }} className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground">Join Club</button>
+                </>
+              )}
             </div>
           </div>
         )}
