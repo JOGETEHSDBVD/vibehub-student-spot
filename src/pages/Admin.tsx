@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Download, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -9,6 +9,7 @@ import StatsCards from "@/components/admin/StatsCards";
 import RecentMembers from "@/components/admin/RecentMembers";
 import QuickActions from "@/components/admin/QuickActions";
 import UpcomingEventsPanel from "@/components/admin/UpcomingEventsPanel";
+import EventFormModal from "@/components/admin/EventFormModal";
 
 const Admin = () => {
   const { isAdmin, loading } = useAdminCheck();
