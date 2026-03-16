@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { MoreVertical, Search, Shield } from "lucide-react";
+import { Search, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import MemberActionsMenu from "@/components/admin/MemberActionsMenu";
 
 interface Member {
   id: string;
@@ -10,6 +11,7 @@ interface Member {
   email: string | null;
   created_at: string;
   isAdmin: boolean;
+  is_banned: boolean;
 }
 
 const PAGE_SIZE = 10;
