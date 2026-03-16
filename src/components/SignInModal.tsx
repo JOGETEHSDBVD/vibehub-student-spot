@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   open: boolean;
@@ -15,6 +17,7 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   if (!open) return null;
 
@@ -30,6 +33,17 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
       setEmail("");
       setPassword("");
       onClose();
+      // Check if user is admin and redirect
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: isAdmin } = await (supabase.rpc as any)("has_role", {
+          _user_id: user.id,
+          _role: "admin",
+        });
+        if (isAdmin) {
+          navigate("/admin");
+        }
+      }
     }
   };
 
