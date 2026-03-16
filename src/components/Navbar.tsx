@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { Menu, X, LogOut, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import SignInModal from "./SignInModal";
 import JoinModal from "./JoinModal";
 import { useAuth } from "@/contexts/AuthContext";
 
-const navLinks = ["Home", "About", "Events", "MBTI Test", "Admin"];
+const navLinks = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "#" },
+  { label: "Events", href: "#" },
+  { label: "MBTI Test", href: "#" },
+  { label: "Admin", href: "/admin" },
+];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -26,8 +33,8 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link, i) => (
-              <a key={link} href="#" className={`text-sm font-medium transition-colors duration-200 ${i === 0 ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
-                {link}
+              <a key={link.label} href={link.href} className={`text-sm font-medium transition-colors duration-200 ${i === 0 ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                {link.label}
               </a>
             ))}
           </div>
@@ -60,7 +67,7 @@ const Navbar = () => {
         {mobileOpen && (
           <div className="md:hidden border-t border-border bg-background px-6 pb-4">
             {navLinks.map((link, i) => (
-              <a key={link} href="#" className={`block py-2 text-sm font-medium ${i === 0 ? "text-primary" : "text-muted-foreground"}`}>{link}</a>
+              <a key={link.label} href={link.href} className={`block py-2 text-sm font-medium ${i === 0 ? "text-primary" : "text-muted-foreground"}`}>{link.label}</a>
             ))}
             <div className="mt-3 flex flex-col gap-2">
               {user ? (
