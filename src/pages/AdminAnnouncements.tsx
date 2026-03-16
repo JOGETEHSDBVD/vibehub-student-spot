@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -19,6 +20,7 @@ interface Announcement {
   message: string;
   created_by: string | null;
   created_at: string;
+  author_name?: string;
 }
 
 const AdminAnnouncements = () => {
@@ -26,7 +28,7 @@ const AdminAnnouncements = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [allAnnouncements, setAllAnnouncements] = useState<Announcement[]>([]);
   const [fetching, setFetching] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Announcement | null>(null);
@@ -47,11 +49,35 @@ const AdminAnnouncements = () => {
       .from("announcements")
       .select("*")
       .order("created_at", { ascending: false });
-    setAnnouncements((data as Announcement[]) ?? []);
+
+    const announcements = (data as Announcement[]) ?? [];
+
+    // Fetch author names for all announcements
+    const authorIds = [...new Set(announcements.map((a) => a.created_by).filter(Boolean))] as string[];
+    let authorMap: Record<string, string> = {};
+    if (authorIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", authorIds);
+      (profiles ?? []).forEach((p: any) => {
+        authorMap[p.id] = p.full_name || p.email || "Unknown";
+      });
+    }
+
+    setAllAnnouncements(
+      announcements.map((a) => ({
+        ...a,
+        author_name: a.created_by ? authorMap[a.created_by] || "Unknown" : "Unknown",
+      }))
+    );
     setFetching(false);
   }, []);
 
   useEffect(() => { if (isAdmin) fetchAnnouncements(); }, [isAdmin, fetchAnnouncements]);
+
+  const myAnnouncements = allAnnouncements.filter((a) => a.created_by === user?.id);
+  const othersAnnouncements = allAnnouncements.filter((a) => a.created_by !== user?.id);
 
   const openCreate = () => {
     setEditing(null);
@@ -95,6 +121,39 @@ const AdminAnnouncements = () => {
     fetchAnnouncements();
   };
 
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+
+  const renderAnnouncementCard = (a: Announcement, canEdit: boolean) => (
+    <div key={a.id} className="rounded-xl border border-border bg-card p-5">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <h3 className="text-lg font-bold text-foreground">{a.title}</h3>
+          <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{a.message}</p>
+          <div className="mt-3 flex items-center gap-3">
+            <p className="text-xs text-muted-foreground">{formatDate(a.created_at)}</p>
+            {a.author_name && (
+              <span className="text-xs font-medium text-primary">by {a.author_name}</span>
+            )}
+          </div>
+        </div>
+        {canEdit && (
+          <div className="flex gap-1 ml-4">
+            <Button size="icon" variant="ghost" onClick={() => openEdit(a)}><Pencil size={15} /></Button>
+            <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(a.id)}><Trash2 size={15} /></Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderEmpty = (text: string) => (
+    <div className="rounded-xl border border-border bg-card p-12 text-center">
+      <Megaphone className="mx-auto h-12 w-12 text-muted-foreground/30" />
+      <p className="mt-4 text-lg text-muted-foreground">{text}</p>
+    </div>
+  );
+
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!isAdmin) return null;
 
@@ -112,34 +171,32 @@ const AdminAnnouncements = () => {
           </Button>
         </div>
 
-        <div className="space-y-4">
-          {fetching ? (
-            <p className="text-sm text-muted-foreground">Loading announcements...</p>
-          ) : announcements.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-12 text-center">
-              <Megaphone className="mx-auto h-12 w-12 text-muted-foreground/30" />
-              <p className="mt-4 text-lg text-muted-foreground">No announcements yet.</p>
-            </div>
-          ) : (
-            announcements.map((a) => (
-              <div key={a.id} className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-foreground">{a.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{a.message}</p>
-                    <p className="mt-3 text-xs text-muted-foreground">
-                      {new Date(a.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
-                    </p>
-                  </div>
-                  <div className="flex gap-1 ml-4">
-                    <Button size="icon" variant="ghost" onClick={() => openEdit(a)}><Pencil size={15} /></Button>
-                    <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(a.id)}><Trash2 size={15} /></Button>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        <Tabs defaultValue="mine" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="mine">Your Announcements ({myAnnouncements.length})</TabsTrigger>
+            <TabsTrigger value="all">All Announcements ({allAnnouncements.length})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="mine" className="space-y-4">
+            {fetching ? (
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            ) : myAnnouncements.length === 0 ? (
+              renderEmpty("You haven't created any announcements yet.")
+            ) : (
+              myAnnouncements.map((a) => renderAnnouncementCard(a, true))
+            )}
+          </TabsContent>
+
+          <TabsContent value="all" className="space-y-4">
+            {fetching ? (
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            ) : allAnnouncements.length === 0 ? (
+              renderEmpty("No announcements yet.")
+            ) : (
+              allAnnouncements.map((a) => renderAnnouncementCard(a, a.created_by === user?.id))
+            )}
+          </TabsContent>
+        </Tabs>
 
         {/* Create / Edit Modal */}
         <Dialog open={formOpen} onOpenChange={(o) => !o && setFormOpen(false)}>
