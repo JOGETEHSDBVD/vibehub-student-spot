@@ -62,7 +62,7 @@ const RecentMembers = () => {
     };
 
     fetchMembers();
-  }, [search, page]);
+  }, [search, page, refreshKey]);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
