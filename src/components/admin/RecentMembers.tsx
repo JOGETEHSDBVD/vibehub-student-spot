@@ -51,9 +51,10 @@ const RecentMembers = () => {
       const { data, count } = await query;
 
       setMembers(
-        (data ?? []).map((p) => ({
+        (data ?? []).map((p: any) => ({
           ...p,
           isAdmin: adminIds.has(p.id),
+          is_banned: p.is_banned ?? false,
         }))
       );
       setTotal(count ?? 0);
