@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
+import AdminEvents from "./pages/AdminEvents.tsx";
+import Events from "./pages/Events.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
