@@ -68,7 +68,7 @@ const AdminMembers = () => {
       setFetching(false);
     };
     fetchMembers();
-  }, [isAdmin, search, page]);
+  }, [isAdmin, search, page, refreshKey]);
 
   const refreshMembers = () => {
     // trigger re-fetch by toggling page
