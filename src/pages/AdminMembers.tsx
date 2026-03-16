@@ -70,15 +70,7 @@ const AdminMembers = () => {
     fetchMembers();
   }, [isAdmin, search, page, refreshKey]);
 
-  const refreshMembers = () => {
-    // trigger re-fetch by toggling page
-    setPage((p) => p);
-    // force re-render
-    setFetching(true);
-    setTimeout(() => {
-      setPage((prev) => prev);
-    }, 0);
-  };
+  const refreshMembers = () => setRefreshKey((k) => k + 1);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
