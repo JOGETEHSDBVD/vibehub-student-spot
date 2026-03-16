@@ -61,7 +61,7 @@ const AdminMembers = () => {
 
       const { data, count } = await query;
       setMembers(
-        (data ?? []).map((p) => ({ ...p, isAdmin: adminIds.has(p.id) }))
+        (data ?? []).map((p: any) => ({ ...p, isAdmin: adminIds.has(p.id), is_banned: p.is_banned ?? false }))
       );
       setTotal(count ?? 0);
       setFetching(false);
