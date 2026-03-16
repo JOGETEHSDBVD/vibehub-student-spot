@@ -67,7 +67,7 @@ const Navbar = () => {
         {mobileOpen && (
           <div className="md:hidden border-t border-border bg-background px-6 pb-4">
             {navLinks.map((link, i) => (
-              <a key={link} href="#" className={`block py-2 text-sm font-medium ${i === 0 ? "text-primary" : "text-muted-foreground"}`}>{link}</a>
+              <a key={link.label} href={link.href} className={`block py-2 text-sm font-medium ${i === 0 ? "text-primary" : "text-muted-foreground"}`}>{link.label}</a>
             ))}
             <div className="mt-3 flex flex-col gap-2">
               {user ? (
