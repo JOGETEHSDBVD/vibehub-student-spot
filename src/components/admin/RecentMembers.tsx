@@ -22,6 +22,8 @@ const RecentMembers = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const refreshMembers = () => setRefreshKey((k) => k + 1);
 
   useEffect(() => {
     const fetchMembers = async () => {
