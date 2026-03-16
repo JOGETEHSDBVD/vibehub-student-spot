@@ -15,6 +15,7 @@ interface Member {
   email: string | null;
   created_at: string;
   isAdmin: boolean;
+  is_banned: boolean;
 }
 
 const PAGE_SIZE = 10;
