@@ -155,11 +155,15 @@ const AdminMembers = () => {
                       </td>
                       <td className="px-5 py-3 text-muted-foreground">{m.isAdmin ? "Administration" : "General"}</td>
                       <td className="px-5 py-3">
-                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">ACTIVE</span>
+                        {m.is_banned ? (
+                          <span className="rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">BANNED</span>
+                        ) : (
+                          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">ACTIVE</span>
+                        )}
                       </td>
                       <td className="px-5 py-3 text-muted-foreground">{formatDate(m.created_at)}</td>
                       <td className="px-5 py-3">
-                        <button className="text-muted-foreground hover:text-foreground"><MoreVertical size={18} /></button>
+                        <MemberActionsMenu member={m} onRefresh={refreshMembers} />
                       </td>
                     </tr>
                   ))
