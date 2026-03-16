@@ -30,6 +30,7 @@ const AdminMembers = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [fetching, setFetching] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!loading && !authLoading) {
