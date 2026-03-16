@@ -133,13 +133,13 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem onClick={() => setMessageDialogOpen(true)}>
-            <MessageSquare size={14} className="mr-2" />
-            Send Message
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           {!isSelf && (
             <>
+              <DropdownMenuItem onClick={() => setMessageDialogOpen(true)}>
+                <MessageSquare size={14} className="mr-2" />
+                Send Message
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setAdminDialogOpen(true)}>
                 {member.isAdmin ? (
                   <><ShieldOff size={14} className="mr-2" /> Remove Admin</>
@@ -161,7 +161,7 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
           )}
           {isSelf && (
             <DropdownMenuItem disabled className="text-xs text-muted-foreground">
-              Cannot modify your own account
+              This is your account
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
