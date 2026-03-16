@@ -70,6 +70,14 @@ const Admin = () => {
             <UpcomingEventsPanel />
           </div>
         </div>
+
+        {eventFormOpen && (
+          <EventFormModal
+            open={eventFormOpen}
+            onClose={() => setEventFormOpen(false)}
+            onSaved={() => setRefreshKey((k) => k + 1)}
+          />
+        )}
       </main>
     </div>
   );
