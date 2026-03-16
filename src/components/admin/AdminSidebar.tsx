@@ -3,11 +3,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, active: true },
-  { label: "Members", icon: Users },
-  { label: "Events", icon: CalendarDays },
-  { label: "Analytics", icon: BarChart3 },
-  { label: "Announcements", icon: Megaphone },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
+  { label: "Members", icon: Users, path: "/admin" },
+  { label: "Events", icon: CalendarDays, path: "/admin/events" },
+  { label: "Analytics", icon: BarChart3, path: "/admin" },
+  { label: "Announcements", icon: Megaphone, path: "/admin" },
 ];
 
 const AdminSidebar = () => {
