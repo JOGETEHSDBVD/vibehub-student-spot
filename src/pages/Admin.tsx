@@ -58,8 +58,7 @@ const Admin = () => {
           </div>
         </div>
 
-        {/* Stats */}
-        <StatsCards />
+        <StatsCards key={refreshKey} />
 
         {/* Main content */}
         <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
