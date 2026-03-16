@@ -34,19 +34,23 @@ const AdminSidebar = () => {
 
       {/* Nav */}
       <nav className="mt-4 flex-1 space-y-1 px-3">
-        {navItems.map((item) => (
-          <button
-            key={item.label}
-            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-              item.active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <item.icon size={18} />
-            {item.label}
-          </button>
-        ))}
+        {navItems.map((item) => {
+          const isActive = window.location.pathname === item.path;
+          return (
+            <button
+              key={item.label}
+              onClick={() => navigate(item.path)}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <item.icon size={18} />
+              {item.label}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Bottom */}
