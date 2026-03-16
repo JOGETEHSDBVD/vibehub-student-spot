@@ -15,6 +15,8 @@ const Admin = () => {
   const { isAdmin, loading } = useAdminCheck();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [eventFormOpen, setEventFormOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!loading && !authLoading) {
