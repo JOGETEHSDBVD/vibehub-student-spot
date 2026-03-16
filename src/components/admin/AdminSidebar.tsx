@@ -1,18 +1,19 @@
 import { LayoutDashboard, Users, CalendarDays, BarChart3, Megaphone, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
-  { label: "Members", icon: Users, path: "/admin" },
+  { label: "Members", icon: Users, path: "/admin/members" },
   { label: "Events", icon: CalendarDays, path: "/admin/events" },
-  { label: "Analytics", icon: BarChart3, path: "/admin" },
-  { label: "Announcements", icon: Megaphone, path: "/admin" },
+  { label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
+  { label: "Announcements", icon: Megaphone, path: "/admin/announcements" },
 ];
 
 const AdminSidebar = () => {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignOut = async () => {
     await signOut();
@@ -35,7 +36,9 @@ const AdminSidebar = () => {
       {/* Nav */}
       <nav className="mt-4 flex-1 space-y-1 px-3">
         {navItems.map((item) => {
-          const isActive = window.location.pathname === item.path;
+          const isActive = item.path === "/admin"
+            ? location.pathname === "/admin"
+            : location.pathname.startsWith(item.path);
           return (
             <button
               key={item.label}
