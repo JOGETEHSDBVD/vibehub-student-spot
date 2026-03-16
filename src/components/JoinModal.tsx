@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { X } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
   open: boolean;
@@ -7,7 +10,30 @@ interface Props {
 }
 
 const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signUp } = useAuth();
+  const { toast } = useToast();
+
   if (!open) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await signUp(email, password, fullName);
+    setLoading(false);
+    if (error) {
+      toast({ title: "Sign up failed", description: error, variant: "destructive" });
+    } else {
+      toast({ title: "Account created!", description: "Check your email to confirm your account." });
+      setFullName("");
+      setEmail("");
+      setPassword("");
+      onClose();
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4" onClick={onClose}>
@@ -22,20 +48,22 @@ const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
         <h2 className="text-2xl font-bold text-foreground">Join the Club</h2>
         <p className="mt-1 text-sm text-body-text">Create your account and start vibing</p>
 
-        <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Full Name</label>
-            <input type="text" placeholder="Enter your full name" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Enter your full name" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" required />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Email</label>
-            <input type="email" placeholder="you@university.edu" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@university.edu" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" required />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Password</label>
-            <input type="password" placeholder="Create a password" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a password" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" required />
           </div>
-          <button type="submit" className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90">Create Account</button>
+          <button type="submit" disabled={loading} className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:opacity-50">
+            {loading ? "Creating account..." : "Create Account"}
+          </button>
         </form>
 
         <div className="my-5 flex items-center gap-3"><div className="h-px flex-1 bg-border" /><span className="text-xs text-muted-foreground">or continue with</span><div className="h-px flex-1 bg-border" /></div>
