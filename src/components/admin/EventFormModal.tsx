@@ -44,64 +44,75 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async () => {
-    if (!title || !date) {
-      toast({ title: "Title and date are required", variant: "destructive" });
+    if (!title.trim()) {
+      toast({ title: "Title is required", variant: "destructive" });
+      return;
+    }
+    if (!date) {
+      toast({ title: "Please select a date", variant: "destructive" });
       return;
     }
     setSaving(true);
 
-    let image_url = event?.image_url ?? null;
+    try {
+      let image_url = event?.image_url ?? null;
 
-    // Upload image if selected
-    if (imageFile) {
-      const ext = imageFile.name.split(".").pop();
-      const path = `${crypto.randomUUID()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from("event-images")
-        .upload(path, imageFile);
-      if (uploadErr) {
-        toast({ title: "Image upload failed", description: uploadErr.message, variant: "destructive" });
-        setSaving(false);
-        return;
+      // Upload image if selected
+      if (imageFile) {
+        const ext = imageFile.name.split(".").pop();
+        const path = `${crypto.randomUUID()}.${ext}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("event-images")
+          .upload(path, imageFile);
+        if (uploadErr) {
+          toast({ title: "Image upload failed", description: uploadErr.message, variant: "destructive" });
+          setSaving(false);
+          return;
+        }
+        const { data: urlData } = supabase.storage.from("event-images").getPublicUrl(path);
+        image_url = urlData.publicUrl;
       }
-      const { data: urlData } = supabase.storage.from("event-images").getPublicUrl(path);
-      image_url = urlData.publicUrl;
+
+      const payload = {
+        title: title.trim(),
+        description: description.trim() || null,
+        date: date.toISOString(),
+        location: location.trim() || null,
+        category,
+        image_url,
+      };
+
+      if (isEditing) {
+        const { error } = await supabase.from("events").update(payload).eq("id", event!.id);
+        if (error) {
+          toast({ title: "Failed to update event", description: error.message, variant: "destructive" });
+          setSaving(false);
+          return;
+        }
+        toast({ title: "Event updated successfully" });
+      } else {
+        const { error } = await supabase.from("events").insert({
+          ...payload,
+          is_published: false,
+          created_by: user?.id ?? null,
+        });
+        if (error) {
+          console.error("Insert event error:", error);
+          toast({ title: "Failed to create event", description: error.message, variant: "destructive" });
+          setSaving(false);
+          return;
+        }
+        toast({ title: "Event created successfully" });
+      }
+
+      onSaved();
+      onClose();
+    } catch (err: any) {
+      console.error("Event form error:", err);
+      toast({ title: "Something went wrong", description: err?.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
     }
-
-    const payload = {
-      title,
-      description,
-      date: date.toISOString(),
-      location: location || null,
-      category,
-      image_url,
-    };
-
-    if (isEditing) {
-      const { error } = await supabase.from("events").update(payload).eq("id", event.id);
-      if (error) {
-        toast({ title: "Failed to update event", description: error.message, variant: "destructive" });
-        setSaving(false);
-        return;
-      }
-      toast({ title: "Event updated" });
-    } else {
-      const { error } = await supabase.from("events").insert({
-        ...payload,
-        is_published: false,
-        created_by: user?.id ?? null,
-      });
-      if (error) {
-        toast({ title: "Failed to create event", description: error.message, variant: "destructive" });
-        setSaving(false);
-        return;
-      }
-      toast({ title: "Event created" });
-    }
-
-    setSaving(false);
-    onSaved();
-    onClose();
   };
 
   return (
