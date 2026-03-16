@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_messages: {
+        Row: {
+          created_at: string
+          from_user_id: string
+          id: string
+          message: string
+          read: boolean
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_user_id: string
+          id?: string
+          message: string
+          read?: boolean
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          message?: string
+          read?: boolean
+          to_user_id?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           created_at: string
@@ -84,6 +111,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          is_banned: boolean
           updated_at: string
         }
         Insert: {
@@ -92,6 +120,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          is_banned?: boolean
           updated_at?: string
         }
         Update: {
@@ -100,6 +129,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          is_banned?: boolean
           updated_at?: string
         }
         Relationships: []

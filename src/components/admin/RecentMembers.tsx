@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { MoreVertical, Search, Shield } from "lucide-react";
+import { Search, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import MemberActionsMenu from "@/components/admin/MemberActionsMenu";
 
 interface Member {
   id: string;
@@ -10,6 +11,7 @@ interface Member {
   email: string | null;
   created_at: string;
   isAdmin: boolean;
+  is_banned: boolean;
 }
 
 const PAGE_SIZE = 10;
@@ -20,6 +22,8 @@ const RecentMembers = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const refreshMembers = () => setRefreshKey((k) => k + 1);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -34,7 +38,7 @@ const RecentMembers = () => {
 
       let query = supabase
         .from("profiles")
-        .select("id, full_name, email, created_at", { count: "exact" })
+        .select("id, full_name, email, created_at, is_banned", { count: "exact" })
         .order("created_at", { ascending: false });
 
       if (search.trim()) {
@@ -47,9 +51,10 @@ const RecentMembers = () => {
       const { data, count } = await query;
 
       setMembers(
-        (data ?? []).map((p) => ({
+        (data ?? []).map((p: any) => ({
           ...p,
           isAdmin: adminIds.has(p.id),
+          is_banned: p.is_banned ?? false,
         }))
       );
       setTotal(count ?? 0);
@@ -57,7 +62,7 @@ const RecentMembers = () => {
     };
 
     fetchMembers();
-  }, [search, page]);
+  }, [search, page, refreshKey]);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -140,15 +145,15 @@ const RecentMembers = () => {
                     {m.isAdmin ? "Administration" : "Member"}
                   </td>
                   <td className="px-5 py-3">
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                      ACTIVE
-                    </span>
+                    {m.is_banned ? (
+                      <span className="rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">BANNED</span>
+                    ) : (
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">ACTIVE</span>
+                    )}
                   </td>
                   <td className="px-5 py-3 text-muted-foreground">{formatDate(m.created_at)}</td>
                   <td className="px-5 py-3">
-                    <button className="text-muted-foreground hover:text-foreground">
-                      <MoreVertical size={18} />
-                    </button>
+                    <MemberActionsMenu member={m} onRefresh={refreshMembers} />
                   </td>
                 </tr>
               ))
