@@ -78,9 +78,13 @@ const AdminSidebar = () => {
 
       <div className="border-t border-border px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
-            {profile?.full_name?.[0] ?? "A"}
-          </div>
+          {profile?.avatar_url ? (
+            <img src={profile.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover" />
+          ) : (
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+              {profile?.full_name?.[0] ?? "A"}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="truncate text-sm font-medium text-foreground">{profile?.full_name ?? "Admin"}</p>
             <p className="text-xs text-muted-foreground">Super Admin</p>
