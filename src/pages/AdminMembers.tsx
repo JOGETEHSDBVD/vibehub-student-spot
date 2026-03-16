@@ -49,7 +49,7 @@ const AdminMembers = () => {
 
       let query = supabase
         .from("profiles")
-        .select("id, full_name, email, created_at", { count: "exact" })
+        .select("id, full_name, email, created_at, is_banned", { count: "exact" })
         .order("created_at", { ascending: false });
 
       if (search.trim()) {
