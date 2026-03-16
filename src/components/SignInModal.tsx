@@ -33,6 +33,17 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
       setEmail("");
       setPassword("");
       onClose();
+      // Check if user is admin and redirect
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: isAdmin } = await (supabase.rpc as any)("has_role", {
+          _user_id: user.id,
+          _role: "admin",
+        });
+        if (isAdmin) {
+          navigate("/admin");
+        }
+      }
     }
   };
 
