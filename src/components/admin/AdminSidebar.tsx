@@ -13,6 +13,7 @@ const navItems = [
 const AdminSidebar = () => {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignOut = async () => {
     await signOut();
