@@ -193,7 +193,7 @@ const AdminAnnouncements = () => {
             ) : allAnnouncements.length === 0 ? (
               renderEmpty("No announcements yet.")
             ) : (
-              allAnnouncements.map((a) => renderAnnouncementCard(a, a.created_by === user?.id))
+              allAnnouncements.map((a) => renderAnnouncementCard(a, false))
             )}
           </TabsContent>
         </Tabs>
