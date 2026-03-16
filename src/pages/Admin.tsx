@@ -52,7 +52,7 @@ const Admin = () => {
             <Button variant="outline" className="gap-2">
               <Download size={16} /> Export Report
             </Button>
-            <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setEventFormOpen(true)}>
               <PlusCircle size={16} /> Create Event
             </Button>
           </div>
