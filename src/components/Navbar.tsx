@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { Menu, X, LogOut, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import SignInModal from "./SignInModal";
 import JoinModal from "./JoinModal";
 import { useAuth } from "@/contexts/AuthContext";
 
-const navLinks = ["Home", "About", "Events", "MBTI Test", "Admin"];
+const navLinks = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "#" },
+  { label: "Events", href: "#" },
+  { label: "MBTI Test", href: "#" },
+  { label: "Admin", href: "/admin" },
+];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
