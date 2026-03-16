@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
+import AdminEvents from "./pages/AdminEvents.tsx";
+import Events from "./pages/Events.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
@@ -18,7 +20,9 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/events" element={<AdminEvents />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

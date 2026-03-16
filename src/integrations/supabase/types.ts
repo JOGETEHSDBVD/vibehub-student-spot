@@ -40,26 +40,38 @@ export type Database = {
       }
       events: {
         Row: {
+          category: string | null
           created_at: string
           created_by: string | null
           date: string
+          description: string | null
           id: string
+          image_url: string | null
+          is_published: boolean | null
           location: string | null
           title: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           created_by?: string | null
           date: string
+          description?: string | null
           id?: string
+          image_url?: string | null
+          is_published?: boolean | null
           location?: string | null
           title: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           created_by?: string | null
           date?: string
+          description?: string | null
           id?: string
+          image_url?: string | null
+          is_published?: boolean | null
           location?: string | null
           title?: string
         }

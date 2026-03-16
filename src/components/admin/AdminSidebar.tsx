@@ -3,11 +3,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, active: true },
-  { label: "Members", icon: Users },
-  { label: "Events", icon: CalendarDays },
-  { label: "Analytics", icon: BarChart3 },
-  { label: "Announcements", icon: Megaphone },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
+  { label: "Members", icon: Users, path: "/admin" },
+  { label: "Events", icon: CalendarDays, path: "/admin/events" },
+  { label: "Analytics", icon: BarChart3, path: "/admin" },
+  { label: "Announcements", icon: Megaphone, path: "/admin" },
 ];
 
 const AdminSidebar = () => {
@@ -34,19 +34,23 @@ const AdminSidebar = () => {
 
       {/* Nav */}
       <nav className="mt-4 flex-1 space-y-1 px-3">
-        {navItems.map((item) => (
-          <button
-            key={item.label}
-            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-              item.active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <item.icon size={18} />
-            {item.label}
-          </button>
-        ))}
+        {navItems.map((item) => {
+          const isActive = window.location.pathname === item.path;
+          return (
+            <button
+              key={item.label}
+              onClick={() => navigate(item.path)}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <item.icon size={18} />
+              {item.label}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Bottom */}

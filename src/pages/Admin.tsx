@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Download, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -9,11 +9,14 @@ import StatsCards from "@/components/admin/StatsCards";
 import RecentMembers from "@/components/admin/RecentMembers";
 import QuickActions from "@/components/admin/QuickActions";
 import UpcomingEventsPanel from "@/components/admin/UpcomingEventsPanel";
+import EventFormModal from "@/components/admin/EventFormModal";
 
 const Admin = () => {
   const { isAdmin, loading } = useAdminCheck();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [eventFormOpen, setEventFormOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!loading && !authLoading) {
@@ -49,14 +52,13 @@ const Admin = () => {
             <Button variant="outline" className="gap-2">
               <Download size={16} /> Export Report
             </Button>
-            <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setEventFormOpen(true)}>
               <PlusCircle size={16} /> Create Event
             </Button>
           </div>
         </div>
 
-        {/* Stats */}
-        <StatsCards />
+        <StatsCards key={refreshKey} />
 
         {/* Main content */}
         <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -68,6 +70,14 @@ const Admin = () => {
             <UpcomingEventsPanel />
           </div>
         </div>
+
+        {eventFormOpen && (
+          <EventFormModal
+            open={eventFormOpen}
+            onClose={() => setEventFormOpen(false)}
+            onSaved={() => setRefreshKey((k) => k + 1)}
+          />
+        )}
       </main>
     </div>
   );
