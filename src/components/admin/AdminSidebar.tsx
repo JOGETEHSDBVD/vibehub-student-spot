@@ -36,9 +36,9 @@ const AdminSidebar = () => {
       {/* Nav */}
       <nav className="mt-4 flex-1 space-y-1 px-3">
         {navItems.map((item) => {
-          const isActive = item.path === "/admin"
-            ? location.pathname === "/admin"
-            : location.pathname.startsWith(item.path);
+          const currentPath = location.pathname.replace(/\/$/, '') || '/';
+          const itemPath = item.path.replace(/\/$/, '') || '/';
+          const isActive = currentPath === itemPath;
           return (
             <button
               key={item.label}
