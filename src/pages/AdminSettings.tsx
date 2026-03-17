@@ -180,6 +180,19 @@ const AdminSettings = () => {
                 <Input value={email} disabled className="bg-muted" />
                 <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
               </div>
+              <div>
+                <Label>Role</Label>
+                <Select value={memberType} onValueChange={setMemberType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="trainer">Trainer</SelectItem>
+                    <SelectItem value="administration">Administration Member</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="mt-6 flex justify-end">
               <Button onClick={handleSave} disabled={saving} className="gap-2">
