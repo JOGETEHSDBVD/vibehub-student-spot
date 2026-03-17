@@ -112,7 +112,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         pole: pole === "Not specified" ? null : pole,
         image_url,
         tags,
-
+      };
       if (isEditing) {
         const { error } = await supabase.from("events").update(payload).eq("id", event!.id);
         if (error) {
