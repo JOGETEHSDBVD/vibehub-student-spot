@@ -26,6 +26,7 @@ interface EventFormModalProps {
     location: string | null;
     image_url: string | null;
     category: string | null;
+    pole: string | null;
   } | null;
 }
 
