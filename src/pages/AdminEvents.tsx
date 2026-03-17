@@ -100,7 +100,7 @@ const AdminEvents = () => {
             {events.map((e) => (
               <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
                 {/* 3-dot menu */}
-                <div className="absolute top-2 right-2 z-10">
+                <div className="absolute top-2 right-2 z-10" onClick={(ev) => ev.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
