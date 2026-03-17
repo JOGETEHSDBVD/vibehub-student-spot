@@ -38,6 +38,7 @@ const AdminSettings = () => {
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name ?? "");
+      setMemberType(profile.member_type ?? "student");
       setAvatarUrl(profile.avatar_url ?? null);
     }
   }, [profile]);
