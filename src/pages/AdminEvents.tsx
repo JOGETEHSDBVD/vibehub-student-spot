@@ -73,8 +73,7 @@ const AdminEvents = () => {
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!isAdmin) return null;
 
-  const myEvents = events.filter((e) => e.created_by === user?.id);
-  const allPublishedEvents = events.filter((e) => !!e.is_published);
+  const myEvents = events;
 
   const renderTable = (rows: EventRow[]) => (
     rows.length === 0 ? (
