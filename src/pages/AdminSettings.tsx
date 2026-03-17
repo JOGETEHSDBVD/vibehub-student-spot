@@ -20,6 +20,7 @@ const AdminSettings = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [memberType, setMemberType] = useState("student");
+  const [pole, setPole] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
