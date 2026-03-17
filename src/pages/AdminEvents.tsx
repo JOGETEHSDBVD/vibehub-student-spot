@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, Pencil, Trash2 } from "lucide-react";
+import { PlusCircle, Pencil, Trash2, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -72,6 +72,59 @@ const AdminEvents = () => {
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!isAdmin) return null;
 
+  const myEvents = events.filter((e) => e.created_by === user?.id);
+  const otherEvents = events.filter((e) => e.created_by !== user?.id);
+
+  const renderTable = (rows: EventRow[], showActions: boolean) => (
+    rows.length === 0 ? (
+      <div className="flex flex-col items-center py-8">
+        <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
+        <p className="mt-2 text-sm text-muted-foreground">No events here yet.</p>
+      </div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Title</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Status</TableHead>
+            {showActions && <TableHead className="text-right">Actions</TableHead>}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((e) => (
+            <TableRow key={e.id}>
+              <TableCell className="font-medium">{e.title}</TableCell>
+              <TableCell>{new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</TableCell>
+              <TableCell>
+                <Badge variant="secondary">{e.category ?? "—"}</Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Switch checked={!!e.is_published} onCheckedChange={() => togglePublish(e.id, !!e.is_published)} disabled={!showActions} />
+                  <span className="text-xs text-muted-foreground">{e.is_published ? "Published" : "Draft"}</span>
+                </div>
+              </TableCell>
+              {showActions && (
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-1">
+                    <Button size="icon" variant="ghost" onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
+                      <Pencil size={15} />
+                    </Button>
+                    <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(e.id)}>
+                      <Trash2 size={15} />
+                    </Button>
+                  </div>
+                </TableCell>
+              )}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  );
+
   return (
     <div className="flex h-screen bg-muted/30">
       <AdminSidebar />
@@ -86,61 +139,28 @@ const AdminEvents = () => {
           </Button>
         </div>
 
-        <div className="rounded-xl border border-border bg-card">
-          {fetching ? (
-            <p className="p-6 text-sm text-muted-foreground">Loading events...</p>
-          ) : events.length === 0 ? (
-            <p className="p-6 text-sm text-muted-foreground">No events yet. Create your first event!</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {events.map((e) => {
-                  const isOwner = e.created_by === user?.id;
-                  return (
-                    <TableRow key={e.id}>
-                      <TableCell className="font-medium">{e.title}</TableCell>
-                      <TableCell>{new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{e.category ?? "—"}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Switch checked={!!e.is_published} onCheckedChange={() => togglePublish(e.id, !!e.is_published)} disabled={!isOwner} />
-                          <span className="text-xs text-muted-foreground">{e.is_published ? "Published" : "Draft"}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {isOwner ? (
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
-                              <Pencil size={15} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(e.id)}>
-                              <Trash2 size={15} />
-                            </Button>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          )}
-        </div>
+        {fetching ? (
+          <p className="text-sm text-muted-foreground">Loading events...</p>
+        ) : (
+          <div className="space-y-8">
+            {/* Your Events */}
+            <div>
+              <h2 className="text-lg font-bold text-foreground mb-3">Your Events</h2>
+              <div className="rounded-xl border border-border bg-card">
+                {renderTable(myEvents, true)}
+              </div>
+            </div>
 
-        {/* Create / Edit Modal */}
+            {/* All Events */}
+            <div>
+              <h2 className="text-lg font-bold text-foreground mb-3">All Events</h2>
+              <div className="rounded-xl border border-border bg-card">
+                {renderTable(otherEvents, false)}
+              </div>
+            </div>
+          </div>
+        )}
+
         {formOpen && (
           <EventFormModal
             open={formOpen}
@@ -150,7 +170,6 @@ const AdminEvents = () => {
           />
         )}
 
-        {/* Delete Confirmation */}
         <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
