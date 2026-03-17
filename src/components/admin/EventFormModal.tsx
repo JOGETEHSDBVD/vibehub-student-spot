@@ -31,7 +31,11 @@ interface EventFormModalProps {
 }
 
 const categories = ["Sports", "Culture", "Entrepreneurship"];
-
+const poles = [
+  "Not specified", "Administration", "Tourisme", "Arts et Graphique",
+  "Service à la Personne", "Artisanat", "Agro-industrie", "Agriculture",
+  "Gestion et Commerce", "Digital et Intelligence Artificielle", "Industrie",
+];
 const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) => {
   const { user } = useAuth();
   const isEditing = !!event;
