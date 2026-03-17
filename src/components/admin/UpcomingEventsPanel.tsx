@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import EventDetailModal from "@/components/admin/EventDetailModal";
 
 interface Event {
   id: string;
   title: string;
+  description: string | null;
   date: string;
   location: string | null;
   image_url: string | null;
@@ -14,12 +16,13 @@ interface Event {
 const UpcomingEventsPanel = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     const fetch = async () => {
       const { data } = await supabase
         .from("events")
-        .select("id, title, date, location, image_url, category")
+        .select("id, title, description, date, location, image_url, category")
         .eq("is_published", true)
         .gte("date", new Date().toISOString())
         .order("date", { ascending: true })
@@ -57,7 +60,7 @@ const UpcomingEventsPanel = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {events.map((e) => (
-            <div key={e.id} className="rounded-lg border border-border overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
+            <div key={e.id} className="rounded-lg border border-border overflow-hidden transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
               {e.image_url ? (
                 <img src={e.image_url} alt={e.title} className="h-32 w-full object-cover" />
               ) : (
@@ -82,6 +85,14 @@ const UpcomingEventsPanel = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {viewingEvent && (
+        <EventDetailModal
+          open={!!viewingEvent}
+          onClose={() => setViewingEvent(null)}
+          event={viewingEvent}
+        />
       )}
     </div>
   );
