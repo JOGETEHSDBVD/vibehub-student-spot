@@ -20,6 +20,7 @@ const AdminSettings = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [memberType, setMemberType] = useState("student");
+  const [pole, setPole] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -40,6 +41,7 @@ const AdminSettings = () => {
     if (profile) {
       setFullName(profile.full_name ?? "");
       setMemberType(profile.member_type ?? "student");
+      setPole(profile.pole ?? "");
       setAvatarUrl(profile.avatar_url ?? null);
     }
   }, [profile]);
@@ -99,7 +101,7 @@ const AdminSettings = () => {
 
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName.trim(), member_type: memberType })
+      .update({ full_name: fullName.trim(), member_type: memberType, pole: pole || null })
       .eq("id", user.id);
 
     if (error) {
@@ -190,6 +192,26 @@ const AdminSettings = () => {
                     <SelectItem value="student">Student</SelectItem>
                     <SelectItem value="trainer">Trainer</SelectItem>
                     <SelectItem value="administration">Administration Member</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Pôle</Label>
+                <Select value={pole} onValueChange={setPole}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your pôle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Administration">Administration</SelectItem>
+                    <SelectItem value="Tourisme">Tourisme</SelectItem>
+                    <SelectItem value="Arts et Graphique">Arts et Graphique</SelectItem>
+                    <SelectItem value="Service à la Personne">Service à la Personne</SelectItem>
+                    <SelectItem value="Artisanat">Artisanat</SelectItem>
+                    <SelectItem value="Agro-industrie">Agro-industrie</SelectItem>
+                    <SelectItem value="Agriculture">Agriculture</SelectItem>
+                    <SelectItem value="Gestion et Commerce">Gestion et Commerce</SelectItem>
+                    <SelectItem value="Digital et Intelligence Artificielle">Digital et Intelligence Artificielle</SelectItem>
+                    <SelectItem value="Industrie">Industrie</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
