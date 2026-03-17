@@ -45,6 +45,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [date, setDate] = useState<Date | undefined>(event?.date ? new Date(event.date) : undefined);
   const [location, setLocation] = useState(event?.location ?? "");
   const [category, setCategory] = useState(event?.category ?? "Sports");
+  const [pole, setPole] = useState(event?.pole ?? "Not specified");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
