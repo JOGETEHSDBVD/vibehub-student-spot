@@ -115,7 +115,7 @@ const AdminEvents = () => {
                         {e.is_published ? <EyeOff size={14} className="mr-2" /> : <Eye size={14} className="mr-2" />}
                         {e.is_published ? "Unpublish" : "Publish"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteId(e.id)}>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(ev) => { ev.stopPropagation(); setDeleteId(e.id); }}>
                         <Trash2 size={14} className="mr-2" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
