@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Upload, X } from "lucide-react";
+import { CalendarIcon, Clock, Upload, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +44,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [title, setTitle] = useState(event?.title ?? "");
   const [description, setDescription] = useState(event?.description ?? "");
   const [date, setDate] = useState<Date | undefined>(event?.date ? new Date(event.date) : undefined);
+  const [time, setTime] = useState(event?.date ? format(new Date(event.date), "HH:mm") : "12:00");
   const [location, setLocation] = useState(event?.location ?? "");
   const [category, setCategory] = useState(event?.category ?? "Sports");
   const [pole, setPole] = useState(event?.pole ?? "Not specified");
@@ -106,7 +107,12 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
       const payload = {
         title: title.trim(),
         description: description.trim() || null,
-        date: date.toISOString(),
+        date: (() => {
+          const d = new Date(date);
+          const [h, m] = time.split(":").map(Number);
+          d.setHours(h, m, 0, 0);
+          return d.toISOString();
+        })(),
         location: location.trim() || null,
         category,
         pole: pole === "Not specified" ? null : pole,
@@ -165,18 +171,29 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
           </div>
 
           <div>
-            <Label>Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={date} onSelect={setDate} initialFocus className="p-3 pointer-events-auto" />
-              </PopoverContent>
-            </Popover>
+            <Label>Date & Time</Label>
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("flex-1 justify-start text-left font-normal", !date && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={date} onSelect={setDate} initialFocus className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+              <div className="relative">
+                <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="w-[130px] pl-8"
+                />
+              </div>
+            </div>
           </div>
 
           <div>
