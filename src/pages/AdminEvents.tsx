@@ -75,6 +75,13 @@ const AdminEvents = () => {
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!isAdmin) return null;
 
+  const eventIds = events.map((e) => e.id);
+  return <AdminEventsInner events={events} setEvents={setEvents} fetching={fetching} formOpen={formOpen} setFormOpen={setFormOpen} editingEvent={editingEvent} setEditingEvent={setEditingEvent} deleteId={deleteId} setDeleteId={setDeleteId} viewingEvent={viewingEvent} setViewingEvent={setViewingEvent} togglePublish={togglePublish} confirmDelete={confirmDelete} fetchEvents={fetchEvents} user={user} />;
+};
+
+const AdminEventsInner = ({ events, setEvents, fetching, formOpen, setFormOpen, editingEvent, setEditingEvent, deleteId, setDeleteId, viewingEvent, setViewingEvent, togglePublish, confirmDelete, fetchEvents, user }: any) => {
+  const participantCounts = useEventParticipantCounts(events.map((e: any) => e.id));
+
   return (
     <div className="flex h-screen bg-muted/30">
       <AdminSidebar />
