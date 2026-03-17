@@ -44,6 +44,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [title, setTitle] = useState(event?.title ?? "");
   const [description, setDescription] = useState(event?.description ?? "");
   const [date, setDate] = useState<Date | undefined>(event?.date ? new Date(event.date) : undefined);
+  const [time, setTime] = useState(event?.date ? format(new Date(event.date), "HH:mm") : "12:00");
   const [location, setLocation] = useState(event?.location ?? "");
   const [category, setCategory] = useState(event?.category ?? "Sports");
   const [pole, setPole] = useState(event?.pole ?? "Not specified");
