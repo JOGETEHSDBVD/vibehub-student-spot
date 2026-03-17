@@ -195,6 +195,26 @@ const AdminSettings = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label>Pôle</Label>
+                <Select value={pole} onValueChange={setPole}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your pôle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Administration">Administration</SelectItem>
+                    <SelectItem value="Tourisme">Tourisme</SelectItem>
+                    <SelectItem value="Arts et Graphique">Arts et Graphique</SelectItem>
+                    <SelectItem value="Service à la Personne">Service à la Personne</SelectItem>
+                    <SelectItem value="Artisanat">Artisanat</SelectItem>
+                    <SelectItem value="Agro-industrie">Agro-industrie</SelectItem>
+                    <SelectItem value="Agriculture">Agriculture</SelectItem>
+                    <SelectItem value="Gestion et Commerce">Gestion et Commerce</SelectItem>
+                    <SelectItem value="Digital et Intelligence Artificielle">Digital et Intelligence Artificielle</SelectItem>
+                    <SelectItem value="Industrie">Industrie</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="mt-6 flex justify-end">
               <Button onClick={handleSave} disabled={saving} className="gap-2">
