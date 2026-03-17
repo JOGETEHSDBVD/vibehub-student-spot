@@ -13,6 +13,7 @@ interface Member {
   id: string;
   full_name: string | null;
   email: string | null;
+  avatar_url: string | null;
   created_at: string;
   isAdmin: boolean;
   is_banned: boolean;
@@ -50,7 +51,7 @@ const AdminMembers = () => {
 
       let query = supabase
         .from("profiles")
-        .select("id, full_name, email, created_at, is_banned", { count: "exact" })
+        .select("id, full_name, email, avatar_url, created_at, is_banned", { count: "exact" })
         .order("created_at", { ascending: false });
 
       if (search.trim()) {
@@ -129,9 +130,13 @@ const AdminMembers = () => {
                   members.map((m, i) => (
                     <tr key={m.id} className={`border-t border-border ${m.isAdmin ? "bg-primary/5" : ""}`}>
                       <td className="flex items-center gap-3 px-5 py-3">
-                        <div className={`flex h-9 w-9 items-center justify-center rounded-full ${avatarColors[i % avatarColors.length]} text-sm font-bold`}>
-                          {(m.full_name ?? m.email ?? "?")[0].toUpperCase()}
-                        </div>
+                        {m.avatar_url ? (
+                          <img src={m.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover" />
+                        ) : (
+                          <div className={`flex h-9 w-9 items-center justify-center rounded-full ${avatarColors[i % avatarColors.length]} text-sm font-bold`}>
+                            {(m.full_name ?? m.email ?? "?")[0].toUpperCase()}
+                          </div>
+                        )}
                         <div>
                           <span className="font-medium text-foreground">{m.full_name || m.email || "Unknown"}</span>
                           {m.email && <p className="text-xs text-muted-foreground">{m.email}</p>}
