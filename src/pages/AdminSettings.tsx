@@ -41,6 +41,7 @@ const AdminSettings = () => {
     if (profile) {
       setFullName(profile.full_name ?? "");
       setMemberType(profile.member_type ?? "student");
+      setPole(profile.pole ?? "");
       setAvatarUrl(profile.avatar_url ?? null);
     }
   }, [profile]);
