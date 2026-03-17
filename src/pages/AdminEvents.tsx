@@ -48,10 +48,11 @@ const AdminEvents = () => {
     const { data } = await supabase
       .from("events")
       .select("*")
+      .eq("created_by", user?.id ?? "")
       .order("date", { ascending: false });
     setEvents((data as EventRow[]) ?? []);
     setFetching(false);
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => { if (isAdmin) fetchEvents(); }, [isAdmin, fetchEvents]);
 
