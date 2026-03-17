@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Search, Shield } from "lucide-react";
+import { Search, Shield, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import MemberActionsMenu from "@/components/admin/MemberActionsMenu";
+import { useNavigate } from "react-router-dom";
 
 interface Member {
   id: string;
@@ -15,22 +15,19 @@ interface Member {
   is_banned: boolean;
 }
 
-const PAGE_SIZE = 10;
-
 const RecentMembers = () => {
   const [search, setSearch] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const refreshMembers = () => setRefreshKey((k) => k + 1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMembers = async () => {
       setLoading(true);
 
-      // Get admin user IDs
       const { data: adminRoles } = await supabase
         .from("user_roles")
         .select("user_id")
@@ -40,14 +37,12 @@ const RecentMembers = () => {
       let query = supabase
         .from("profiles")
         .select("id, full_name, email, avatar_url, created_at, is_banned", { count: "exact" })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(0, 9);
 
       if (search.trim()) {
         query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
       }
-
-      const from = page * PAGE_SIZE;
-      query = query.range(from, from + PAGE_SIZE - 1);
 
       const { data, count } = await query;
 
@@ -63,7 +58,7 @@ const RecentMembers = () => {
     };
 
     fetchMembers();
-  }, [search, page, refreshKey]);
+  }, [search, refreshKey]);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -72,9 +67,6 @@ const RecentMembers = () => {
     "bg-rose-200", "bg-amber-200", "bg-sky-200", "bg-emerald-200",
     "bg-violet-200", "bg-pink-200", "bg-teal-200", "bg-orange-200",
   ];
-
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-  const hasPagination = total > PAGE_SIZE;
 
   return (
     <div className="rounded-xl border border-border bg-card">
@@ -85,10 +77,7 @@ const RecentMembers = () => {
           <Input
             placeholder="Search members..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
+            onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -171,24 +160,13 @@ const RecentMembers = () => {
         <p className="text-xs text-muted-foreground">
           Showing {members.length} of {total} members
         </p>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!hasPagination || page === 0}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            Previous
-          </Button>
-          <Button
-            size="sm"
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
-            disabled={!hasPagination || page >= totalPages - 1}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
-        </div>
+        <button
+          onClick={() => navigate("/admin/members")}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+        >
+          View all members
+          <ArrowRight size={16} />
+        </button>
       </div>
     </div>
   );
