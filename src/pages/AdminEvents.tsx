@@ -103,31 +103,38 @@ const AdminEvents = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {events.map((e) => (
-                  <TableRow key={e.id}>
-                    <TableCell className="font-medium">{e.title}</TableCell>
-                    <TableCell>{new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{e.category ?? "—"}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Switch checked={!!e.is_published} onCheckedChange={() => togglePublish(e.id, !!e.is_published)} />
-                        <span className="text-xs text-muted-foreground">{e.is_published ? "Published" : "Draft"}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button size="icon" variant="ghost" onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
-                          <Pencil size={15} />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(e.id)}>
-                          <Trash2 size={15} />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {events.map((e) => {
+                  const isOwner = e.created_by === user?.id;
+                  return (
+                    <TableRow key={e.id}>
+                      <TableCell className="font-medium">{e.title}</TableCell>
+                      <TableCell>{new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{e.category ?? "—"}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Switch checked={!!e.is_published} onCheckedChange={() => togglePublish(e.id, !!e.is_published)} disabled={!isOwner} />
+                          <span className="text-xs text-muted-foreground">{e.is_published ? "Published" : "Draft"}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {isOwner ? (
+                          <div className="flex justify-end gap-1">
+                            <Button size="icon" variant="ghost" onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
+                              <Pencil size={15} />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(e.id)}>
+                              <Trash2 size={15} />
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
