@@ -85,6 +85,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         date: date.toISOString(),
         location: location.trim() || null,
         category,
+        pole: pole === "Not specified" ? null : pole,
         image_url,
       };
 
