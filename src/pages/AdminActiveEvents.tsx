@@ -46,7 +46,7 @@ const AdminActiveEvents = () => {
         .from("events")
         .select("id, title, description, date, location, image_url, category, created_by")
         .eq("is_published", true)
-        .order("date", { ascending: false });
+        .order("date", { ascending: true });
 
       const rows = data ?? [];
 

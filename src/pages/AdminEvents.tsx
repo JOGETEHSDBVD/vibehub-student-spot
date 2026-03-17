@@ -55,7 +55,7 @@ const AdminEvents = () => {
       .from("events")
       .select("*")
       .eq("created_by", user?.id ?? "")
-      .order("date", { ascending: false });
+      .order("date", { ascending: true });
     setEvents((data as EventRow[]) ?? []);
     setFetching(false);
   }, [user?.id]);
