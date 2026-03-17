@@ -67,8 +67,11 @@ const Admin = () => {
           </div>
           <div className="space-y-6">
             <QuickActions />
-            <UpcomingEventsPanel />
           </div>
+        </div>
+
+        <div className="mt-6">
+          <UpcomingEventsPanel />
         </div>
 
         {eventFormOpen && (
