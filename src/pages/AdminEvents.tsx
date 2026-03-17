@@ -23,6 +23,7 @@ interface EventRow {
   image_url: string | null;
   category: string | null;
   pole: string | null;
+  tags: string[] | null;
   is_published: boolean | null;
   created_at: string;
   created_by: string | null;
