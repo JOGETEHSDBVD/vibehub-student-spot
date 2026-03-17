@@ -173,6 +173,18 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
           </div>
 
           <div>
+            <Label>Pôle</Label>
+            <Select value={pole} onValueChange={setPole}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {poles.map((p) => (
+                  <SelectItem key={p} value={p}>{p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
             <Label>Image</Label>
             <div className="mt-1">
               <label className="flex cursor-pointer items-center gap-2 rounded-md border border-input px-3 py-2 text-sm text-muted-foreground hover:bg-muted">
