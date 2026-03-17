@@ -34,7 +34,7 @@ const UpcomingEventsPanel = () => {
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-foreground">Upcoming Events</h3>
-        <a href="/admin/events" className="text-xs font-medium text-primary hover:underline">View all</a>
+        <a href="/admin/active-events" className="text-xs font-medium text-primary hover:underline">View all</a>
       </div>
 
       {loading ? (

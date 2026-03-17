@@ -48,10 +48,11 @@ const AdminEvents = () => {
     const { data } = await supabase
       .from("events")
       .select("*")
+      .eq("created_by", user?.id ?? "")
       .order("date", { ascending: false });
     setEvents((data as EventRow[]) ?? []);
     setFetching(false);
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => { if (isAdmin) fetchEvents(); }, [isAdmin, fetchEvents]);
 
@@ -72,8 +73,7 @@ const AdminEvents = () => {
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!isAdmin) return null;
 
-  const myEvents = events.filter((e) => e.created_by === user?.id);
-  const allPublishedEvents = events.filter((e) => !!e.is_published);
+  const myEvents = events;
 
   const renderTable = (rows: EventRow[]) => (
     rows.length === 0 ? (
@@ -123,42 +123,6 @@ const AdminEvents = () => {
     )
   );
 
-  const renderEventCards = (rows: EventRow[]) => (
-    rows.length === 0 ? (
-      <div className="flex flex-col items-center py-8">
-        <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
-        <p className="mt-2 text-sm text-muted-foreground">No active events yet.</p>
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {rows.map((e) => (
-          <div key={e.id} className="rounded-lg border border-border overflow-hidden transition-transform duration-200 hover:scale-[1.02] bg-card">
-            {e.image_url ? (
-              <img src={e.image_url} alt={e.title} className="h-32 w-full object-cover" />
-            ) : (
-              <div className="h-32 w-full bg-muted flex items-center justify-center">
-                <CalendarDays className="h-8 w-8 text-muted-foreground/30" />
-              </div>
-            )}
-            <div className="p-3">
-              <p className="text-[11px] font-medium text-primary">
-                {new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-              </p>
-              <h4 className="mt-1 text-sm font-bold text-foreground truncate">{e.title}</h4>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
-                  {e.category ?? "Event"}
-                </span>
-                {e.location && (
-                  <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">{e.location}</span>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  );
 
   return (
     <div className="flex h-screen bg-muted/30">
@@ -166,8 +130,8 @@ const AdminEvents = () => {
       <main className="flex-1 overflow-y-auto p-6 lg:p-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Event Management</h1>
-            <p className="text-sm text-muted-foreground">Create, edit, publish and manage all events.</p>
+            <h1 className="text-2xl font-bold text-foreground">Your Events</h1>
+            <p className="text-sm text-muted-foreground">Create, edit, publish and manage your events.</p>
           </div>
           <Button className="gap-2" onClick={() => { setEditingEvent(null); setFormOpen(true); }}>
             <PlusCircle size={16} /> Create Event
@@ -177,20 +141,8 @@ const AdminEvents = () => {
         {fetching ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
         ) : (
-          <div className="space-y-8">
-            {/* Your Events */}
-            <div>
-              <h2 className="text-lg font-bold text-foreground mb-3">Your Events</h2>
-              <div className="rounded-xl border border-border bg-card">
-                {renderTable(myEvents)}
-              </div>
-            </div>
-
-            {/* All Active Events */}
-            <div>
-              <h2 className="text-lg font-bold text-foreground mb-3">All Active Events</h2>
-              {renderEventCards(allPublishedEvents)}
-            </div>
+          <div className="rounded-xl border border-border bg-card">
+            {renderTable(myEvents)}
           </div>
         )}
 
