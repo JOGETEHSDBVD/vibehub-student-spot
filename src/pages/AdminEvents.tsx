@@ -160,6 +160,10 @@ const AdminEventsInner = ({ events, setEvents, fetching, formOpen, setFormOpen, 
                       <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{e.location}</span>
                     )}
                   </div>
+                  <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <Users size={12} />
+                    <span>{participantCounts[e.id] ?? 0} participants</span>
+                  </div>
                 </div>
               </div>
             ))}
