@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, CalendarCheck, DollarSign, Zap } from "lucide-react";
+import { Users, CalendarCheck, TrendingUp, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const StatsCards = () => {
