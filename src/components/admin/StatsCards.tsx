@@ -43,12 +43,12 @@ const StatsCards = () => {
       iconBg: "bg-amber-100 text-amber-600",
     },
     {
-      label: "Monthly Revenue",
-      value: "$0",
+      label: "Total Participation",
+      value: loading ? "—" : "0",
       change: "",
       changeColor: "text-muted-foreground",
-      icon: DollarSign,
-      iconBg: "bg-primary/10 text-primary",
+      icon: TrendingUp,
+      iconBg: "bg-emerald-100 text-emerald-600",
     },
     {
       label: "Engagement Rate",
