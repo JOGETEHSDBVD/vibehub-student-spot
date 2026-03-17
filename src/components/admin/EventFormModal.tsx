@@ -26,11 +26,16 @@ interface EventFormModalProps {
     location: string | null;
     image_url: string | null;
     category: string | null;
+    pole: string | null;
   } | null;
 }
 
 const categories = ["Sports", "Culture", "Entrepreneurship"];
-
+const poles = [
+  "Not specified", "Administration", "Tourisme", "Arts et Graphique",
+  "Service à la Personne", "Artisanat", "Agro-industrie", "Agriculture",
+  "Gestion et Commerce", "Digital et Intelligence Artificielle", "Industrie",
+];
 const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) => {
   const { user } = useAuth();
   const isEditing = !!event;
@@ -40,6 +45,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [date, setDate] = useState<Date | undefined>(event?.date ? new Date(event.date) : undefined);
   const [location, setLocation] = useState(event?.location ?? "");
   const [category, setCategory] = useState(event?.category ?? "Sports");
+  const [pole, setPole] = useState(event?.pole ?? "Not specified");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -79,6 +85,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         date: date.toISOString(),
         location: location.trim() || null,
         category,
+        pole: pole === "Not specified" ? null : pole,
         image_url,
       };
 
@@ -160,6 +167,18 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
               <SelectContent>
                 {categories.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label>Pôle</Label>
+            <Select value={pole} onValueChange={setPole}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {poles.map((p) => (
+                  <SelectItem key={p} value={p}>{p}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
