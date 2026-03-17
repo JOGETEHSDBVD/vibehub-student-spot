@@ -48,7 +48,30 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [category, setCategory] = useState(event?.category ?? "Sports");
   const [pole, setPole] = useState(event?.pole ?? "Not specified");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [tags, setTags] = useState<string[]>(event?.tags ?? []);
+  const [tagInput, setTagInput] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const addTag = (value: string) => {
+    const tag = value.trim().replace(/^#/, "");
+    if (tag && !tags.includes(tag)) {
+      setTags([...tags, tag]);
+    }
+    setTagInput("");
+  };
+
+  const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      addTag(tagInput);
+    } else if (e.key === "Backspace" && !tagInput && tags.length > 0) {
+      setTags(tags.slice(0, -1));
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
     if (!title.trim()) {
