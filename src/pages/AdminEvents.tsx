@@ -182,16 +182,14 @@ const AdminEvents = () => {
             <div>
               <h2 className="text-lg font-bold text-foreground mb-3">Your Events</h2>
               <div className="rounded-xl border border-border bg-card">
-                {renderTable(myEvents, true)}
+                {renderTable(myEvents)}
               </div>
             </div>
 
-            {/* All Events */}
+            {/* All Active Events */}
             <div>
-              <h2 className="text-lg font-bold text-foreground mb-3">All Events</h2>
-              <div className="rounded-xl border border-border bg-card">
-                {renderTable(otherEvents, false)}
-              </div>
+              <h2 className="text-lg font-bold text-foreground mb-3">All Active Events</h2>
+              {renderEventCards(allPublishedEvents)}
             </div>
           </div>
         )}
