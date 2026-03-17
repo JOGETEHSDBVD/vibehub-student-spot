@@ -36,6 +36,7 @@ const AdminEvents = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
 
   useEffect(() => {
     if (!loading && !authLoading) {
