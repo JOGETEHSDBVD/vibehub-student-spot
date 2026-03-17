@@ -106,6 +106,7 @@ export type Database = {
           is_published: boolean | null
           location: string | null
           pole: string | null
+          tags: string[] | null
           title: string
         }
         Insert: {
@@ -119,6 +120,7 @@ export type Database = {
           is_published?: boolean | null
           location?: string | null
           pole?: string | null
+          tags?: string[] | null
           title: string
         }
         Update: {
@@ -132,6 +134,7 @@ export type Database = {
           is_published?: boolean | null
           location?: string | null
           pole?: string | null
+          tags?: string[] | null
           title?: string
         }
         Relationships: []
