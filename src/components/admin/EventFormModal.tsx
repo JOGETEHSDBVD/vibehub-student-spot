@@ -209,6 +209,31 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
           </div>
 
           <div>
+            <Label>Hashtags</Label>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded-md border border-input px-3 py-2 focus-within:ring-2 focus-within:ring-ring">
+              {tags.map((tag, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                >
+                  #{tag}
+                  <button type="button" onClick={() => removeTag(i)} className="hover:text-destructive">
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+              <input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                onBlur={() => tagInput.trim() && addTag(tagInput)}
+                placeholder={tags.length === 0 ? "Type and press space or enter..." : ""}
+                className="flex-1 min-w-[120px] bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
+          </div>
+
+          <div>
             <Label>Image</Label>
             <div className="mt-1">
               <label className="flex cursor-pointer items-center gap-2 rounded-md border border-input px-3 py-2 text-sm text-muted-foreground hover:bg-muted">
