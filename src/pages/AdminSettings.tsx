@@ -98,7 +98,7 @@ const AdminSettings = () => {
 
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName.trim() })
+      .update({ full_name: fullName.trim(), member_type: memberType })
       .eq("id", user.id);
 
     if (error) {
