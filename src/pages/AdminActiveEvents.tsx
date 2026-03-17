@@ -122,6 +122,14 @@ const AdminActiveEvents = () => {
             ))}
           </div>
         )}
+
+        {viewingEvent && (
+          <EventDetailModal
+            open={!!viewingEvent}
+            onClose={() => setViewingEvent(null)}
+            event={viewingEvent}
+          />
+        )}
       </main>
     </div>
   );
