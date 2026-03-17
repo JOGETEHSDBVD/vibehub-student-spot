@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -12,6 +12,7 @@ import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useEventParticipantCounts } from "@/hooks/useEventParticipants";
 
 interface EventRow {
   id: string;
@@ -37,6 +38,9 @@ const AdminEvents = () => {
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
+
+  const eventIds = useMemo(() => events.map((e) => e.id), [events]);
+  const participantCounts = useEventParticipantCounts(eventIds);
 
   useEffect(() => {
     if (!loading && !authLoading) {
@@ -152,6 +156,10 @@ const AdminEvents = () => {
                       <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{e.location}</span>
                     )}
                   </div>
+                  <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <Users size={12} />
+                    <span>{participantCounts[e.id] ?? 0} participants</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -162,7 +170,7 @@ const AdminEvents = () => {
           <EventDetailModal
             open={!!viewingEvent}
             onClose={() => setViewingEvent(null)}
-            event={viewingEvent}
+            event={{ ...viewingEvent, participant_count: participantCounts[viewingEvent.id] ?? 0 }}
           />
         )}
 

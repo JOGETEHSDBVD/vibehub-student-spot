@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { CalendarDays } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { CalendarDays, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import EventDetailModal from "@/components/admin/EventDetailModal";
+import { useEventParticipantCounts } from "@/hooks/useEventParticipants";
 
 interface Event {
   id: string;
@@ -17,6 +18,9 @@ const UpcomingEventsPanel = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
+
+  const eventIds = useMemo(() => events.map((e) => e.id), [events]);
+  const participantCounts = useEventParticipantCounts(eventIds);
 
   useEffect(() => {
     const fetch = async () => {
@@ -77,9 +81,10 @@ const UpcomingEventsPanel = () => {
                   <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
                     {e.category ?? "Event"}
                   </span>
-                  {e.location && (
-                    <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">{e.location}</span>
-                  )}
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <Users size={11} />
+                    <span>{participantCounts[e.id] ?? 0}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -91,7 +96,7 @@ const UpcomingEventsPanel = () => {
         <EventDetailModal
           open={!!viewingEvent}
           onClose={() => setViewingEvent(null)}
-          event={viewingEvent}
+          event={{ ...viewingEvent, participant_count: participantCounts[viewingEvent.id] ?? 0 }}
         />
       )}
     </div>

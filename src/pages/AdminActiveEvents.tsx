@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, User } from "lucide-react";
+import { CalendarDays, User, Users } from "lucide-react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import EventDetailModal from "@/components/admin/EventDetailModal";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { useEventParticipantCounts } from "@/hooks/useEventParticipants";
 
 interface EventRow {
   id: string;
@@ -28,6 +29,9 @@ const AdminActiveEvents = () => {
   const [fetching, setFetching] = useState(true);
   const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
 
+  const eventIds = useMemo(() => events.map((e) => e.id), [events]);
+  const participantCounts = useEventParticipantCounts(eventIds);
+
   useEffect(() => {
     if (!loading && !authLoading) {
       if (!user || !isAdmin) navigate("/");
@@ -46,7 +50,6 @@ const AdminActiveEvents = () => {
 
       const rows = data ?? [];
 
-      // Fetch creator names from profiles
       const creatorIds = [...new Set(rows.map((e) => e.created_by).filter(Boolean))] as string[];
       let profileMap: Record<string, string> = {};
       if (creatorIds.length > 0) {
@@ -113,9 +116,15 @@ const AdminActiveEvents = () => {
                       <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{e.location}</span>
                     )}
                   </div>
-                  <div className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <User size={12} />
-                    <span>by {e.creator_name}</span>
+                  <div className="mt-2 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <User size={12} />
+                      <span>by {e.creator_name}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <Users size={12} />
+                      <span>{participantCounts[e.id] ?? 0}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -127,7 +136,7 @@ const AdminActiveEvents = () => {
           <EventDetailModal
             open={!!viewingEvent}
             onClose={() => setViewingEvent(null)}
-            event={viewingEvent}
+            event={{ ...viewingEvent, participant_count: participantCounts[viewingEvent.id] ?? 0 }}
           />
         )}
       </main>
