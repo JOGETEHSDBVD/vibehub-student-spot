@@ -40,7 +40,7 @@ const AdminActiveEvents = () => {
       setFetching(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, date, location, image_url, category, created_by")
+        .select("id, title, description, date, location, image_url, category, created_by")
         .eq("is_published", true)
         .order("date", { ascending: false });
 
