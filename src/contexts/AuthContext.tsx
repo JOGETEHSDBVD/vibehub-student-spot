@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface Profile {
   full_name: string | null;
   avatar_url: string | null;
+  member_type: string | null;
 }
 
 interface AuthContextType {
