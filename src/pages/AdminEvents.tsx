@@ -130,8 +130,8 @@ const AdminEvents = () => {
       <main className="flex-1 overflow-y-auto p-6 lg:p-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Event Management</h1>
-            <p className="text-sm text-muted-foreground">Create, edit, publish and manage all events.</p>
+            <h1 className="text-2xl font-bold text-foreground">Your Events</h1>
+            <p className="text-sm text-muted-foreground">Create, edit, publish and manage your events.</p>
           </div>
           <Button className="gap-2" onClick={() => { setEditingEvent(null); setFormOpen(true); }}>
             <PlusCircle size={16} /> Create Event
