@@ -23,6 +23,7 @@ interface EventRow {
   category: string | null;
   is_published: boolean | null;
   created_at: string;
+  created_by: string | null;
 }
 
 const AdminEvents = () => {
