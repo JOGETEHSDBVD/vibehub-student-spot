@@ -181,7 +181,7 @@ const AdminSettings = () => {
                 <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
               </div>
               <div>
-                <Label>Role</Label>
+                <Label>Role at the Établissement</Label>
                 <Select value={memberType} onValueChange={setMemberType}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select your role" />
