@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, User } from "lucide-react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,6 +14,8 @@ interface EventRow {
   location: string | null;
   image_url: string | null;
   category: string | null;
+  created_by: string | null;
+  creator_name: string | null;
 }
 
 const AdminActiveEvents = () => {
@@ -31,17 +33,38 @@ const AdminActiveEvents = () => {
 
   useEffect(() => {
     if (!isAdmin) return;
-    const fetch = async () => {
+    const fetchEvents = async () => {
       setFetching(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, date, location, image_url, category")
+        .select("id, title, date, location, image_url, category, created_by")
         .eq("is_published", true)
         .order("date", { ascending: false });
-      setEvents(data ?? []);
+
+      const rows = data ?? [];
+
+      // Fetch creator names from profiles
+      const creatorIds = [...new Set(rows.map((e) => e.created_by).filter(Boolean))] as string[];
+      let profileMap: Record<string, string> = {};
+      if (creatorIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", creatorIds);
+        if (profiles) {
+          profileMap = Object.fromEntries(profiles.map((p) => [p.id, p.full_name ?? "Unknown"]));
+        }
+      }
+
+      setEvents(
+        rows.map((e) => ({
+          ...e,
+          creator_name: e.created_by ? profileMap[e.created_by] ?? "Unknown" : "Unknown",
+        }))
+      );
       setFetching(false);
     };
-    fetch();
+    fetchEvents();
   }, [isAdmin]);
 
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
@@ -86,6 +109,10 @@ const AdminActiveEvents = () => {
                     {e.location && (
                       <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{e.location}</span>
                     )}
+                  </div>
+                  <div className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <User size={12} />
+                    <span>by {e.creator_name}</span>
                   </div>
                 </div>
               </div>

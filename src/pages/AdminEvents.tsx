@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, Pencil, Trash2, CalendarDays } from "lucide-react";
+import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import EventFormModal from "@/components/admin/EventFormModal";
@@ -73,57 +72,6 @@ const AdminEvents = () => {
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!isAdmin) return null;
 
-  const myEvents = events;
-
-  const renderTable = (rows: EventRow[]) => (
-    rows.length === 0 ? (
-      <div className="flex flex-col items-center py-8">
-        <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
-        <p className="mt-2 text-sm text-muted-foreground">No events here yet.</p>
-      </div>
-    ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((e) => (
-            <TableRow key={e.id}>
-              <TableCell className="font-medium">{e.title}</TableCell>
-              <TableCell>{new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</TableCell>
-              <TableCell>
-                <Badge variant="secondary">{e.category ?? "—"}</Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Switch checked={!!e.is_published} onCheckedChange={() => togglePublish(e.id, !!e.is_published)} />
-                  <span className="text-xs text-muted-foreground">{e.is_published ? "Published" : "Draft"}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
-                    <Pencil size={15} />
-                  </Button>
-                  <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(e.id)}>
-                    <Trash2 size={15} />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )
-  );
-
-
   return (
     <div className="flex h-screen bg-muted/30">
       <AdminSidebar />
@@ -140,9 +88,71 @@ const AdminEvents = () => {
 
         {fetching ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
+        ) : events.length === 0 ? (
+          <div className="flex flex-col items-center py-16">
+            <CalendarDays className="h-12 w-12 text-muted-foreground/30" />
+            <p className="mt-3 text-sm text-muted-foreground">No events yet. Create your first event!</p>
+          </div>
         ) : (
-          <div className="rounded-xl border border-border bg-card">
-            {renderTable(myEvents)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {events.map((e) => (
+              <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02]">
+                {/* 3-dot menu */}
+                <div className="absolute top-2 right-2 z-10">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                        <MoreVertical size={16} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
+                        <Pencil size={14} className="mr-2" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => togglePublish(e.id, !!e.is_published)}>
+                        {e.is_published ? <EyeOff size={14} className="mr-2" /> : <Eye size={14} className="mr-2" />}
+                        {e.is_published ? "Unpublish" : "Publish"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteId(e.id)}>
+                        <Trash2 size={14} className="mr-2" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Status badge */}
+                <div className="absolute top-2 left-2 z-10">
+                  <Badge variant={e.is_published ? "default" : "secondary"} className="text-[10px] shadow-sm">
+                    {e.is_published ? "Published" : "Draft"}
+                  </Badge>
+                </div>
+
+                {/* Image */}
+                {e.image_url ? (
+                  <img src={e.image_url} alt={e.title} className="h-40 w-full object-cover" />
+                ) : (
+                  <div className="h-40 w-full bg-muted flex items-center justify-center">
+                    <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="p-4">
+                  <p className="text-xs font-medium text-primary">
+                    {new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </p>
+                  <h4 className="mt-1 text-sm font-bold text-foreground truncate">{e.title}</h4>
+                  <div className="mt-3 flex items-center justify-between">
+                    <Badge variant="outline" className="text-[10px] uppercase">
+                      {e.category ?? "Event"}
+                    </Badge>
+                    {e.location && (
+                      <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{e.location}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
