@@ -26,6 +26,7 @@ const AdminActiveEvents = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
 
   useEffect(() => {
     if (!loading && !authLoading) {
