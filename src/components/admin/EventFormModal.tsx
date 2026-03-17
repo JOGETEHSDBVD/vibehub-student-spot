@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Upload } from "lucide-react";
+import { CalendarIcon, Upload, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +27,7 @@ interface EventFormModalProps {
     image_url: string | null;
     category: string | null;
     pole: string | null;
+    tags?: string[] | null;
   } | null;
 }
 
@@ -47,7 +48,30 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [category, setCategory] = useState(event?.category ?? "Sports");
   const [pole, setPole] = useState(event?.pole ?? "Not specified");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [tags, setTags] = useState<string[]>(event?.tags ?? []);
+  const [tagInput, setTagInput] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const addTag = (value: string) => {
+    const tag = value.trim().replace(/^#/, "");
+    if (tag && !tags.includes(tag)) {
+      setTags([...tags, tag]);
+    }
+    setTagInput("");
+  };
+
+  const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      addTag(tagInput);
+    } else if (e.key === "Backspace" && !tagInput && tags.length > 0) {
+      setTags(tags.slice(0, -1));
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -87,8 +111,8 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         category,
         pole: pole === "Not specified" ? null : pole,
         image_url,
+        tags,
       };
-
       if (isEditing) {
         const { error } = await supabase.from("events").update(payload).eq("id", event!.id);
         if (error) {
@@ -182,6 +206,31 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label>Hashtags</Label>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded-md border border-input px-3 py-2 focus-within:ring-2 focus-within:ring-ring">
+              {tags.map((tag, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                >
+                  #{tag}
+                  <button type="button" onClick={() => removeTag(i)} className="hover:text-destructive">
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+              <input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                onBlur={() => tagInput.trim() && addTag(tagInput)}
+                placeholder={tags.length === 0 ? "Type and press space or enter..." : ""}
+                className="flex-1 min-w-[120px] bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
           </div>
 
           <div>
