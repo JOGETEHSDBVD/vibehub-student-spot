@@ -130,9 +130,13 @@ const AdminMembers = () => {
                   members.map((m, i) => (
                     <tr key={m.id} className={`border-t border-border ${m.isAdmin ? "bg-primary/5" : ""}`}>
                       <td className="flex items-center gap-3 px-5 py-3">
-                        <div className={`flex h-9 w-9 items-center justify-center rounded-full ${avatarColors[i % avatarColors.length]} text-sm font-bold`}>
-                          {(m.full_name ?? m.email ?? "?")[0].toUpperCase()}
-                        </div>
+                        {m.avatar_url ? (
+                          <img src={m.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover" />
+                        ) : (
+                          <div className={`flex h-9 w-9 items-center justify-center rounded-full ${avatarColors[i % avatarColors.length]} text-sm font-bold`}>
+                            {(m.full_name ?? m.email ?? "?")[0].toUpperCase()}
+                          </div>
+                        )}
                         <div>
                           <span className="font-medium text-foreground">{m.full_name || m.email || "Unknown"}</span>
                           {m.email && <p className="text-xs text-muted-foreground">{m.email}</p>}
