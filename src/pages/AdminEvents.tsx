@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
