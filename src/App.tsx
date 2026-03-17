@@ -28,6 +28,7 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/events" element={<AdminEvents />} />
+            <Route path="/admin/active-events" element={<AdminActiveEvents />} />
             <Route path="/admin/members" element={<AdminMembers />} />
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/announcements" element={<AdminAnnouncements />} />

@@ -141,20 +141,8 @@ const AdminEvents = () => {
         {fetching ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
         ) : (
-          <div className="space-y-8">
-            {/* Your Events */}
-            <div>
-              <h2 className="text-lg font-bold text-foreground mb-3">Your Events</h2>
-              <div className="rounded-xl border border-border bg-card">
-                {renderTable(myEvents)}
-              </div>
-            </div>
-
-            {/* All Active Events */}
-            <div>
-              <h2 className="text-lg font-bold text-foreground mb-3">All Active Events</h2>
-              {renderEventCards(allPublishedEvents)}
-            </div>
+          <div className="rounded-xl border border-border bg-card">
+            {renderTable(myEvents)}
           </div>
         )}
 

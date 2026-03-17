@@ -1,11 +1,12 @@
-import { LayoutDashboard, Users, CalendarDays, BarChart3, Megaphone, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, CalendarDays, CalendarCheck, BarChart3, Megaphone, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
   { label: "Members", icon: Users, path: "/admin/members" },
-  { label: "Events", icon: CalendarDays, path: "/admin/events" },
+  { label: "Your Events", icon: CalendarDays, path: "/admin/events" },
+  { label: "Active Events", icon: CalendarCheck, path: "/admin/active-events" },
   { label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
   { label: "Announcements", icon: Megaphone, path: "/admin/announcements" },
 ];
