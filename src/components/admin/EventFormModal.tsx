@@ -148,7 +148,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Event" : "Create Event"}</DialogTitle>
         </DialogHeader>
