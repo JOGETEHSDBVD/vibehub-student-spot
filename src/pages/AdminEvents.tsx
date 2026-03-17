@@ -98,7 +98,7 @@ const AdminEvents = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {events.map((e) => (
-              <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02]">
+              <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
                 {/* 3-dot menu */}
                 <div className="absolute top-2 right-2 z-10">
                   <DropdownMenu>
