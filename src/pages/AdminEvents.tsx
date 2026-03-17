@@ -123,42 +123,6 @@ const AdminEvents = () => {
     )
   );
 
-  const renderEventCards = (rows: EventRow[]) => (
-    rows.length === 0 ? (
-      <div className="flex flex-col items-center py-8">
-        <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
-        <p className="mt-2 text-sm text-muted-foreground">No active events yet.</p>
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {rows.map((e) => (
-          <div key={e.id} className="rounded-lg border border-border overflow-hidden transition-transform duration-200 hover:scale-[1.02] bg-card">
-            {e.image_url ? (
-              <img src={e.image_url} alt={e.title} className="h-32 w-full object-cover" />
-            ) : (
-              <div className="h-32 w-full bg-muted flex items-center justify-center">
-                <CalendarDays className="h-8 w-8 text-muted-foreground/30" />
-              </div>
-            )}
-            <div className="p-3">
-              <p className="text-[11px] font-medium text-primary">
-                {new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-              </p>
-              <h4 className="mt-1 text-sm font-bold text-foreground truncate">{e.title}</h4>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
-                  {e.category ?? "Event"}
-                </span>
-                {e.location && (
-                  <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">{e.location}</span>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  );
 
   return (
     <div className="flex h-screen bg-muted/30">
