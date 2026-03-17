@@ -39,7 +39,7 @@ const RecentMembers = () => {
 
       let query = supabase
         .from("profiles")
-        .select("id, full_name, email, created_at, is_banned", { count: "exact" })
+        .select("id, full_name, email, avatar_url, created_at, is_banned", { count: "exact" })
         .order("created_at", { ascending: false });
 
       if (search.trim()) {
