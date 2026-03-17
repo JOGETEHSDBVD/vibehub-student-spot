@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Camera, Save, User } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ const AdminSettings = () => {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [memberType, setMemberType] = useState("student");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -37,6 +39,7 @@ const AdminSettings = () => {
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name ?? "");
+      setMemberType(profile.member_type ?? "student");
       setAvatarUrl(profile.avatar_url ?? null);
     }
   }, [profile]);
@@ -96,7 +99,7 @@ const AdminSettings = () => {
 
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName.trim() })
+      .update({ full_name: fullName.trim(), member_type: memberType })
       .eq("id", user.id);
 
     if (error) {
@@ -176,6 +179,19 @@ const AdminSettings = () => {
                 <Label>Email</Label>
                 <Input value={email} disabled className="bg-muted" />
                 <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
+              </div>
+              <div>
+                <Label>Role</Label>
+                <Select value={memberType} onValueChange={setMemberType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="trainer">Trainer</SelectItem>
+                    <SelectItem value="administration">Administration Member</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="mt-6 flex justify-end">
