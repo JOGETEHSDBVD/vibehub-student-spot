@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
 import AdminEvents from "./pages/AdminEvents.tsx";
+import AdminActiveEvents from "./pages/AdminActiveEvents.tsx";
 import AdminMembers from "./pages/AdminMembers.tsx";
 import AdminAnalytics from "./pages/AdminAnalytics.tsx";
 import AdminAnnouncements from "./pages/AdminAnnouncements.tsx";
