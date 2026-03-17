@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,9 @@ const AdminEvents = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
 
+  const eventIds = useMemo(() => events.map((e) => e.id), [events]);
+  const participantCounts = useEventParticipantCounts(eventIds);
+
   useEffect(() => {
     if (!loading && !authLoading) {
       if (!user || !isAdmin) navigate("/");
@@ -74,13 +77,6 @@ const AdminEvents = () => {
 
   if (loading || authLoading) return <div className="flex h-screen items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!isAdmin) return null;
-
-  const eventIds = events.map((e) => e.id);
-  return <AdminEventsInner events={events} setEvents={setEvents} fetching={fetching} formOpen={formOpen} setFormOpen={setFormOpen} editingEvent={editingEvent} setEditingEvent={setEditingEvent} deleteId={deleteId} setDeleteId={setDeleteId} viewingEvent={viewingEvent} setViewingEvent={setViewingEvent} togglePublish={togglePublish} confirmDelete={confirmDelete} fetchEvents={fetchEvents} user={user} />;
-};
-
-const AdminEventsInner = ({ events, setEvents, fetching, formOpen, setFormOpen, editingEvent, setEditingEvent, deleteId, setDeleteId, viewingEvent, setViewingEvent, togglePublish, confirmDelete, fetchEvents, user }: any) => {
-  const participantCounts = useEventParticipantCounts(events.map((e: any) => e.id));
 
   return (
     <div className="flex h-screen bg-muted/30">
@@ -174,7 +170,7 @@ const AdminEventsInner = ({ events, setEvents, fetching, formOpen, setFormOpen, 
           <EventDetailModal
             open={!!viewingEvent}
             onClose={() => setViewingEvent(null)}
-            event={viewingEvent}
+            event={{ ...viewingEvent, participant_count: participantCounts[viewingEvent.id] ?? 0 }}
           />
         )}
 
