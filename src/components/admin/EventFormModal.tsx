@@ -107,7 +107,12 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
       const payload = {
         title: title.trim(),
         description: description.trim() || null,
-        date: date.toISOString(),
+        date: (() => {
+          const d = new Date(date);
+          const [h, m] = time.split(":").map(Number);
+          d.setHours(h, m, 0, 0);
+          return d.toISOString();
+        })(),
         location: location.trim() || null,
         category,
         pole: pole === "Not specified" ? null : pole,
