@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 interface EventRow {
   id: string;
   title: string;
+  description: string | null;
   date: string;
   location: string | null;
   image_url: string | null;
