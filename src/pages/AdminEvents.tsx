@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import EventDetailModal from "@/components/admin/EventDetailModal";
 import EventFormModal from "@/components/admin/EventFormModal";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,6 +36,7 @@ const AdminEvents = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
 
   useEffect(() => {
     if (!loading && !authLoading) {
@@ -96,9 +98,9 @@ const AdminEvents = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {events.map((e) => (
-              <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02]">
+              <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
                 {/* 3-dot menu */}
-                <div className="absolute top-2 right-2 z-10">
+                <div className="absolute top-2 right-2 z-10" onClick={(ev) => ev.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
@@ -106,14 +108,14 @@ const AdminEvents = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
+                      <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); setEditingEvent(e); setFormOpen(true); }}>
                         <Pencil size={14} className="mr-2" /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => togglePublish(e.id, !!e.is_published)}>
+                      <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); togglePublish(e.id, !!e.is_published); }}>
                         {e.is_published ? <EyeOff size={14} className="mr-2" /> : <Eye size={14} className="mr-2" />}
                         {e.is_published ? "Unpublish" : "Publish"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteId(e.id)}>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(ev) => { ev.stopPropagation(); setDeleteId(e.id); }}>
                         <Trash2 size={14} className="mr-2" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -154,6 +156,14 @@ const AdminEvents = () => {
               </div>
             ))}
           </div>
+        )}
+
+        {viewingEvent && (
+          <EventDetailModal
+            open={!!viewingEvent}
+            onClose={() => setViewingEvent(null)}
+            event={viewingEvent}
+          />
         )}
 
         {formOpen && (

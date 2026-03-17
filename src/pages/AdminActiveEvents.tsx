@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, User } from "lucide-react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import EventDetailModal from "@/components/admin/EventDetailModal";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 interface EventRow {
   id: string;
   title: string;
+  description: string | null;
   date: string;
   location: string | null;
   image_url: string | null;
@@ -24,6 +26,7 @@ const AdminActiveEvents = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
 
   useEffect(() => {
     if (!loading && !authLoading) {
@@ -37,7 +40,7 @@ const AdminActiveEvents = () => {
       setFetching(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, date, location, image_url, category, created_by")
+        .select("id, title, description, date, location, image_url, category, created_by")
         .eq("is_published", true)
         .order("date", { ascending: false });
 
@@ -89,7 +92,7 @@ const AdminActiveEvents = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {events.map((e) => (
-              <div key={e.id} className="rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02]">
+              <div key={e.id} className="rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
                 {e.image_url ? (
                   <img src={e.image_url} alt={e.title} className="h-40 w-full object-cover" />
                 ) : (
@@ -118,6 +121,14 @@ const AdminActiveEvents = () => {
               </div>
             ))}
           </div>
+        )}
+
+        {viewingEvent && (
+          <EventDetailModal
+            open={!!viewingEvent}
+            onClose={() => setViewingEvent(null)}
+            event={viewingEvent}
+          />
         )}
       </main>
     </div>
