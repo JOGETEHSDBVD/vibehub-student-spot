@@ -108,10 +108,10 @@ const AdminEvents = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
+                      <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); setEditingEvent(e); setFormOpen(true); }}>
                         <Pencil size={14} className="mr-2" /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => togglePublish(e.id, !!e.is_published)}>
+                      <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); togglePublish(e.id, !!e.is_published); }}>
                         {e.is_published ? <EyeOff size={14} className="mr-2" /> : <Eye size={14} className="mr-2" />}
                         {e.is_published ? "Unpublish" : "Publish"}
                       </DropdownMenuItem>
