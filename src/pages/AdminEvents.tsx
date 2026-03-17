@@ -73,9 +73,9 @@ const AdminEvents = () => {
   if (!isAdmin) return null;
 
   const myEvents = events.filter((e) => e.created_by === user?.id);
-  const otherEvents = events.filter((e) => e.created_by !== user?.id);
+  const allPublishedEvents = events.filter((e) => !!e.is_published);
 
-  const renderTable = (rows: EventRow[], showActions: boolean) => (
+  const renderTable = (rows: EventRow[]) => (
     rows.length === 0 ? (
       <div className="flex flex-col items-center py-8">
         <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
@@ -89,7 +89,7 @@ const AdminEvents = () => {
             <TableHead>Date</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Status</TableHead>
-            {showActions && <TableHead className="text-right">Actions</TableHead>}
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -102,26 +102,61 @@ const AdminEvents = () => {
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <Switch checked={!!e.is_published} onCheckedChange={() => togglePublish(e.id, !!e.is_published)} disabled={!showActions} />
+                  <Switch checked={!!e.is_published} onCheckedChange={() => togglePublish(e.id, !!e.is_published)} />
                   <span className="text-xs text-muted-foreground">{e.is_published ? "Published" : "Draft"}</span>
                 </div>
               </TableCell>
-              {showActions && (
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button size="icon" variant="ghost" onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
-                      <Pencil size={15} />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(e.id)}>
-                      <Trash2 size={15} />
-                    </Button>
-                  </div>
-                </TableCell>
-              )}
+              <TableCell className="text-right">
+                <div className="flex justify-end gap-1">
+                  <Button size="icon" variant="ghost" onClick={() => { setEditingEvent(e); setFormOpen(true); }}>
+                    <Pencil size={15} />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(e.id)}>
+                    <Trash2 size={15} />
+                  </Button>
+                </div>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+    )
+  );
+
+  const renderEventCards = (rows: EventRow[]) => (
+    rows.length === 0 ? (
+      <div className="flex flex-col items-center py-8">
+        <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
+        <p className="mt-2 text-sm text-muted-foreground">No active events yet.</p>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {rows.map((e) => (
+          <div key={e.id} className="rounded-lg border border-border overflow-hidden transition-transform duration-200 hover:scale-[1.02] bg-card">
+            {e.image_url ? (
+              <img src={e.image_url} alt={e.title} className="h-32 w-full object-cover" />
+            ) : (
+              <div className="h-32 w-full bg-muted flex items-center justify-center">
+                <CalendarDays className="h-8 w-8 text-muted-foreground/30" />
+              </div>
+            )}
+            <div className="p-3">
+              <p className="text-[11px] font-medium text-primary">
+                {new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </p>
+              <h4 className="mt-1 text-sm font-bold text-foreground truncate">{e.title}</h4>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
+                  {e.category ?? "Event"}
+                </span>
+                {e.location && (
+                  <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">{e.location}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     )
   );
 
