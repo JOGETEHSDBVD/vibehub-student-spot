@@ -1,54 +1,52 @@
-import { Globe, Play, Share2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const Footer = () => (
-  <footer className="bg-dark-bg pt-16 pb-8">
-    <div className="container mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/20 text-primary font-bold text-sm">HL</div>
-            <span className="text-lg font-bold text-dark-bg-foreground">VibeHub</span>
-          </div>
-          <p className="mt-4 text-sm leading-relaxed text-dark-bg-foreground/70">
-            The premier student-led organization for well-rounded university experiences.
-          </p>
+const Footer = () => {
+  return (
+    <footer className="bg-slate-900 text-white py-16 px-6 lg:px-20">
+      <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="col-span-1 md:col-span-1 flex flex-col gap-6">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 text-primary font-bold text-sm">HL</div>
+            <h2 className="font-display text-2xl font-black tracking-tight">VibeHub</h2>
+          </Link>
+          <p className="text-slate-400 text-sm leading-relaxed">The premier student-led organization for well-rounded university experiences.</p>
         </div>
-
         <div>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">Quick Links</h4>
-          <ul className="mt-4 space-y-2 text-sm text-dark-bg-foreground/70">
-            <li><a href="#" className="hover:text-primary transition-colors duration-200">About Us</a></li>
-            <li><a href="#" className="hover:text-primary transition-colors duration-200">Events</a></li>
-            <li><a href="#" className="hover:text-primary transition-colors duration-200">MBTI Test</a></li>
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Quick Links</h5>
+          <ul className="flex flex-col gap-4 text-sm text-slate-400">
+            <li><Link className="hover:text-white transition-colors" to="#about">About Us</Link></li>
+            <li><Link className="hover:text-white transition-colors" to="/events">Events</Link></li>
+            <li><Link className="hover:text-white transition-colors" to="#">MBTI Test</Link></li>
           </ul>
         </div>
-
         <div>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">Support</h4>
-          <ul className="mt-4 space-y-2 text-sm text-dark-bg-foreground/70">
-            <li><a href="#" className="hover:text-primary transition-colors duration-200">FAQ</a></li>
-            <li><a href="#" className="hover:text-primary transition-colors duration-200">Contact Support</a></li>
-            <li><a href="#" className="hover:text-primary transition-colors duration-200">Privacy Policy</a></li>
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Support</h5>
+          <ul className="flex flex-col gap-4 text-sm text-slate-400">
+            <li><a className="hover:text-white transition-colors" href="#">FAQ</a></li>
+            <li><a className="hover:text-white transition-colors" href="#">Contact Support</a></li>
+            <li><a className="hover:text-white transition-colors" href="#">Privacy Policy</a></li>
           </ul>
         </div>
-
         <div>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">Connect</h4>
-          <div className="mt-4 flex gap-3">
-            {[Globe, Play, Share2].map((Icon, i) => (
-              <a key={i} href="#" className="flex h-10 w-10 items-center justify-center rounded-full border border-dark-bg-foreground/20 text-dark-bg-foreground/70 transition-colors duration-200 hover:border-primary hover:text-primary">
-                <Icon size={16} />
-              </a>
-            ))}
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Connect</h5>
+          <div className="flex gap-3">
+            <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
+              <span className="material-symbols-outlined text-sm">public</span>
+            </a>
+            <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
+              <span className="material-symbols-outlined text-sm">send</span>
+            </a>
+            <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
+              <span className="material-symbols-outlined text-sm">share</span>
+            </a>
           </div>
         </div>
       </div>
-
-      <div className="mt-12 border-t border-dark-bg-foreground/10 pt-6 text-center text-sm text-dark-bg-foreground/50">
+      <div className="mx-auto max-w-7xl mt-12 pt-8 border-t border-slate-800 text-slate-500 text-sm text-center">
         © 2024 VibeHub Club. Empowering university students.
       </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 export default Footer;
