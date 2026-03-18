@@ -37,11 +37,17 @@ const Index = () => {
               </div>
             </div>
             <div className="relative">
-              <div
-                className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-primary/10 bg-cover bg-center"
-                style={{ backgroundImage: `url(${heroBuilding})` }}
-              />
-              <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-2xl shadow-xl border border-primary/20 hidden md:block">
+              {/* Dark rotated panel behind image */}
+              <div className="absolute inset-0 bg-slate-800 rounded-2xl transform rotate-3 scale-105" />
+              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                <img src={heroBuilding} alt="Cité des Métiers et des Compétences de la Région Casablanca-Settat" className="h-auto w-full object-cover" />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/80 to-transparent p-6">
+                  <p className="text-sm font-semibold uppercase tracking-wider text-primary-foreground">
+                    Cité des Métiers et des Compétences de la région Casablanca-Settat
+                  </p>
+                </div>
+              </div>
+              <div className="absolute -bottom-6 left-6 bg-card p-5 rounded-2xl shadow-xl border border-primary/20 hidden md:block">
                 <div className="flex flex-col">
                   <span className="text-4xl font-black text-primary">2026</span>
                   <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Membership Open</span>
