@@ -26,9 +26,7 @@ const AdminSidebar = () => {
     <aside className="flex h-screen w-60 flex-col border-r border-border bg-background">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Users size={20} />
-        </div>
+        <img src={logoCmc} alt="CMC Logo" className="h-10 w-auto object-contain" />
         <div>
           <p className="text-sm font-bold text-foreground">VibeHub Club</p>
           <p className="text-xs text-muted-foreground">ADMIN PANEL</p>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AuthModal from "@/components/AuthModal";
-import heroBuilding from "@/assets/hero-building.jpg";
+import heroBuilding from "@/assets/hero-building.png";
 import aboutEvent from "@/assets/about-event.jpg";
 import aboutStudent from "@/assets/about-student.jpg";
 
@@ -37,15 +37,8 @@ const Index = () => {
               </div>
             </div>
             <div className="relative">
-              {/* Dark rotated panel behind image */}
-              <div className="absolute inset-0 bg-slate-800 rounded-2xl transform rotate-3 scale-105" />
-              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+              <div className="overflow-hidden rounded-2xl shadow-2xl">
                 <img src={heroBuilding} alt="Cité des Métiers et des Compétences de la Région Casablanca-Settat" className="h-auto w-full object-cover" />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/80 to-transparent p-6">
-                  <p className="text-sm font-semibold uppercase tracking-wider text-primary-foreground">
-                    Cité des Métiers et des Compétences de la région Casablanca-Settat
-                  </p>
-                </div>
               </div>
               <div className="absolute -bottom-6 left-6 bg-card p-5 rounded-2xl shadow-xl border border-primary/20 hidden md:block">
                 <div className="flex flex-col">
