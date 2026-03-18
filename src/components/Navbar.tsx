@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
+import logoCmc from "@/assets/logo-cmc.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -22,8 +23,8 @@ const Navbar = () => {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-background/80 backdrop-blur-md px-8 lg:px-24 py-5">
         <div className="mx-auto max-w-7xl flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-xl">HL</div>
+          <Link to="/" className="flex items-center gap-3">
+            <img src={logoCmc} alt="CMC Logo" className="h-12 w-auto object-contain" />
             <h2 className="font-display text-3xl font-black tracking-tight text-foreground">VibeHub</h2>
           </Link>
           <nav className="hidden md:flex items-center gap-12">
