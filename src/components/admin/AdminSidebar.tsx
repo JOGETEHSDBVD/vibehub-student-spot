@@ -1,6 +1,7 @@
 import { LayoutDashboard, Users, CalendarDays, CalendarCheck, BarChart3, Megaphone, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import logoCmc from "@/assets/logo-cmc.png";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
