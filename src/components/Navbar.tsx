@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
+import logoCmc from "@/assets/logo-cmc.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
