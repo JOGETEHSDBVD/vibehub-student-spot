@@ -180,7 +180,7 @@ const EventDetail = () => {
           <img
             src={event.image_url}
             alt=""
-            className="h-full w-full object-cover blur-[80px] scale-110 opacity-30"
+            className="h-full w-full object-cover blur-[120px] scale-125 opacity-50"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
         </div>
