@@ -7,6 +7,7 @@ interface Profile {
   avatar_url: string | null;
   member_type: string | null;
   pole: string | null;
+  filiere: string | null;
 }
 
 interface AuthContextType {
