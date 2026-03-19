@@ -30,7 +30,7 @@ const UpcomingEventsPanel = () => {
         .eq("is_published", true)
         .gte("date", new Date().toISOString())
         .order("date", { ascending: true })
-        .limit(6);
+        .limit(3);
       setEvents(data ?? []);
       setLoading(false);
     };
