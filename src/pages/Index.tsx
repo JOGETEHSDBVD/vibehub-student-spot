@@ -6,6 +6,17 @@ import AuthModal from "@/components/AuthModal";
 import heroBuilding from "@/assets/hero-building.png";
 import aboutEvent from "@/assets/about-event.jpg";
 import aboutStudent from "@/assets/about-student.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { CalendarDays } from "lucide-react";
+
+interface EventItem {
+  id: string;
+  title: string;
+  description: string | null;
+  date: string;
+  image_url: string | null;
+  category: string | null;
+}
 
 const Index = () => {
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
