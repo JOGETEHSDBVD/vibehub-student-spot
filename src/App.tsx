@@ -45,6 +45,7 @@ const App = () => (
           <OnboardingGuard>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/email-verified" element={<EmailVerified />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventDetail />} />
