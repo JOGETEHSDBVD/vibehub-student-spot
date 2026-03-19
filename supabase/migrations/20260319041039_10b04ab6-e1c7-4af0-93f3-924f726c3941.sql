@@ -1,0 +1,1 @@
+UPDATE profiles SET member_type = NULL WHERE id = '1cc2595f-671b-4590-a94a-84936f159121';
