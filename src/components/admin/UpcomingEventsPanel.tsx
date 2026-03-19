@@ -28,7 +28,7 @@ const UpcomingEventsPanel = () => {
         .from("events")
         .select("id, title, description, date, location, image_url, category")
         .eq("is_published", true)
-        .order("created_at", { ascending: false })
+        .order("date", { ascending: true })
         .limit(3);
       setEvents(data ?? []);
       setLoading(false);
