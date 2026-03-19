@@ -20,6 +20,23 @@ interface EventItem {
 
 const Index = () => {
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data } = await supabase
+        .from("events")
+        .select("id, title, description, date, image_url, category")
+        .eq("is_published", true)
+        .gte("date", new Date().toISOString())
+        .order("date", { ascending: true });
+      setEvents((data as EventItem[]) ?? []);
+      setEventsLoading(false);
+    };
+    fetchEvents();
+  }, []);
+
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
       <Navbar />
