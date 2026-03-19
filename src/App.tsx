@@ -28,6 +28,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:id" element={<EventDetail />} />
+            <Route path="/organizer/:id" element={<OrganizerProfile />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/events" element={<AdminEvents />} />
             <Route path="/admin/active-events" element={<AdminActiveEvents />} />
