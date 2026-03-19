@@ -29,11 +29,12 @@ const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
     if (error) {
       toast({ title: "Sign up failed", description: error, variant: "destructive" });
     } else {
-      toast({ title: "Account created!", description: "Check your email to confirm your account." });
+      toast({ title: "Compte créé !", description: "Complétez votre profil pour continuer." });
       setFullName("");
       setEmail("");
       setPassword("");
       onClose();
+      navigate("/onboarding");
     }
   };
 
