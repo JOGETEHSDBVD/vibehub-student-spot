@@ -17,6 +17,7 @@ import Events from "./pages/Events.tsx";
 import EventDetail from "./pages/EventDetail.tsx";
 import OrganizerProfile from "./pages/OrganizerProfile.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import EmailVerified from "./pages/EmailVerified.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
           <OnboardingGuard>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/email-verified" element={<EmailVerified />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventDetail />} />

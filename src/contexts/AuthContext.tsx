@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
@@ -49,6 +49,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setProfile(null);
         }
         setLoading(false);
+
+        // Redirect to verified page after email confirmation
+        if (event === "SIGNED_IN" && window.location.hash.includes("type=signup")) {
+          window.location.hash = "";
+          window.location.href = "/email-verified";
+        }
       }
     );
 
