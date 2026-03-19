@@ -171,7 +171,7 @@ const EventDetail = () => {
   const isPast = d < now;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background relative">
       <Navbar />
 
       {/* Blurred background from event image */}
