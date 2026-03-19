@@ -14,8 +14,7 @@ const StatsCards = () => {
         supabase
           .from("events")
           .select("id", { count: "exact", head: true })
-          .eq("is_published", true)
-          .gte("date", new Date().toISOString()),
+          .eq("is_published", true),
       ]);
 
       setTotalMembers(membersRes.count ?? 0);
