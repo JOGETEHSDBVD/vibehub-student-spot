@@ -176,13 +176,13 @@ const EventDetail = () => {
 
       {/* Blurred background from event image */}
       {event.image_url && (
-        <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden h-[500px]">
           <img
             src={event.image_url}
             alt=""
-            className="h-[50vh] w-full object-cover blur-[80px] scale-110 opacity-30"
+            className="h-full w-full object-cover blur-[80px] scale-110 opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
         </div>
       )}
 
