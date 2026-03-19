@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,6 +17,7 @@ const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   if (!open) return null;
 
@@ -27,11 +29,12 @@ const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
     if (error) {
       toast({ title: "Sign up failed", description: error, variant: "destructive" });
     } else {
-      toast({ title: "Account created!", description: "Check your email to confirm your account." });
+      toast({ title: "Compte créé !", description: "Complétez votre profil pour continuer." });
       setFullName("");
       setEmail("");
       setPassword("");
       onClose();
+      navigate("/onboarding");
     }
   };
 
