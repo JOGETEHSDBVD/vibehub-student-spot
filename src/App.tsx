@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
 import AdminEvents from "./pages/AdminEvents.tsx";
@@ -19,6 +20,20 @@ import Onboarding from "./pages/Onboarding.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
+const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
+  const { user, profile, loading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user && profile && !profile.member_type && location.pathname !== "/onboarding") {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [loading, user, profile, location.pathname, navigate]);
+
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -26,21 +41,23 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/events/:id" element={<EventDetail />} />
-            <Route path="/organizer/:id" element={<OrganizerProfile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/events" element={<AdminEvents />} />
-            <Route path="/admin/active-events" element={<AdminActiveEvents />} />
-            <Route path="/admin/members" element={<AdminMembers />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
-            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <OnboardingGuard>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/events/:id" element={<EventDetail />} />
+              <Route path="/organizer/:id" element={<OrganizerProfile />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/events" element={<AdminEvents />} />
+              <Route path="/admin/active-events" element={<AdminActiveEvents />} />
+              <Route path="/admin/members" element={<AdminMembers />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </OnboardingGuard>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
