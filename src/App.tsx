@@ -28,6 +28,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/organizer/:id" element={<OrganizerProfile />} />
