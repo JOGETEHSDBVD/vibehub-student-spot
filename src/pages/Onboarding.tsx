@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check } from "lucide-react";
+import { Check, Mail } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +23,7 @@ const ROLES = [
   { id: "trainer", label: "Formateur" },
 ];
 
-type Step = "role" | "pole" | "filiere";
+type Step = "role" | "pole" | "filiere" | "verify-email";
 
 const Onboarding = () => {
   const [step, setStep] = useState<Step>("role");
@@ -79,8 +79,7 @@ const Onboarding = () => {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     } else {
       refreshProfile();
-      toast({ title: "Bienvenue ! 🎉", description: "Votre profil a été complété." });
-      navigate("/");
+      setStep("verify-email");
     }
   };
 
@@ -97,21 +96,54 @@ const Onboarding = () => {
     role: "Quel est votre statut ?",
     pole: "Choisissez votre pôle",
     filiere: "Choisissez votre filière",
+    "verify-email": "",
   };
 
   const stepNumber = step === "role" ? 1 : step === "pole" ? 2 : 3;
   const totalSteps = isStudent ? 3 : 1;
 
+  if (step === "verify-email") {
+    return (
+      <div className="min-h-screen bg-[hsl(var(--dark-bg))] flex flex-col items-center justify-center px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(174,72%,40%,0.08),transparent_70%)]" />
+        <div className="relative z-10 w-full max-w-md flex flex-col items-center text-center">
+          <img src={logoCmc} alt="CMC" className="h-12 w-auto mb-10 opacity-90" />
+
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/15 mb-6">
+            <Mail className="h-10 w-10 text-primary" />
+          </div>
+
+          <h1 className="text-2xl md:text-3xl font-bold text-[hsl(var(--dark-bg-foreground))] mb-3">
+            Vérifiez votre email
+          </h1>
+          <p className="text-muted-foreground text-sm leading-relaxed mb-2">
+            Un email de vérification a été envoyé à
+          </p>
+          <p className="text-primary font-medium text-sm mb-6">
+            {user?.email}
+          </p>
+          <p className="text-muted-foreground text-xs leading-relaxed mb-8">
+            Cliquez sur le lien dans l'email pour activer votre compte. Vérifiez votre dossier spam si vous ne le trouvez pas.
+          </p>
+
+          <button
+            onClick={() => navigate("/")}
+            className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Retour à l'accueil
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[hsl(var(--dark-bg))] flex flex-col items-center justify-center px-4 relative overflow-hidden">
-      {/* Subtle radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(174,72%,40%,0.08),transparent_70%)]" />
 
       <div className="relative z-10 w-full max-w-2xl flex flex-col items-center">
-        {/* Logo */}
         <img src={logoCmc} alt="CMC" className="h-12 w-auto mb-12 opacity-90" />
 
-        {/* Progress indicator */}
         <div className="flex items-center gap-2 mb-8">
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div
@@ -123,7 +155,6 @@ const Onboarding = () => {
           ))}
         </div>
 
-        {/* Title */}
         <h1 className="text-2xl md:text-3xl font-bold text-[hsl(var(--dark-bg-foreground))] text-center mb-2">
           {stepTitle[step]}
         </h1>
@@ -133,7 +164,6 @@ const Onboarding = () => {
           {step === "filiere" && "Précisez votre spécialité"}
         </p>
 
-        {/* Options */}
         <div className="flex flex-wrap justify-center gap-3 mb-10">
           {step === "role" &&
             ROLES.map((role) => (
@@ -164,7 +194,6 @@ const Onboarding = () => {
             ))}
         </div>
 
-        {/* Buttons */}
         <div className="flex items-center gap-3">
           {step !== "role" && (
             <button
