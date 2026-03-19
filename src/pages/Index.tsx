@@ -154,30 +154,55 @@ const Index = () => {
               View Full Calendar <span className="material-symbols-outlined">calendar_month</span>
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { date: "Oct 12, 2024", title: "Annual Vibe Gala Night", desc: "A celebration of talent, culture, and achievements of our members throughout the semester.", tag: "Culture", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDXVEltJ5oes7ogP5736ERWgkXcxpCehkCQlZxNYYbV3QgfepJoljKd48i89xAK5a9M7veEEhH_ZWmPX2u6KNUz616qLzBSwRFJeun3n0UUctCqlN4Mpo2yNH97PlPNsgBbvGqdzLQ6VSdAtGNEc3SX_jhtiRvLMwvXq2PhF4SUstu-0_te7w-6FgXRBWOTA0I0DkEF4Zrpi3d03O4w1iewoV6ru0F7SDVCGy__5P1Wc-8FByn9xiuXppDqi-FhIfe7b_Zm1B0aY1cq" },
-              { date: "Oct 18, 2024", title: "Start-up Pitch Deck Workshop", desc: "Learn how to craft winning presentations with guest mentors from the local tech hub.", tag: "Entrepreneurship", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBMWz1AjuPPJOF25OC8d-u3wJAljoV69Qj7ORGwdwjIy4vtdLB3hihyRY0BQa-TLDp9iWgaYxF8ZVYlr1y1LON043ApXu9knyfh9KLj3HGvHKMcAVVuypEcaGffOXfdIAlxsRG5xG7UtfWTFR5DOs1F66VAhmJrpA1Fc9UiXqQ_TVJfnx1R1gO2EjRxwMTgwQEDvS5_1ihJ-hBF8h7foiSTXwii-xZtr3kMGlXAiMfnrWagd_fAfjKGF4WEoqtE1UC6hVVkE6BPcVBB" },
-              { date: "Oct 25, 2024", title: "Intra-University Cup", desc: "The most anticipated basketball tournament of the year. Bring your team spirit!", tag: "Sports", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDej98NG-WsX0ys36nWo7lMfFWvHtYdavtBG68MYF4R6iyu0xkr3URjfH0_ceP1vdrlQQmahKVvOpYIgls4Xwhx_lY0Q90XaCHTG49r3VkLNbCmPfXTnMXb42xYboHuLfNvlFHha_RyO43VPabPs8bIsMPsEkGS3qf3z834Skzc7uC8s1-uRCf5pfArXv5Okw3kmnA0FiuX-SQOTJHCKhc0I4Hj2dgQmRBDR9jUod96eWw5aqa11CHaom4txHNcglsu4xg_SbbA0xyJ" },
-            ].map((event) => (
-              <div key={event.title} className="flex flex-col rounded-2xl overflow-hidden border border-border bg-card group">
-                <div className="h-48 overflow-hidden bg-muted">
-                  <div className="w-full h-full group-hover:scale-105 transition-transform duration-500 bg-cover bg-center" style={{ backgroundImage: `url('${event.img}')` }} />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 text-xs font-bold text-primary mb-3">
-                    <span className="material-symbols-outlined text-sm">calendar_today</span> {event.date}
-                  </div>
-                  <h4 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors text-foreground">{event.title}</h4>
-                  <p className="text-sm text-muted-foreground line-clamp-2">{event.desc}</p>
-                  <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
-                    <span className="text-xs font-medium bg-muted px-3 py-1 rounded-full uppercase tracking-tighter">{event.tag}</span>
-                    <button className="text-sm font-bold flex items-center">RSVP</button>
+          {eventsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="rounded-2xl border border-border bg-card animate-pulse">
+                  <div className="h-48 bg-muted rounded-t-2xl" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-3 w-24 bg-muted rounded" />
+                    <div className="h-5 w-3/4 bg-muted rounded" />
+                    <div className="h-3 w-full bg-muted rounded" />
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : events.length === 0 ? (
+            <div className="text-center py-16">
+              <CalendarDays className="mx-auto h-12 w-12 text-muted-foreground/30" />
+              <p className="mt-4 text-muted-foreground">No upcoming events yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {events.map((event) => (
+                <div key={event.id} className="flex flex-col rounded-2xl overflow-hidden border border-border bg-card group">
+                  <div className="h-48 overflow-hidden bg-muted">
+                    {event.image_url ? (
+                      <img src={event.image_url} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 text-xs font-bold text-primary mb-3">
+                      <span className="material-symbols-outlined text-sm">calendar_today</span>
+                      {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </div>
+                    <h4 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors text-foreground">{event.title}</h4>
+                    {event.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
+                    )}
+                    <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
+                      <span className="text-xs font-medium bg-muted px-3 py-1 rounded-full uppercase tracking-tighter">{event.category ?? "Event"}</span>
+                      <button className="text-sm font-bold flex items-center">RSVP</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Community Gallery */}
