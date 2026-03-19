@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, User } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, User, LogOut, ExternalLink, Ticket } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 import logoCmc from "@/assets/logo-cmc.png";
 
 const navLinks = [
@@ -10,14 +11,35 @@ const navLinks = [
   { to: "#about", label: "About" },
   { to: "/events", label: "Events" },
   { to: "#", label: "MBTI Test" },
-  { to: "/admin", label: "Admin" },
 ];
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
+  const { isAdmin } = useAdminCheck();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setAvatarOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleAccountClick = () => {
+    setAvatarOpen(false);
+    if (isAdmin) {
+      navigate("/admin/settings");
+    }
+    // Member settings page will be built later
+  };
 
   return (
     <>
@@ -44,16 +66,50 @@ const Navbar = () => {
           </nav>
           <div className="hidden md:flex items-center gap-4">
             {user ? (
-              <>
-                <div className="flex items-center gap-2 text-sm text-foreground">
-                  <User size={18} className="text-primary" />
-                  <span className="font-medium">{profile?.full_name || user.email}</span>
+              <div className="flex items-center gap-4">
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-1 text-sm font-bold uppercase tracking-wide text-foreground hover:text-primary transition-colors"
+                  >
+                    I'm an Organizer
+                    <ExternalLink size={14} />
+                  </Link>
+                )}
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setAvatarOpen(!avatarOpen)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-background hover:border-primary transition-colors overflow-hidden"
+                  >
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                    ) : (
+                      <User size={20} className="text-foreground" />
+                    )}
+                  </button>
+                  {avatarOpen && (
+                    <div className="absolute right-0 top-12 w-60 rounded-xl border border-border bg-background shadow-lg py-2 z-50">
+                      <div className="px-4 py-3 border-b border-border">
+                        <p className="text-sm font-medium text-foreground truncate">{user.email}</p>
+                      </div>
+                      <button
+                        onClick={handleAccountClick}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
+                      >
+                        <User size={18} />
+                        My account
+                      </button>
+                      <button
+                        onClick={() => { setAvatarOpen(false); signOut(); }}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
+                      >
+                        <LogOut size={18} />
+                        Log out
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <button onClick={signOut}
-                  className="flex items-center gap-1 border border-border text-muted-foreground px-6 py-2.5 rounded-full font-bold text-sm hover:bg-secondary transition-all">
-                  <LogOut size={16} /> Sign Out
-                </button>
-              </>
+              </div>
             ) : (
               <>
                 <button onClick={() => setAuthMode("signin")}
@@ -85,10 +141,20 @@ const Navbar = () => {
                 <>
                   <div className="flex items-center gap-2 py-2 text-sm text-foreground">
                     <User size={18} className="text-primary" />
-                    <span className="font-medium">{profile?.full_name || user.email}</span>
+                    <span className="font-medium">{user.email}</span>
                   </div>
+                  {isAdmin && (
+                    <Link to="/admin" onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-1 py-2 text-sm font-bold uppercase text-foreground">
+                      I'm an Organizer <ExternalLink size={14} />
+                    </Link>
+                  )}
+                  <button onClick={() => { setMobileOpen(false); handleAccountClick(); }}
+                    className="flex items-center gap-2 py-2 text-sm font-medium text-foreground">
+                    <User size={16} /> My account
+                  </button>
                   <button onClick={() => { setMobileOpen(false); signOut(); }}
-                    className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted-foreground">Sign Out</button>
+                    className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted-foreground">Log out</button>
                 </>
               ) : (
                 <>
