@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { CalendarDays, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +13,7 @@ interface PublicEvent {
   location: string | null;
   image_url: string | null;
   category: string | null;
+  tags: string[] | null;
 }
 
 const Events = () => {
@@ -21,18 +21,28 @@ const Events = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchEvents = async () => {
       const { data } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category")
+        .select("id, title, description, date, location, image_url, category, tags")
         .eq("is_published", true)
         .gte("date", new Date().toISOString())
         .order("date", { ascending: true });
       setEvents((data as PublicEvent[]) ?? []);
       setLoading(false);
     };
-    fetch();
+    fetchEvents();
   }, []);
+
+  const formatDateShort = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return {
+      weekday: d.toLocaleDateString("en-US", { weekday: "short" }),
+      month: d.toLocaleDateString("en-US", { month: "short" }),
+      day: d.getDate(),
+      time: d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+    };
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -46,47 +56,80 @@ const Events = () => {
         </div>
 
         {loading ? (
-          <p className="text-center text-muted-foreground">Loading events...</p>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-[4/3] rounded-xl bg-muted" />
+                <div className="mt-3 space-y-2">
+                  <div className="h-4 w-3/4 bg-muted rounded" />
+                  <div className="h-3 w-1/2 bg-muted rounded" />
+                  <div className="h-3 w-1/3 bg-muted rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : events.length === 0 ? (
           <div className="text-center py-20">
             <CalendarDays className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <p className="mt-4 text-lg text-muted-foreground">No events available yet.</p>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {events.map((e) => (
-              <div key={e.id} className="rounded-xl border border-border bg-card overflow-hidden flex flex-col">
-                {e.image_url ? (
-                  <img src={e.image_url} alt={e.title} className="h-48 w-full object-cover" />
-                ) : (
-                  <div className="h-48 w-full bg-muted flex items-center justify-center">
-                    <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
-                  </div>
-                )}
-                <div className="flex flex-col flex-1 p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="secondary">{e.category ?? "Event"}</Badge>
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground">{e.title}</h3>
-                  {e.description && (
-                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{e.description}</p>
-                  )}
-                  <div className="mt-auto pt-4 space-y-1 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <CalendarDays size={14} />
-                      {new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
-                    </div>
-                    {e.location && (
-                      <div className="flex items-center gap-1.5">
-                        <MapPin size={14} />
-                        {e.location}
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {events.map((e) => {
+              const dt = formatDateShort(e.date);
+              return (
+                <Link
+                  key={e.id}
+                  to={`/events/${e.id}`}
+                  className="group block"
+                >
+                  {/* Image */}
+                  <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
+                    {e.image_url ? (
+                      <img
+                        src={e.image_url}
+                        alt={e.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-muted flex items-center justify-center">
+                        <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
                       </div>
                     )}
                   </div>
-                  <Button className="mt-4 w-full">Participate</Button>
-                </div>
-              </div>
-            ))}
+
+                  {/* Info */}
+                  <div className="mt-3">
+                    <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                      {e.title}
+                    </h3>
+                    {e.location && (
+                      <p className="mt-0.5 text-sm text-muted-foreground flex items-center gap-1">
+                        <MapPin size={13} className="shrink-0" />
+                        {e.location}
+                      </p>
+                    )}
+                    <p className="mt-1 text-sm font-semibold text-primary">
+                      {dt.weekday}, {dt.month} {dt.day} | {dt.time}
+                    </p>
+
+                    {/* Tags */}
+                    {e.tags && e.tags.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {e.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-border px-2.5 py-0.5 text-[11px] font-medium uppercase text-muted-foreground"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </main>
