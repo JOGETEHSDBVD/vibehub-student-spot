@@ -13,6 +13,8 @@ import AdminAnalytics from "./pages/AdminAnalytics.tsx";
 import AdminAnnouncements from "./pages/AdminAnnouncements.tsx";
 import AdminSettings from "./pages/AdminSettings.tsx";
 import Events from "./pages/Events.tsx";
+import EventDetail from "./pages/EventDetail.tsx";
+import OrganizerProfile from "./pages/OrganizerProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:id" element={<EventDetail />} />
+            <Route path="/organizer/:id" element={<OrganizerProfile />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/events" element={<AdminEvents />} />
             <Route path="/admin/active-events" element={<AdminActiveEvents />} />
