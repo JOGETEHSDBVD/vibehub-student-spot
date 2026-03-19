@@ -17,6 +17,7 @@ const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   if (!open) return null;
 
