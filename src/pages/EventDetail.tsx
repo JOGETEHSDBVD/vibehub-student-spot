@@ -173,7 +173,20 @@ const EventDetail = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="flex-1">
+
+      {/* Blurred background from event image */}
+      {event.image_url && (
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <img
+            src={event.image_url}
+            alt=""
+            className="h-[50vh] w-full object-cover blur-[80px] scale-110 opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
+        </div>
+      )}
+
+      <main className="flex-1 relative z-10">
         {/* Breadcrumb */}
         <div className="max-w-5xl mx-auto px-4 pt-8">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -189,7 +202,7 @@ const EventDetail = () => {
         <div className="max-w-5xl mx-auto px-4 pt-6 pb-10">
           <h1 className="text-3xl md:text-4xl font-black text-foreground">{event.title}</h1>
 
-          <div className="mt-8 grid md:grid-cols-[1fr_1.2fr] gap-8">
+          <div className="mt-4 grid md:grid-cols-[1fr_1.2fr] gap-8 items-start">
             {/* Left info */}
             <div className="space-y-5">
               {/* Date */}
