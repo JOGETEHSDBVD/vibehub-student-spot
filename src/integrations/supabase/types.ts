@@ -208,6 +208,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_not_banned: { Args: never; Returns: boolean }
+      update_own_profile: {
+        Args: {
+          _avatar_url?: string
+          _filiere?: string
+          _full_name?: string
+          _member_type?: string
+          _pole?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

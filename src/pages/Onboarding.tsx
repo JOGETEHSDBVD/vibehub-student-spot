@@ -68,14 +68,11 @@ const Onboarding = () => {
     if (!user) return;
     setSaving(true);
     const pole = selectedPole ? POLES.find(p => p.id === selectedPole) : null;
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        member_type: selectedRole,
-        pole: pole?.label ?? null,
-        filiere: selectedFiliere ?? null,
-      })
-      .eq("id", user.id);
+    const { error } = await supabase.rpc("update_own_profile", {
+      _member_type: selectedRole,
+      _pole: pole?.label ?? null,
+      _filiere: selectedFiliere ?? null,
+    });
 
     setSaving(false);
     if (error) {
