@@ -171,39 +171,59 @@ const Onboarding = () => {
         <div className="relative z-10 w-full max-w-md flex flex-col items-center text-center">
           <img src={logoCmc} alt="CMC" className="h-12 w-auto mb-10 opacity-90" />
 
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/15 mb-6">
-            <Mail className="h-10 w-10 text-primary" />
+          <div className={`flex h-20 w-20 items-center justify-center rounded-full mb-6 transition-all duration-700 ${emailConfirmed ? "bg-primary/20" : "bg-primary/15"}`}>
+            {emailConfirmed ? (
+              <CheckCircle className="h-10 w-10 text-primary animate-in fade-in zoom-in duration-500" />
+            ) : (
+              <Mail className="h-10 w-10 text-primary" />
+            )}
           </div>
 
-          <h1 className="text-2xl md:text-3xl font-bold text-[hsl(var(--dark-bg-foreground))] mb-3">
-            Vérifiez votre email
+          <h1 className="text-2xl md:text-3xl font-bold text-[hsl(var(--dark-bg-foreground))] mb-3 transition-all duration-500">
+            {emailConfirmed ? "Email vérifié !" : "Vérifiez votre email"}
           </h1>
-          <p className="text-muted-foreground text-sm leading-relaxed mb-2">
-            Un email de vérification a été envoyé à
-          </p>
-          <p className="text-primary font-medium text-sm mb-6">
-            {displayEmail}
-          </p>
-          <p className="text-muted-foreground text-xs leading-relaxed mb-8">
-            Cliquez sur le lien dans l'email pour activer votre compte. Vérifiez votre dossier spam si vous ne le trouvez pas.
-          </p>
 
-          <div className="flex flex-col items-center gap-3">
-            <button
-              onClick={() => navigate("/")}
-              className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              Retour à l'accueil
-            </button>
-            <button
-              onClick={handleResendEmail}
-              disabled={resending}
-              className="flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium text-muted-foreground border border-muted-foreground/30 hover:bg-muted-foreground/10 transition-colors disabled:opacity-50"
-            >
-              <RefreshCw size={14} className={resending ? "animate-spin" : ""} />
-              {resending ? "Envoi en cours..." : "Renvoyer l'email"}
-            </button>
-          </div>
+          {emailConfirmed ? (
+            <>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                Votre compte est maintenant actif. Bienvenue sur la plateforme !
+              </p>
+              <button
+                onClick={() => navigate("/")}
+                className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors animate-in fade-in slide-in-from-bottom-4 duration-500"
+              >
+                Accéder à la plateforme
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-2">
+                Un email de vérification a été envoyé à
+              </p>
+              <p className="text-primary font-medium text-sm mb-6">
+                {displayEmail}
+              </p>
+              <p className="text-muted-foreground text-xs leading-relaxed mb-8">
+                Cliquez sur le lien dans l'email pour activer votre compte. Vérifiez votre dossier spam si vous ne le trouvez pas.
+              </p>
+              <div className="flex flex-col items-center gap-3">
+                <button
+                  onClick={() => navigate("/")}
+                  className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  Retour à l'accueil
+                </button>
+                <button
+                  onClick={handleResendEmail}
+                  disabled={resending}
+                  className="flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium text-muted-foreground border border-muted-foreground/30 hover:bg-muted-foreground/10 transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw size={14} className={resending ? "animate-spin" : ""} />
+                  {resending ? "Envoi en cours..." : "Renvoyer l'email"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
