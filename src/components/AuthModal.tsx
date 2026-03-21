@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +18,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +39,10 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
       if (error) {
         toast({ title: "Sign up failed", description: error, variant: "destructive" });
       } else {
-        toast({ title: "Account created!", description: "Check your email to confirm your account." });
+        toast({ title: "Compte créé !", description: "Complétez votre profil pour continuer." });
         setEmail(""); setPassword(""); setName("");
         onClose();
+        navigate("/onboarding");
       }
     }
   };
