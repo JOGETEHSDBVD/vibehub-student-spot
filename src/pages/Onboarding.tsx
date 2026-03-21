@@ -33,6 +33,7 @@ const Onboarding = () => {
   const [saving, setSaving] = useState(false);
   const [resending, setResending] = useState(false);
   const [signupEmail, setSignupEmail] = useState<string | null>(null);
+  const [emailConfirmed, setEmailConfirmed] = useState(false);
   const { user, refreshProfile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
