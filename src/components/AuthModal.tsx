@@ -40,6 +40,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
         toast({ title: "Sign up failed", description: error, variant: "destructive" });
       } else {
         toast({ title: "Compte créé !", description: "Complétez votre profil pour continuer." });
+        localStorage.setItem("onboarding_email", email);
         setEmail(""); setPassword(""); setName("");
         onClose();
         navigate("/onboarding");
