@@ -137,6 +137,7 @@ const Onboarding = () => {
   const totalSteps = isStudent ? 3 : 1;
 
   if (step === "verify-email") {
+    const displayEmail = signupEmail || user?.email || localStorage.getItem("onboarding_email") || "";
     return (
       <div className="min-h-screen bg-[hsl(var(--dark-bg))] flex flex-col items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(174,72%,40%,0.08),transparent_70%)]" />
@@ -154,18 +155,28 @@ const Onboarding = () => {
             Un email de vérification a été envoyé à
           </p>
           <p className="text-primary font-medium text-sm mb-6">
-            {user?.email}
+            {displayEmail}
           </p>
           <p className="text-muted-foreground text-xs leading-relaxed mb-8">
             Cliquez sur le lien dans l'email pour activer votre compte. Vérifiez votre dossier spam si vous ne le trouvez pas.
           </p>
 
-          <button
-            onClick={() => navigate("/")}
-            className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            Retour à l'accueil
-          </button>
+          <div className="flex flex-col items-center gap-3">
+            <button
+              onClick={() => navigate("/")}
+              className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Retour à l'accueil
+            </button>
+            <button
+              onClick={handleResendEmail}
+              disabled={resending}
+              className="flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium text-muted-foreground border border-muted-foreground/30 hover:bg-muted-foreground/10 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw size={14} className={resending ? "animate-spin" : ""} />
+              {resending ? "Envoi en cours..." : "Renvoyer l'email"}
+            </button>
+          </div>
         </div>
       </div>
     );
