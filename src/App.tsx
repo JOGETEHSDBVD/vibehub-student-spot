@@ -27,7 +27,7 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user && profile && !profile.member_type && location.pathname !== "/onboarding") {
+    if (!loading && user && profile && !profile.member_type && location.pathname !== "/onboarding" && location.pathname !== "/email-verified") {
       navigate("/onboarding", { replace: true });
     }
   }, [loading, user, profile, location.pathname, navigate]);

@@ -1,16 +1,47 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import logoCmc from "@/assets/logo-cmc.png";
 
 const EmailVerified = () => {
   const [verified, setVerified] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const { user, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => setVerified(true), 2500);
-    return () => clearTimeout(timer);
-  }, []);
+    const savePendingOnboarding = async (userId: string) => {
+      const raw = localStorage.getItem("onboarding_data");
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        setSaving(true);
+        await supabase.rpc("update_own_profile", {
+          _member_type: data.member_type,
+          _pole: data.pole,
+          _filiere: data.filiere,
+        });
+        localStorage.removeItem("onboarding_data");
+        refreshProfile();
+      } catch {
+        // silent
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    if (user) {
+      savePendingOnboarding(user.id).then(() => {
+        setVerified(true);
+      });
+    } else {
+      // Wait for auth to settle
+      const timer = setTimeout(() => setVerified(true), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-[hsl(var(--dark-bg))] flex flex-col items-center justify-center px-4 relative overflow-hidden">
