@@ -27,7 +27,11 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user && profile && !profile.member_type && location.pathname !== "/onboarding" && location.pathname !== "/email-verified") {
+    // Don't redirect if the URL hash contains email verification tokens
+    const hash = window.location.hash;
+    const isVerificationCallback = hash.includes("type=signup") || hash.includes("type=email") || hash.includes("type=recovery");
+    
+    if (!loading && user && profile && !profile.member_type && !isVerificationCallback && location.pathname !== "/onboarding" && location.pathname !== "/email-verified") {
       navigate("/onboarding", { replace: true });
     }
   }, [loading, user, profile, location.pathname, navigate]);
