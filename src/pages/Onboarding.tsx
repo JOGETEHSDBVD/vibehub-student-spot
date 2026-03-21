@@ -66,13 +66,20 @@ const Onboarding = () => {
 
   const saveProfile = async () => {
     setSaving(true);
+    // Always store selections in localStorage for post-verification save
+    const pole = selectedPole ? POLES.find(p => p.id === selectedPole) : null;
+    localStorage.setItem("onboarding_data", JSON.stringify({
+      member_type: selectedRole,
+      pole: pole?.label ?? null,
+      filiere: selectedFiliere ?? null,
+    }));
+
     if (!user) {
       // User not authenticated yet (email not confirmed) — skip DB save, show verify-email
       setSaving(false);
       setStep("verify-email");
       return;
     }
-    const pole = selectedPole ? POLES.find(p => p.id === selectedPole) : null;
     const { error } = await supabase.rpc("update_own_profile", {
       _member_type: selectedRole,
       _pole: pole?.label ?? null,
@@ -83,6 +90,7 @@ const Onboarding = () => {
     if (error) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     } else {
+      localStorage.removeItem("onboarding_data");
       refreshProfile();
       setStep("verify-email");
     }
