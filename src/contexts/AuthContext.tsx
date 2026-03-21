@@ -51,10 +51,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
 
         // Redirect to verified page after email confirmation
-        const hash = window.location.hash;
-        if (event === "SIGNED_IN" && (hash.includes("type=signup") || hash.includes("type=email"))) {
-          window.location.hash = "";
-          window.location.href = "/email-verified";
+        if (event === "SIGNED_IN" && window.location.pathname === "/email-verified") {
+          // Already on the verified page, no redirect needed
         }
       }
     );
