@@ -31,6 +31,8 @@ const Onboarding = () => {
   const [selectedPole, setSelectedPole] = useState<string | null>(null);
   const [selectedFiliere, setSelectedFiliere] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [signupEmail, setSignupEmail] = useState<string | null>(null);
   const { user, refreshProfile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
