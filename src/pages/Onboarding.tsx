@@ -65,8 +65,13 @@ const Onboarding = () => {
   };
 
   const saveProfile = async () => {
-    if (!user) return;
     setSaving(true);
+    if (!user) {
+      // User not authenticated yet (email not confirmed) — skip DB save, show verify-email
+      setSaving(false);
+      setStep("verify-email");
+      return;
+    }
     const pole = selectedPole ? POLES.find(p => p.id === selectedPole) : null;
     const { error } = await supabase.rpc("update_own_profile", {
       _member_type: selectedRole,
