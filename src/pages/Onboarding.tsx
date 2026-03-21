@@ -40,6 +40,32 @@ const Onboarding = () => {
 
   const isStudent = selectedRole === "1ere_annee" || selectedRole === "2eme_annee";
 
+  // Listen for email confirmation while on verify-email step
+  useEffect(() => {
+    if (step !== "verify-email") return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user?.email_confirmed_at) {
+        // Save pending onboarding data
+        const raw = localStorage.getItem("onboarding_data");
+        if (raw) {
+          try {
+            const data = JSON.parse(raw);
+            supabase.rpc("update_own_profile", {
+              _member_type: data.member_type,
+              _pole: data.pole,
+              _filiere: data.filiere,
+            }).then(() => {
+              localStorage.removeItem("onboarding_data");
+              refreshProfile();
+            });
+          } catch {}
+        }
+        setEmailConfirmed(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [step]);
+
   const handleNext = async () => {
     if (step === "role") {
       if (!selectedRole) return;
