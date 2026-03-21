@@ -68,16 +68,19 @@ const Onboarding = () => {
 
   const saveProfile = async () => {
     setSaving(true);
-    // Always store selections in localStorage for post-verification save
     const pole = selectedPole ? POLES.find(p => p.id === selectedPole) : null;
-    localStorage.setItem("onboarding_data", JSON.stringify({
+    const onboardingData = {
       member_type: selectedRole,
       pole: pole?.label ?? null,
       filiere: selectedFiliere ?? null,
-    }));
+    };
+    localStorage.setItem("onboarding_data", JSON.stringify(onboardingData));
+
+    // Capture the email for the verify screen
+    const storedEmail = localStorage.getItem("onboarding_email");
+    if (storedEmail) setSignupEmail(storedEmail);
 
     if (!user) {
-      // User not authenticated yet (email not confirmed) — skip DB save, show verify-email
       setSaving(false);
       setStep("verify-email");
       return;
@@ -95,6 +98,22 @@ const Onboarding = () => {
       localStorage.removeItem("onboarding_data");
       refreshProfile();
       setStep("verify-email");
+    }
+  };
+
+  const handleResendEmail = async () => {
+    const email = signupEmail || user?.email || localStorage.getItem("onboarding_email");
+    if (!email) {
+      toast({ title: "Erreur", description: "Adresse email introuvable.", variant: "destructive" });
+      return;
+    }
+    setResending(true);
+    const { error } = await supabase.auth.resend({ type: "signup", email });
+    setResending(false);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Email envoyé !", description: "Un nouvel email de vérification a été envoyé." });
     }
   };
 
