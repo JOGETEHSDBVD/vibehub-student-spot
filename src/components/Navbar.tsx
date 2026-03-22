@@ -37,8 +37,9 @@ const Navbar = () => {
     setAvatarOpen(false);
     if (isAdmin) {
       navigate("/admin/settings");
+    } else {
+      navigate("/account");
     }
-    // Member settings page will be built later
   };
 
   return (
