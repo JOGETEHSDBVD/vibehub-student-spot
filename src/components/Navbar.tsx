@@ -37,8 +37,9 @@ const Navbar = () => {
     setAvatarOpen(false);
     if (isAdmin) {
       navigate("/admin/settings");
+    } else {
+      navigate("/account");
     }
-    // Member settings page will be built later
   };
 
   return (
@@ -90,7 +91,7 @@ const Navbar = () => {
                   {avatarOpen && (
                     <div className="absolute right-0 top-12 w-60 rounded-xl border border-border bg-background shadow-lg py-2 z-50">
                       <div className="px-4 py-3 border-b border-border">
-                        <p className="text-sm font-medium text-foreground truncate">{user.email}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{profile?.full_name || user.email}</p>
                       </div>
                       <button
                         onClick={handleAccountClick}
@@ -141,7 +142,7 @@ const Navbar = () => {
                 <>
                   <div className="flex items-center gap-2 py-2 text-sm text-foreground">
                     <User size={18} className="text-primary" />
-                    <span className="font-medium">{user.email}</span>
+                    <span className="font-medium">{profile?.full_name || user.email}</span>
                   </div>
                   {isAdmin && (
                     <Link to="/admin" onClick={() => setMobileOpen(false)}
