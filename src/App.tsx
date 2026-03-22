@@ -18,6 +18,7 @@ import EventDetail from "./pages/EventDetail.tsx";
 import OrganizerProfile from "./pages/OrganizerProfile.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import EmailVerified from "./pages/EmailVerified.tsx";
+import MyAccount from "./pages/MyAccount.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
