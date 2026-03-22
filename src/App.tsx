@@ -65,6 +65,7 @@ const App = () => (
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/announcements" element={<AdminAnnouncements />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
+              <Route path="/account" element={<MyAccount />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </OnboardingGuard>

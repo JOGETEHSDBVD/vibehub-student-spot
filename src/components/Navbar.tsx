@@ -142,7 +142,7 @@ const Navbar = () => {
                 <>
                   <div className="flex items-center gap-2 py-2 text-sm text-foreground">
                     <User size={18} className="text-primary" />
-                    <span className="font-medium">{user.email}</span>
+                    <span className="font-medium">{profile?.full_name || user.email}</span>
                   </div>
                   {isAdmin && (
                     <Link to="/admin" onClick={() => setMobileOpen(false)}
