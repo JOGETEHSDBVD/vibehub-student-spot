@@ -91,7 +91,7 @@ const Navbar = () => {
                   {avatarOpen && (
                     <div className="absolute right-0 top-12 w-60 rounded-xl border border-border bg-background shadow-lg py-2 z-50">
                       <div className="px-4 py-3 border-b border-border">
-                        <p className="text-sm font-medium text-foreground truncate">{user.email}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{profile?.full_name || user.email}</p>
                       </div>
                       <button
                         onClick={handleAccountClick}
