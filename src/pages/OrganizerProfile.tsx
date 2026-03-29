@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { CalendarDays, User } from "lucide-react";
+import { CalendarDays, User, Linkedin, Instagram, Facebook } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +9,12 @@ interface OrganizerData {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
   pole: string | null;
   member_type: string | null;
+  linkedin_url: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
 }
 
 interface OrgEvent {
@@ -33,7 +37,7 @@ const OrganizerProfile = () => {
     if (!id) return;
     const fetch = async () => {
       const [{ data: prof }, { data: evts }] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, avatar_url, pole, member_type").eq("id", id).single(),
+        supabase.from("profiles").select("id, full_name, avatar_url, cover_url, pole, member_type, linkedin_url, instagram_url, facebook_url").eq("id", id).single(),
         supabase.from("events").select("id, title, date, location, image_url, category, tags").eq("created_by", id).eq("is_published", true).order("date", { ascending: false }),
       ]);
       setOrganizer(prof as OrganizerData | null);
@@ -95,8 +99,15 @@ const OrganizerProfile = () => {
           <span className="text-foreground">{organizer.full_name ?? "Organizer"}</span>
         </div>
 
+        {/* Cover Photo */}
+        {organizer.cover_url && (
+          <div className="rounded-xl overflow-hidden border border-border mb-8">
+            <img src={organizer.cover_url} alt="" className="w-full h-48 md:h-64 object-cover" />
+          </div>
+        )}
+
         {/* Organizer header */}
-        <div className="flex items-center gap-5 mb-12">
+        <div className="flex items-center gap-5 mb-4">
           {organizer.avatar_url ? (
             <img src={organizer.avatar_url} alt="" className="h-24 w-24 rounded-full object-cover border-2 border-border" />
           ) : (
@@ -112,6 +123,29 @@ const OrganizerProfile = () => {
             <p className="text-xs text-muted-foreground mt-1">{events.length} event{events.length !== 1 ? "s" : ""}</p>
           </div>
         </div>
+
+        {/* Social Links */}
+        {(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && (
+          <div className="flex items-center gap-3 mb-12">
+            {organizer.linkedin_url && (
+              <a href={organizer.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                <Linkedin size={14} className="text-[#0A66C2]" /> LinkedIn
+              </a>
+            )}
+            {organizer.instagram_url && (
+              <a href={organizer.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                <Instagram size={14} className="text-[#E4405F]" /> Instagram
+              </a>
+            )}
+            {organizer.facebook_url && (
+              <a href={organizer.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                <Facebook size={14} className="text-[#1877F2]" /> Facebook
+              </a>
+            )}
+          </div>
+        )}
+
+        {!(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && <div className="mb-12" />}
 
         {/* Upcoming Events */}
         {upcoming.length > 0 && (
