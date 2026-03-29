@@ -18,9 +18,8 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
+  const handleExit = () => {
+    navigate("/events");
   };
 
   return (
@@ -90,7 +89,7 @@ const AdminSidebar = () => {
             <p className="truncate text-sm font-medium text-foreground">{profile?.full_name ?? "Admin"}</p>
             <p className="text-xs text-muted-foreground">Super Admin</p>
           </div>
-          <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground">
+          <button onClick={handleExit} title="Back to site" className="text-muted-foreground hover:text-foreground">
             <LogOut size={16} />
           </button>
         </div>
