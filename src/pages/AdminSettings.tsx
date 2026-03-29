@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Save, User } from "lucide-react";
+import { Camera, Save, User, Image, Linkedin, Instagram, Facebook } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,13 +16,19 @@ const AdminSettings = () => {
   const { user, profile, loading: authLoading, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [memberType, setMemberType] = useState("student");
   const [pole, setPole] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -32,9 +38,7 @@ const AdminSettings = () => {
   }, [isAdmin, loading, authLoading, user, navigate]);
 
   useEffect(() => {
-    if (user) {
-      setEmail(user.email ?? "");
-    }
+    if (user) setEmail(user.email ?? "");
   }, [user]);
 
   useEffect(() => {
@@ -43,73 +47,65 @@ const AdminSettings = () => {
       setMemberType(profile.member_type ?? "student");
       setPole(profile.pole ?? "");
       setAvatarUrl(profile.avatar_url ?? null);
+      setCoverUrl(profile.cover_url ?? null);
+      setLinkedinUrl(profile.linkedin_url ?? "");
+      setInstagramUrl(profile.instagram_url ?? "");
+      setFacebookUrl(profile.facebook_url ?? "");
     }
   }, [profile]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-
-    if (!file.type.startsWith("image/")) {
-      toast({ title: "Please select an image file", variant: "destructive" });
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Image must be under 5MB", variant: "destructive" });
-      return;
-    }
+    if (!file.type.startsWith("image/")) { toast({ title: "Please select an image file", variant: "destructive" }); return; }
+    if (file.size > 5 * 1024 * 1024) { toast({ title: "Image must be under 5MB", variant: "destructive" }); return; }
 
     setUploading(true);
     const ext = file.name.split(".").pop();
     const path = `${user.id}/avatar.${ext}`;
-
-    const { error: uploadErr } = await supabase.storage
-      .from("avatars")
-      .upload(path, file, { upsert: true });
-
-    if (uploadErr) {
-      toast({ title: "Upload failed", description: uploadErr.message, variant: "destructive" });
-      setUploading(false);
-      return;
-    }
-
+    const { error: uploadErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (uploadErr) { toast({ title: "Upload failed", description: uploadErr.message, variant: "destructive" }); setUploading(false); return; }
     const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
     const newUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-
-    const { error: updateErr } = await supabase
-      .from("profiles")
-      .update({ avatar_url: newUrl })
-      .eq("id", user.id);
-
-    if (updateErr) {
-      toast({ title: "Failed to save avatar", description: updateErr.message, variant: "destructive" });
-    } else {
-      setAvatarUrl(newUrl);
-      refreshProfile();
-      toast({ title: "Profile picture updated" });
-    }
+    const { error: updateErr } = await supabase.from("profiles").update({ avatar_url: newUrl }).eq("id", user.id);
+    if (updateErr) { toast({ title: "Failed to save avatar", description: updateErr.message, variant: "destructive" }); }
+    else { setAvatarUrl(newUrl); refreshProfile(); toast({ title: "Profile picture updated" }); }
     setUploading(false);
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) { toast({ title: "Please select an image file", variant: "destructive" }); return; }
+    if (file.size > 10 * 1024 * 1024) { toast({ title: "Image must be under 10MB", variant: "destructive" }); return; }
+
+    setUploadingCover(true);
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/cover.${ext}`;
+    const { error: uploadErr } = await supabase.storage.from("covers").upload(path, file, { upsert: true });
+    if (uploadErr) { toast({ title: "Upload failed", description: uploadErr.message, variant: "destructive" }); setUploadingCover(false); return; }
+    const { data: urlData } = supabase.storage.from("covers").getPublicUrl(path);
+    const newUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+    const { error: updateErr } = await supabase.from("profiles").update({ cover_url: newUrl }).eq("id", user.id);
+    if (updateErr) { toast({ title: "Failed to save cover", description: updateErr.message, variant: "destructive" }); }
+    else { setCoverUrl(newUrl); refreshProfile(); toast({ title: "Cover photo updated" }); }
+    setUploadingCover(false);
   };
 
   const handleSave = async () => {
     if (!user) return;
-    if (!fullName.trim()) {
-      toast({ title: "Name is required", variant: "destructive" });
-      return;
-    }
+    if (!fullName.trim()) { toast({ title: "Name is required", variant: "destructive" }); return; }
     setSaving(true);
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ full_name: fullName.trim(), member_type: memberType, pole: pole || null })
-      .eq("id", user.id);
-
-    if (error) {
-      toast({ title: "Failed to update profile", description: error.message, variant: "destructive" });
-    } else {
-      refreshProfile();
-      toast({ title: "Profile updated successfully" });
-    }
+    const { error } = await supabase.from("profiles").update({
+      full_name: fullName.trim(),
+      member_type: memberType,
+      pole: pole || null,
+      linkedin_url: linkedinUrl.trim() || null,
+      instagram_url: instagramUrl.trim() || null,
+      facebook_url: facebookUrl.trim() || null,
+    }).eq("id", user.id);
+    if (error) { toast({ title: "Failed to update profile", description: error.message, variant: "destructive" }); }
+    else { refreshProfile(); toast({ title: "Profile updated successfully" }); }
     setSaving(false);
   };
 
@@ -126,36 +122,46 @@ const AdminSettings = () => {
         </div>
 
         <div className="mx-auto max-w-2xl space-y-8">
+          {/* Cover Photo */}
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-lg font-bold text-foreground mb-4">Cover Photo</h2>
+            <div className="relative">
+              {coverUrl ? (
+                <img src={coverUrl} alt="Cover" className="w-full h-40 rounded-lg object-cover border border-border" />
+              ) : (
+                <div className="w-full h-40 rounded-lg bg-muted flex items-center justify-center border border-border">
+                  <Image className="h-10 w-10 text-muted-foreground/40" />
+                </div>
+              )}
+              <button
+                onClick={() => coverInputRef.current?.click()}
+                disabled={uploadingCover}
+                className="absolute bottom-3 right-3 flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-md hover:bg-primary/90 transition-colors"
+              >
+                <Camera size={14} />
+                {uploadingCover ? "Uploading..." : "Change Cover"}
+              </button>
+              <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">Recommended: 1200×400px. Max 10MB.</p>
+          </div>
+
           {/* Profile Picture */}
           <div className="rounded-xl border border-border bg-card p-6">
             <h2 className="text-lg font-bold text-foreground mb-4">Profile Picture</h2>
             <div className="flex items-center gap-6">
               <div className="relative">
                 {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="Avatar"
-                    className="h-24 w-24 rounded-full object-cover border-2 border-border"
-                  />
+                  <img src={avatarUrl} alt="Avatar" className="h-24 w-24 rounded-full object-cover border-2 border-border" />
                 ) : (
                   <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 border-2 border-border">
                     <User className="h-10 w-10 text-primary" />
                   </div>
                 )}
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-colors"
-                >
+                <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-colors">
                   <Camera size={14} />
                 </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                />
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
               </div>
               <div>
                 <p className="text-sm font-medium text-foreground">Upload a new photo</p>
@@ -171,11 +177,7 @@ const AdminSettings = () => {
             <div className="space-y-4">
               <div>
                 <Label>Full Name</Label>
-                <Input
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your full name"
-                />
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" />
               </div>
               <div>
                 <Label>Email</Label>
@@ -185,9 +187,7 @@ const AdminSettings = () => {
               <div>
                 <Label>Role at the Établissement</Label>
                 <Select value={memberType} onValueChange={setMemberType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Select your role" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="student">Student</SelectItem>
                     <SelectItem value="trainer">Trainer</SelectItem>
@@ -198,9 +198,7 @@ const AdminSettings = () => {
               <div>
                 <Label>Pôle</Label>
                 <Select value={pole} onValueChange={setPole}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your pôle" />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Select your pôle" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Administration">Administration</SelectItem>
                     <SelectItem value="Tourisme">Tourisme</SelectItem>
@@ -216,12 +214,34 @@ const AdminSettings = () => {
                 </Select>
               </div>
             </div>
-            <div className="mt-6 flex justify-end">
-              <Button onClick={handleSave} disabled={saving} className="gap-2">
-                <Save size={16} />
-                {saving ? "Saving..." : "Save Changes"}
-              </Button>
+          </div>
+
+          {/* Social Links */}
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-lg font-bold text-foreground mb-4">Social Links</h2>
+            <p className="text-xs text-muted-foreground mb-4">These will be displayed on your organizer profile.</p>
+            <div className="space-y-4">
+              <div>
+                <Label className="flex items-center gap-2"><Linkedin size={16} className="text-[#0A66C2]" /> LinkedIn</Label>
+                <Input value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/yourprofile" />
+              </div>
+              <div>
+                <Label className="flex items-center gap-2"><Instagram size={16} className="text-[#E4405F]" /> Instagram</Label>
+                <Input value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} placeholder="https://instagram.com/yourprofile" />
+              </div>
+              <div>
+                <Label className="flex items-center gap-2"><Facebook size={16} className="text-[#1877F2]" /> Facebook</Label>
+                <Input value={facebookUrl} onChange={(e) => setFacebookUrl(e.target.value)} placeholder="https://facebook.com/yourprofile" />
+              </div>
             </div>
+          </div>
+
+          {/* Save */}
+          <div className="flex justify-end pb-8">
+            <Button onClick={handleSave} disabled={saving} className="gap-2">
+              <Save size={16} />
+              {saving ? "Saving..." : "Save Changes"}
+            </Button>
           </div>
         </div>
       </main>
