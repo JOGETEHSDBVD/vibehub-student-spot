@@ -404,19 +404,19 @@ const EventMiniCard = ({ event }: { event: EventFull }) => {
   const d = new Date(event.date);
   return (
     <Link to={`/events/${event.id}`} className="group block">
-      <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
+      <div className="aspect-[4/3] overflow-hidden">
         {event.image_url ? (
           <img src={event.image_url} alt={event.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
         ) : (
-          <div className="h-full w-full bg-muted flex items-center justify-center">
-            <CalendarDays className="h-8 w-8 text-muted-foreground/30" />
+          <div className="h-full w-full bg-dark-bg-foreground/10 flex items-center justify-center">
+            <CalendarDays className="h-8 w-8 text-dark-bg-foreground/30" />
           </div>
         )}
       </div>
       <div className="mt-2">
-        <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{event.title}</h4>
+        <h4 className="text-sm font-bold text-dark-bg-foreground group-hover:text-primary transition-colors">{event.title}</h4>
         {event.location && (
-          <p className="text-xs text-muted-foreground">{event.location}</p>
+          <p className="text-xs text-dark-bg-foreground/50">{event.location}</p>
         )}
         <p className="text-xs font-semibold text-primary mt-0.5">
           {d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} | {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
