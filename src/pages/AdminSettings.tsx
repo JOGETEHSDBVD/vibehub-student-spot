@@ -122,29 +122,6 @@ const AdminSettings = () => {
         </div>
 
         <div className="mx-auto max-w-2xl space-y-8">
-          {/* Cover Photo */}
-          <div className="rounded-xl border border-border bg-card p-6">
-            <h2 className="text-lg font-bold text-foreground mb-4">Cover Photo</h2>
-            <div className="relative">
-              {coverUrl ? (
-                <img src={coverUrl} alt="Cover" className="w-full h-40 rounded-lg object-cover border border-border" />
-              ) : (
-                <div className="w-full h-40 rounded-lg bg-muted flex items-center justify-center border border-border">
-                  <Image className="h-10 w-10 text-muted-foreground/40" />
-                </div>
-              )}
-              <button
-                onClick={() => coverInputRef.current?.click()}
-                disabled={uploadingCover}
-                className="absolute bottom-3 right-3 flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-md hover:bg-primary/90 transition-colors"
-              >
-                <Camera size={14} />
-                {uploadingCover ? "Uploading..." : "Change Cover"}
-              </button>
-              <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">Recommended: 1200×400px. Max 10MB.</p>
-          </div>
 
           {/* Profile Picture */}
           <div className="rounded-xl border border-border bg-card p-6">
