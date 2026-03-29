@@ -91,7 +91,6 @@ const Index = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/85 via-foreground/60 to-foreground/30" />
           {/* Decorative shapes */}
-          <div className="absolute top-1/3 right-1/4 w-24 h-24 border-[3px] border-orange-400 rounded-full hidden lg:block" />
           <div className="absolute bottom-12 right-12 w-10 h-10 bg-primary/40 rounded-full hidden lg:block" />
 
           <div className="relative z-10 h-full flex items-center px-6 lg:px-20">
