@@ -7,6 +7,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface EventFull {
   id: string;
@@ -39,6 +49,7 @@ const EventDetail = () => {
   const [hasJoined, setHasJoined] = useState(false);
   const [joining, setJoining] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
 
   // Fetch event
   useEffect(() => {
@@ -105,22 +116,30 @@ const EventDetail = () => {
   const handleParticipate = async () => {
     if (!user) { toast.error("Please sign in to participate"); return; }
     if (!id) return;
-    setJoining(true);
     if (hasJoined) {
-      await supabase.from("event_participants").delete().eq("event_id", id).eq("user_id", user.id);
-      setHasJoined(false);
-      setParticipantCount((c) => c - 1);
-      toast.success("You left the event");
-    } else {
-      const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id });
-      if (!error) {
-        setHasJoined(true);
-        setParticipantCount((c) => c + 1);
-        toast.success("You joined the event!");
-      } else {
-        toast.error("Failed to join");
-      }
+      setShowLeaveDialog(true);
+      return;
     }
+    setJoining(true);
+    const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id });
+    if (!error) {
+      setHasJoined(true);
+      setParticipantCount((c) => c + 1);
+      toast.success("You joined the event!");
+    } else {
+      toast.error("Failed to join");
+    }
+    setJoining(false);
+  };
+
+  const handleLeaveConfirm = async () => {
+    if (!user || !id) return;
+    setShowLeaveDialog(false);
+    setJoining(true);
+    await supabase.from("event_participants").delete().eq("event_id", id).eq("user_id", user.id);
+    setHasJoined(false);
+    setParticipantCount((c) => c - 1);
+    toast.success("You left the event");
     setJoining(false);
   };
 
@@ -360,6 +379,21 @@ const EventDetail = () => {
             </div>
           </div>
         )}
+
+        <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Leave this event?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to leave "{event.title}"? You can always join again later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>No, stay</AlertDialogCancel>
+              <AlertDialogAction onClick={handleLeaveConfirm}>Yes, leave</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
       <Footer />
     </div>
