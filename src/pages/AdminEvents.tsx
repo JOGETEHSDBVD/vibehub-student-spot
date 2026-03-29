@@ -19,6 +19,7 @@ interface EventRow {
   title: string;
   description: string | null;
   date: string;
+  end_time: string | null;
   location: string | null;
   image_url: string | null;
   category: string | null;
