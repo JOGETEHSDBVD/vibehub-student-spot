@@ -37,7 +37,7 @@ const OrganizerProfile = () => {
     if (!id) return;
     const fetch = async () => {
       const [{ data: prof }, { data: evts }] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, avatar_url, pole, member_type").eq("id", id).single(),
+        supabase.from("profiles").select("id, full_name, avatar_url, cover_url, pole, member_type, linkedin_url, instagram_url, facebook_url").eq("id", id).single(),
         supabase.from("events").select("id, title, date, location, image_url, category, tags").eq("created_by", id).eq("is_published", true).order("date", { ascending: false }),
       ]);
       setOrganizer(prof as OrganizerData | null);
