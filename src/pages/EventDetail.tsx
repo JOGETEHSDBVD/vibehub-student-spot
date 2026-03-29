@@ -208,12 +208,12 @@ const EventDetail = () => {
       <main className="flex-1 relative z-10">
         {/* Breadcrumb */}
         <div className="max-w-5xl mx-auto px-4 pt-8">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+          <div className="flex items-center gap-2 text-sm text-dark-bg-foreground/50">
+            <Link to="/" className="hover:text-dark-bg-foreground transition-colors">Home</Link>
             <span>›</span>
-            <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
+            <Link to="/events" className="hover:text-dark-bg-foreground transition-colors">Events</Link>
             <span>›</span>
-            <span className="text-foreground truncate max-w-[200px]">{event.title}</span>
+            <span className="text-dark-bg-foreground truncate max-w-[200px]">{event.title}</span>
           </div>
         </div>
 
@@ -222,9 +222,9 @@ const EventDetail = () => {
           <div className="grid md:grid-cols-[1fr_1.2fr] gap-8 items-start">
             <div className="space-y-5">
               <div>
-                <h1 className="text-3xl md:text-4xl font-black text-foreground">{event.title}</h1>
+                <h1 className="text-3xl md:text-4xl font-black text-dark-bg-foreground">{event.title}</h1>
                 {organizer && (
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p className="mt-1 text-sm text-dark-bg-foreground/50">
                     By{" "}
                     <Link to={`/organizer/${organizer.id}`} className="font-semibold text-primary hover:underline">
                       {organizer.full_name ?? "Unknown Organizer"}
@@ -239,7 +239,7 @@ const EventDetail = () => {
                   <p className="text-sm font-semibold text-primary">
                     {d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                   <p className="text-sm text-dark-bg-foreground/50">
                     {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                   </p>
                 </div>
@@ -249,13 +249,13 @@ const EventDetail = () => {
               {event.location && (
                 <div className="flex items-start gap-3">
                   <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
-                  <p className="text-sm text-foreground">{event.location}</p>
+                  <p className="text-sm text-dark-bg-foreground">{event.location}</p>
                 </div>
               )}
 
               {/* Category */}
               {event.category && (
-                <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase text-muted-foreground">
+                <span className="inline-block rounded-full border border-dark-bg-foreground/20 px-3 py-1 text-xs font-semibold uppercase text-dark-bg-foreground/60">
                   {event.category}
                 </span>
               )}
@@ -264,7 +264,7 @@ const EventDetail = () => {
               {event.tags && event.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {event.tags.map((tag) => (
-                    <span key={tag} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] font-medium uppercase text-muted-foreground">
+                    <span key={tag} className="rounded-full border border-dark-bg-foreground/20 px-2.5 py-0.5 text-[11px] font-medium uppercase text-dark-bg-foreground/60">
                       {tag}
                     </span>
                   ))}
@@ -272,8 +272,8 @@ const EventDetail = () => {
               )}
 
               {/* Participants count */}
-              <p className="text-sm text-muted-foreground">
-                <span className="font-bold text-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
+              <p className="text-sm text-dark-bg-foreground/50">
+                <span className="font-bold text-dark-bg-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
               </p>
 
               {/* Action buttons */}
@@ -291,12 +291,12 @@ const EventDetail = () => {
               )}
 
               {isPast && (
-                <p className="text-sm font-medium text-muted-foreground italic">This event has ended.</p>
+                <p className="text-sm font-medium text-dark-bg-foreground/50 italic">This event has ended.</p>
               )}
             </div>
 
             {/* Right image */}
-            <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
+            <div className="aspect-[4/3] overflow-hidden">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="h-full w-full object-cover" />
               ) : (
@@ -310,8 +310,8 @@ const EventDetail = () => {
 
         {/* Description */}
         <div className="max-w-5xl mx-auto px-4 pb-10">
-          <div className="border-t border-border pt-8">
-            <h2 className="text-xl font-black text-foreground mb-4">Description</h2>
+          <div className="border-t border-dark-bg-foreground/10 pt-8">
+            <h2 className="text-xl font-black text-dark-bg-foreground mb-4">Description</h2>
             {event.description ? (
               <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap max-w-2xl">
                 {event.description}
