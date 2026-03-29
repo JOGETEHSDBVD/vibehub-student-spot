@@ -150,7 +150,7 @@ const EventDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
         <Navbar />
         <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-12">
           <div className="animate-pulse space-y-6">
@@ -173,7 +173,7 @@ const EventDetail = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -190,30 +190,30 @@ const EventDetail = () => {
   const isPast = d < now;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground relative">
       <Navbar />
 
       {/* Blurred background from event image */}
       {event.image_url && (
-        <div className="absolute top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden h-[500px]">
+      <div className="absolute top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden h-[500px]">
           <img
             src={event.image_url}
             alt=""
             className="h-full w-full object-cover blur-[120px] scale-125 opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dark-bg/60 to-dark-bg" />
         </div>
       )}
 
       <main className="flex-1 relative z-10">
         {/* Breadcrumb */}
         <div className="max-w-5xl mx-auto px-4 pt-8">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+          <div className="flex items-center gap-2 text-sm text-dark-bg-foreground/50">
+            <Link to="/" className="hover:text-dark-bg-foreground transition-colors">Home</Link>
             <span>›</span>
-            <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
+            <Link to="/events" className="hover:text-dark-bg-foreground transition-colors">Events</Link>
             <span>›</span>
-            <span className="text-foreground truncate max-w-[200px]">{event.title}</span>
+            <span className="text-dark-bg-foreground truncate max-w-[200px]">{event.title}</span>
           </div>
         </div>
 
@@ -222,9 +222,9 @@ const EventDetail = () => {
           <div className="grid md:grid-cols-[1fr_1.2fr] gap-8 items-start">
             <div className="space-y-5">
               <div>
-                <h1 className="text-3xl md:text-4xl font-black text-foreground">{event.title}</h1>
+                <h1 className="text-3xl md:text-4xl font-black text-dark-bg-foreground">{event.title}</h1>
                 {organizer && (
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p className="mt-1 text-sm text-dark-bg-foreground/50">
                     By{" "}
                     <Link to={`/organizer/${organizer.id}`} className="font-semibold text-primary hover:underline">
                       {organizer.full_name ?? "Unknown Organizer"}
@@ -239,7 +239,7 @@ const EventDetail = () => {
                   <p className="text-sm font-semibold text-primary">
                     {d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                   <p className="text-sm text-dark-bg-foreground/50">
                     {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                   </p>
                 </div>
@@ -249,13 +249,13 @@ const EventDetail = () => {
               {event.location && (
                 <div className="flex items-start gap-3">
                   <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
-                  <p className="text-sm text-foreground">{event.location}</p>
+                  <p className="text-sm text-dark-bg-foreground">{event.location}</p>
                 </div>
               )}
 
               {/* Category */}
               {event.category && (
-                <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase text-muted-foreground">
+                <span className="inline-block rounded-full border border-dark-bg-foreground/20 px-3 py-1 text-xs font-semibold uppercase text-dark-bg-foreground/60">
                   {event.category}
                 </span>
               )}
@@ -264,7 +264,7 @@ const EventDetail = () => {
               {event.tags && event.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {event.tags.map((tag) => (
-                    <span key={tag} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] font-medium uppercase text-muted-foreground">
+                    <span key={tag} className="rounded-full border border-dark-bg-foreground/20 px-2.5 py-0.5 text-[11px] font-medium uppercase text-dark-bg-foreground/60">
                       {tag}
                     </span>
                   ))}
@@ -272,8 +272,8 @@ const EventDetail = () => {
               )}
 
               {/* Participants count */}
-              <p className="text-sm text-muted-foreground">
-                <span className="font-bold text-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
+              <p className="text-sm text-dark-bg-foreground/50">
+                <span className="font-bold text-dark-bg-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
               </p>
 
               {/* Action buttons */}
@@ -291,12 +291,12 @@ const EventDetail = () => {
               )}
 
               {isPast && (
-                <p className="text-sm font-medium text-muted-foreground italic">This event has ended.</p>
+                <p className="text-sm font-medium text-dark-bg-foreground/50 italic">This event has ended.</p>
               )}
             </div>
 
             {/* Right image */}
-            <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
+            <div className="aspect-[4/3] overflow-hidden">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="h-full w-full object-cover" />
               ) : (
@@ -310,14 +310,14 @@ const EventDetail = () => {
 
         {/* Description */}
         <div className="max-w-5xl mx-auto px-4 pb-10">
-          <div className="border-t border-border pt-8">
-            <h2 className="text-xl font-black text-foreground mb-4">Description</h2>
+          <div className="border-t border-dark-bg-foreground/10 pt-8">
+            <h2 className="text-xl font-black text-dark-bg-foreground mb-4">Description</h2>
             {event.description ? (
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap max-w-2xl">
+              <p className="text-sm text-dark-bg-foreground/60 leading-relaxed whitespace-pre-wrap max-w-2xl">
                 {event.description}
               </p>
             ) : (
-              <p className="text-sm text-muted-foreground italic">No description provided.</p>
+              <p className="text-sm text-dark-bg-foreground/50 italic">No description provided.</p>
             )}
           </div>
         </div>
@@ -325,25 +325,25 @@ const EventDetail = () => {
         {/* Organizer */}
         {organizer && (
           <div className="max-w-5xl mx-auto px-4 pb-10">
-            <div className="border-t border-border pt-8">
-              <h2 className="text-xl font-black text-foreground mb-4">Organized By</h2>
+            <div className="border-t border-dark-bg-foreground/10 pt-8">
+              <h2 className="text-xl font-black text-dark-bg-foreground mb-4">Organized By</h2>
               <Link
                 to={`/organizer/${organizer.id}`}
                 className="flex items-center gap-4 group"
               >
                 {organizer.avatar_url ? (
-                  <img src={organizer.avatar_url} alt="" className="h-14 w-14 rounded-full object-cover border-2 border-border group-hover:border-primary transition-colors" />
+                  <img src={organizer.avatar_url} alt="" className="h-14 w-14 rounded-full object-cover border-2 border-dark-bg-foreground/20 group-hover:border-primary transition-colors" />
                 ) : (
-                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border-2 border-border group-hover:border-primary transition-colors">
+                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border-2 border-dark-bg-foreground/20 group-hover:border-primary transition-colors">
                     <User size={24} className="text-primary" />
                   </div>
                 )}
                 <div>
-                  <p className="font-bold text-foreground group-hover:text-primary transition-colors">
+                  <p className="font-bold text-dark-bg-foreground group-hover:text-primary transition-colors">
                     {organizer.full_name ?? "Unknown Organizer"}
                   </p>
                   {organizer.pole && (
-                    <p className="text-xs text-muted-foreground">{organizer.pole}</p>
+                    <p className="text-xs text-dark-bg-foreground/50">{organizer.pole}</p>
                   )}
                 </div>
               </Link>
@@ -354,10 +354,10 @@ const EventDetail = () => {
         {/* Organizer's other events */}
         {(upcomingOrgEvents.length > 0 || pastOrgEvents.length > 0) && (
           <div className="max-w-5xl mx-auto px-4 pb-16">
-            <div className="border-t border-border pt-8">
+            <div className="border-t border-dark-bg-foreground/10 pt-8">
               {upcomingOrgEvents.length > 0 && (
                 <div className="mb-10">
-                  <h2 className="text-lg font-black uppercase tracking-wide text-foreground mb-6">Upcoming Events</h2>
+                  <h2 className="text-lg font-black uppercase tracking-wide text-dark-bg-foreground mb-6">Upcoming Events</h2>
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {upcomingOrgEvents.map((e) => (
                       <EventMiniCard key={e.id} event={e} />
@@ -368,7 +368,7 @@ const EventDetail = () => {
 
               {pastOrgEvents.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-black uppercase tracking-wide text-foreground mb-6">Past Events</h2>
+                  <h2 className="text-lg font-black uppercase tracking-wide text-dark-bg-foreground mb-6">Past Events</h2>
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {pastOrgEvents.map((e) => (
                       <EventMiniCard key={e.id} event={e} />
@@ -404,19 +404,19 @@ const EventMiniCard = ({ event }: { event: EventFull }) => {
   const d = new Date(event.date);
   return (
     <Link to={`/events/${event.id}`} className="group block">
-      <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
+      <div className="aspect-[4/3] overflow-hidden">
         {event.image_url ? (
           <img src={event.image_url} alt={event.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
         ) : (
-          <div className="h-full w-full bg-muted flex items-center justify-center">
-            <CalendarDays className="h-8 w-8 text-muted-foreground/30" />
+          <div className="h-full w-full bg-dark-bg-foreground/10 flex items-center justify-center">
+            <CalendarDays className="h-8 w-8 text-dark-bg-foreground/30" />
           </div>
         )}
       </div>
       <div className="mt-2">
-        <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{event.title}</h4>
+        <h4 className="text-sm font-bold text-dark-bg-foreground group-hover:text-primary transition-colors">{event.title}</h4>
         {event.location && (
-          <p className="text-xs text-muted-foreground">{event.location}</p>
+          <p className="text-xs text-dark-bg-foreground/50">{event.location}</p>
         )}
         <p className="text-xs font-semibold text-primary mt-0.5">
           {d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} | {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}

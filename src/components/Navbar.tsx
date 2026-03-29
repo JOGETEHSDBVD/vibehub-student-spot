@@ -42,13 +42,15 @@ const Navbar = () => {
     }
   };
 
+  const isDarkPage = location.pathname === "/events" || location.pathname.startsWith("/events/");
+
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-background/80 backdrop-blur-md px-8 lg:px-24 py-5">
+      <header className={`sticky top-0 z-50 w-full border-b px-8 lg:px-24 py-5 ${isDarkPage ? "border-dark-bg-foreground/10 bg-dark-bg/90 backdrop-blur-md" : "border-primary/20 bg-background/80 backdrop-blur-md"}`}>
         <div className="mx-auto max-w-7xl flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <img src={logoCmc} alt="CMC Logo" className="h-12 w-auto object-contain" />
-            <h2 className="font-display text-3xl font-black tracking-tight text-foreground">VibeHub</h2>
+            <h2 className={`font-display text-3xl font-black tracking-tight ${isDarkPage ? "text-dark-bg-foreground" : "text-foreground"}`}>VibeHub</h2>
           </Link>
           <nav className="hidden md:flex items-center gap-12">
             {navLinks.map((link) => (
@@ -58,7 +60,7 @@ const Navbar = () => {
                 className={`text-base font-semibold transition-colors ${
                   location.pathname === link.to
                     ? "text-primary"
-                    : "text-foreground hover:text-primary"
+                    : isDarkPage ? "text-dark-bg-foreground hover:text-primary" : "text-foreground hover:text-primary"
                 }`}
               >
                 {link.label}
@@ -71,7 +73,7 @@ const Navbar = () => {
                 {isAdmin && (
                   <Link
                     to="/admin"
-                    className="flex items-center gap-1 text-sm font-bold uppercase tracking-wide text-foreground hover:text-primary transition-colors"
+                    className={`flex items-center gap-1 text-sm font-bold uppercase tracking-wide transition-colors ${isDarkPage ? "text-dark-bg-foreground hover:text-primary" : "text-foreground hover:text-primary"}`}
                   >
                     I'm an Organizer
                     <ExternalLink size={14} />

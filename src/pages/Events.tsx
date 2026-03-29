@@ -71,7 +71,7 @@ const Events = () => {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-[4/3] rounded-xl bg-dark-bg-foreground/10" />
+                <div className="aspect-[4/3] bg-dark-bg-foreground/10" />
                 <div className="mt-3 space-y-2">
                   <div className="h-4 w-3/4 bg-dark-bg-foreground/10 rounded" />
                   <div className="h-3 w-1/2 bg-dark-bg-foreground/10 rounded" />
@@ -97,7 +97,7 @@ const Events = () => {
                     className="group block"
                   >
                     {/* Image */}
-                    <div className="aspect-[4/3] overflow-hidden rounded-xl">
+                    <div className="aspect-[4/3] overflow-hidden">
                       {e.image_url ? (
                         <img
                           src={e.image_url}
