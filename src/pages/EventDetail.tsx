@@ -49,6 +49,7 @@ const EventDetail = () => {
   const [hasJoined, setHasJoined] = useState(false);
   const [joining, setJoining] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
 
   // Fetch event
   useEffect(() => {
