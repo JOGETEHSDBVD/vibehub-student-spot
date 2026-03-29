@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { CalendarDays, User } from "lucide-react";
+import { CalendarDays, User, Linkedin, Instagram, Facebook } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +9,12 @@ interface OrganizerData {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
   pole: string | null;
   member_type: string | null;
+  linkedin_url: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
 }
 
 interface OrgEvent {
