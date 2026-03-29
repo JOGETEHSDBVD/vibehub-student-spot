@@ -4,8 +4,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AuthModal from "@/components/AuthModal";
 import heroBuilding from "@/assets/hero-building.png";
+import story1 from "@/assets/story-1.jpg";
+import story2 from "@/assets/story-2.jpg";
+import story3 from "@/assets/story-3.jpg";
+import story4 from "@/assets/story-4.jpg";
+import story5 from "@/assets/story-5.jpg";
 import { supabase } from "@/integrations/supabase/client";
-import { CalendarDays, MapPin, Rocket, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, MapPin, Rocket } from "lucide-react";
 
 interface EventItem {
   id: string;
