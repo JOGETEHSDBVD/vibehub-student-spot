@@ -99,8 +99,15 @@ const OrganizerProfile = () => {
           <span className="text-foreground">{organizer.full_name ?? "Organizer"}</span>
         </div>
 
+        {/* Cover Photo */}
+        {organizer.cover_url && (
+          <div className="rounded-xl overflow-hidden border border-border mb-8">
+            <img src={organizer.cover_url} alt="" className="w-full h-48 md:h-64 object-cover" />
+          </div>
+        )}
+
         {/* Organizer header */}
-        <div className="flex items-center gap-5 mb-12">
+        <div className="flex items-center gap-5 mb-4">
           {organizer.avatar_url ? (
             <img src={organizer.avatar_url} alt="" className="h-24 w-24 rounded-full object-cover border-2 border-border" />
           ) : (
@@ -116,6 +123,29 @@ const OrganizerProfile = () => {
             <p className="text-xs text-muted-foreground mt-1">{events.length} event{events.length !== 1 ? "s" : ""}</p>
           </div>
         </div>
+
+        {/* Social Links */}
+        {(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && (
+          <div className="flex items-center gap-3 mb-12">
+            {organizer.linkedin_url && (
+              <a href={organizer.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                <Linkedin size={14} className="text-[#0A66C2]" /> LinkedIn
+              </a>
+            )}
+            {organizer.instagram_url && (
+              <a href={organizer.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                <Instagram size={14} className="text-[#E4405F]" /> Instagram
+              </a>
+            )}
+            {organizer.facebook_url && (
+              <a href={organizer.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                <Facebook size={14} className="text-[#1877F2]" /> Facebook
+              </a>
+            )}
+          </div>
+        )}
+
+        {!(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && <div className="mb-12" />}
 
         {/* Upcoming Events */}
         {upcoming.length > 0 && (
