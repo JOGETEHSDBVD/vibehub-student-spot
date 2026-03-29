@@ -10,6 +10,7 @@ import Admin from "./pages/Admin.tsx";
 import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminActiveEvents from "./pages/AdminActiveEvents.tsx";
 import AdminMembers from "./pages/AdminMembers.tsx";
+import AdminPastEvents from "./pages/AdminPastEvents.tsx";
 import AdminAnalytics from "./pages/AdminAnalytics.tsx";
 import AdminAnnouncements from "./pages/AdminAnnouncements.tsx";
 import AdminSettings from "./pages/AdminSettings.tsx";
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/events" element={<AdminEvents />} />
               <Route path="/admin/active-events" element={<AdminActiveEvents />} />
+              <Route path="/admin/past-events" element={<AdminPastEvents />} />
               <Route path="/admin/members" element={<AdminMembers />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/announcements" element={<AdminAnnouncements />} />
