@@ -142,36 +142,48 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          cover_url: string | null
           created_at: string
           email: string | null
+          facebook_url: string | null
           filiere: string | null
           full_name: string | null
           id: string
+          instagram_url: string | null
           is_banned: boolean
+          linkedin_url: string | null
           member_type: string | null
           pole: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          cover_url?: string | null
           created_at?: string
           email?: string | null
+          facebook_url?: string | null
           filiere?: string | null
           full_name?: string | null
           id: string
+          instagram_url?: string | null
           is_banned?: boolean
+          linkedin_url?: string | null
           member_type?: string | null
           pole?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          cover_url?: string | null
           created_at?: string
           email?: string | null
+          facebook_url?: string | null
           filiere?: string | null
           full_name?: string | null
           id?: string
+          instagram_url?: string | null
           is_banned?: boolean
+          linkedin_url?: string | null
           member_type?: string | null
           pole?: string | null
           updated_at?: string
