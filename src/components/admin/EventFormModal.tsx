@@ -375,14 +375,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
                       )}
                       onClick={() => setActiveImageIndex(activeImageIndex === i ? null : i)}
                     >
-                      <img
-                        src={img.url}
-                        alt={`Image ${i + 1}`}
-                        className="h-full w-full object-cover"
-                        style={{
-                          transform: `scale(${img.zoom}) translate(${img.offsetX}%, ${img.offsetY}%)`,
-                        }}
-                      />
+                      <img src={img.url} alt={`Image ${i + 1}`} className="h-full w-full object-cover" />
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); removeImage(i); }}
@@ -400,59 +393,30 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
                 </div>
               )}
 
-              {/* Image adjustment panel */}
+              {/* Image preview panel */}
               {activeImageIndex !== null && images[activeImageIndex] && (
                 <div className="rounded-md border border-border p-3 space-y-3 bg-muted/30">
-                  <p className="text-xs font-medium text-foreground flex items-center gap-1">
-                    <Move size={12} /> Adjust Image {activeImageIndex + 1}
+                  <p className="text-xs font-medium text-foreground">
+                    Preview — Image {activeImageIndex + 1}
                   </p>
-                  {/* Preview */}
                   <div className="relative w-full aspect-video rounded-md overflow-hidden border border-border bg-muted">
                     <img
                       src={images[activeImageIndex].url}
                       alt="Preview"
-                      className="h-full w-full object-cover transition-transform"
-                      style={{
-                        transform: `scale(${images[activeImageIndex].zoom}) translate(${images[activeImageIndex].offsetX}%, ${images[activeImageIndex].offsetY}%)`,
-                      }}
+                      className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <ZoomOut size={14} className="text-muted-foreground" />
-                      <Slider
-                        value={[images[activeImageIndex].zoom]}
-                        onValueChange={([v]) => updateImageZoom(activeImageIndex, v)}
-                        min={1}
-                        max={3}
-                        step={0.05}
-                        className="flex-1"
-                      />
-                      <ZoomIn size={14} className="text-muted-foreground" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground w-6">X</span>
-                      <Slider
-                        value={[images[activeImageIndex].offsetX]}
-                        onValueChange={([v]) => updateImageOffset(activeImageIndex, "offsetX", v)}
-                        min={-30}
-                        max={30}
-                        step={1}
-                        className="flex-1"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground w-6">Y</span>
-                      <Slider
-                        value={[images[activeImageIndex].offsetY]}
-                        onValueChange={([v]) => updateImageOffset(activeImageIndex, "offsetY", v)}
-                        min={-30}
-                        max={30}
-                        step={1}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
+                  {activeImageIndex !== 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full gap-1.5 text-xs"
+                      onClick={() => setAsMain(activeImageIndex)}
+                    >
+                      <Star size={12} /> Set as main image
+                    </Button>
+                  )}
                 </div>
               )}
 
