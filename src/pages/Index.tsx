@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AuthModal from "@/components/AuthModal";
 import heroBuilding from "@/assets/hero-building.png";
 import { supabase } from "@/integrations/supabase/client";
-import { CalendarDays, MapPin, Rocket } from "lucide-react";
+import { CalendarDays, MapPin, Rocket, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface EventItem {
   id: string;
@@ -19,10 +19,20 @@ interface EventItem {
   tags: string[] | null;
 }
 
+interface StoryEvent {
+  id: string;
+  title: string;
+  image_url: string | null;
+  category: string | null;
+  date: string;
+}
+
 const Index = () => {
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
+  const [stories, setStories] = useState<StoryEvent[]>([]);
+  const storiesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -35,7 +45,20 @@ const Index = () => {
       setEvents((data as EventItem[]) ?? []);
       setEventsLoading(false);
     };
+
+    const fetchStories = async () => {
+      const { data } = await supabase
+        .from("events")
+        .select("id, title, image_url, category, date")
+        .eq("is_published", true)
+        .lt("date", new Date().toISOString())
+        .order("date", { ascending: false })
+        .limit(10);
+      setStories((data as StoryEvent[]) ?? []);
+    };
+
     fetchEvents();
+    fetchStories();
   }, []);
 
   const formatDateRange = (date: string, endTime: string | null) => {
