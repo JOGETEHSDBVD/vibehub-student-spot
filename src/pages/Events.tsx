@@ -99,23 +99,23 @@ const Events = () => {
                   </div>
 
                   {/* Info */}
-                  <div className="mt-3">
+                  <div className="mt-3 space-y-1">
                     <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
                       {e.title}
                     </h3>
                     {e.location && (
-                      <p className="mt-0.5 text-sm text-muted-foreground flex items-center gap-1">
+                      <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <MapPin size={13} className="shrink-0" />
                         {e.location}
                       </p>
                     )}
-                    <p className="mt-1 text-sm font-semibold text-primary">
+                    <p className="text-sm font-semibold text-primary">
                       {dt.weekday}, {dt.month} {dt.day} | {dt.time}
                     </p>
 
                     {/* Tags */}
                     {e.tags && e.tags.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
+                      <div className="pt-1 flex flex-wrap gap-1.5">
                         {e.tags.map((tag) => (
                           <span
                             key={tag}
