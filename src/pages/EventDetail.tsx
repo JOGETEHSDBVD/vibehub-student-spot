@@ -200,19 +200,19 @@ const EventDetail = () => {
 
         {/* Hero section */}
         <div className="max-w-5xl mx-auto px-4 pt-6 pb-10">
-          <h1 className="text-3xl md:text-4xl font-black text-foreground">{event.title}</h1>
-          {organizer && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              By{" "}
-              <Link to={`/organizer/${organizer.id}`} className="font-semibold text-primary hover:underline">
-                {organizer.full_name ?? "Unknown Organizer"}
-              </Link>
-            </p>
-          )}
-
-          <div className="mt-4 grid md:grid-cols-[1fr_1.2fr] gap-8 items-start">
-            {/* Left info */}
+          <div className="grid md:grid-cols-[1fr_1.2fr] gap-8 items-start">
             <div className="space-y-5">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black text-foreground">{event.title}</h1>
+                {organizer && (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    By{" "}
+                    <Link to={`/organizer/${organizer.id}`} className="font-semibold text-primary hover:underline">
+                      {organizer.full_name ?? "Unknown Organizer"}
+                    </Link>
+                  </p>
+                )}
+              </div>
               {/* Date */}
               <div className="flex items-start gap-3">
                 <CalendarDays size={20} className="text-primary mt-0.5 shrink-0" />
