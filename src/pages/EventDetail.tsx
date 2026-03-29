@@ -150,7 +150,7 @@ const EventDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
         <Navbar />
         <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-12">
           <div className="animate-pulse space-y-6">
@@ -173,7 +173,7 @@ const EventDetail = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -190,18 +190,18 @@ const EventDetail = () => {
   const isPast = d < now;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground relative">
       <Navbar />
 
       {/* Blurred background from event image */}
       {event.image_url && (
-        <div className="absolute top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden h-[500px]">
+      <div className="absolute top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden h-[500px]">
           <img
             src={event.image_url}
             alt=""
             className="h-full w-full object-cover blur-[120px] scale-125 opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dark-bg/60 to-dark-bg" />
         </div>
       )}
 
