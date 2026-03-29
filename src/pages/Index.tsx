@@ -104,6 +104,23 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Statistics Bar */}
+        <section className="px-6 lg:px-20 py-12 bg-dark-bg">
+          <div className="mx-auto max-w-[1200px] grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
+            {[
+              { value: "500+", label: "Active Members" },
+              { value: "25+", label: "Annual Events" },
+              { value: "15+", label: "Skill Workshops" },
+              { value: "2k+", label: "Participants" },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center text-center gap-2">
+                <span className="text-4xl font-black text-primary">{stat.value}</span>
+                <p className="text-sm font-medium text-dark-bg-foreground uppercase tracking-widest">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Upcoming Events */}
         <section className="px-6 lg:px-20 py-20 mx-auto max-w-[1200px]" id="events">
           <div className="flex justify-between items-end mb-12">
