@@ -144,6 +144,59 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Today's Stories */}
+        {stories.length > 0 && (
+          <section className="px-6 lg:px-20 py-16 mx-auto max-w-[1200px]">
+            <div className="flex justify-between items-end mb-8">
+              <div>
+                <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">Today's Stories</h2>
+                <p className="text-muted-foreground">Catch the buzz before it's gone.</p>
+              </div>
+              <Link to="/events" className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors">
+                View All Stories <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </Link>
+            </div>
+            <div className="relative">
+              <div
+                ref={storiesRef}
+                className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"
+                style={{ scrollBehavior: "smooth" }}
+              >
+                {stories.map((story) => (
+                  <Link
+                    key={story.id}
+                    to={`/events/${story.id}`}
+                    className="flex-shrink-0 w-[160px] md:w-[180px] group"
+                  >
+                    <div className="relative h-[240px] md:h-[280px] rounded-2xl overflow-hidden border-[3px] border-primary/30 hover:border-primary transition-colors">
+                      {story.image_url ? (
+                        <img
+                          src={story.image_url}
+                          alt={story.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-dark-bg flex items-center justify-center">
+                          <CalendarDays className="h-8 w-8 text-primary/40" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
+                      {story.category && (
+                        <span className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded">
+                          {story.category}
+                        </span>
+                      )}
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <p className="text-xs font-bold text-primary-foreground leading-tight line-clamp-2">{story.title}</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Upcoming Events */}
         <section className="px-6 lg:px-20 py-20 mx-auto max-w-[1200px]" id="events">
           <div className="flex justify-between items-end mb-12">
