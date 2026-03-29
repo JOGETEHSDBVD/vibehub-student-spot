@@ -77,7 +77,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
           .eq("event_id", event.id)
           .eq("media_type", "image");
         if (data && data.length > 0) {
-          setImages(data.map((m) => ({ url: m.url, zoom: 1, offsetX: 0, offsetY: 0 })));
+          setImages(data.map((m) => ({ url: m.url })));
         }
       };
       loadMedia();
@@ -86,7 +86,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
     if (event?.image_url) {
       setImages((prev) => {
         if (prev.some((p) => p.url === event.image_url)) return prev;
-        return [{ url: event.image_url!, zoom: 1, offsetX: 0, offsetY: 0 }, ...prev];
+        return [{ url: event.image_url! }, ...prev];
       });
     }
   }, [isEditing, event?.id, event?.image_url]);
@@ -122,9 +122,6 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
     const newImages: ImageItem[] = Array.from(files).slice(0, remaining).map((file) => ({
       file,
       url: URL.createObjectURL(file),
-      zoom: 1,
-      offsetX: 0,
-      offsetY: 0,
     }));
     setImages((prev) => [...prev, ...newImages]);
   };
@@ -137,12 +134,15 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
     }
   };
 
-  const updateImageZoom = (index: number, zoom: number) => {
-    setImages((prev) => prev.map((img, i) => i === index ? { ...img, zoom } : img));
-  };
-
-  const updateImageOffset = (index: number, axis: "offsetX" | "offsetY", value: number) => {
-    setImages((prev) => prev.map((img, i) => i === index ? { ...img, [axis]: value } : img));
+  const setAsMain = (index: number) => {
+    if (index === 0) return;
+    setImages((prev) => {
+      const newArr = [...prev];
+      const [item] = newArr.splice(index, 1);
+      newArr.unshift(item);
+      return newArr;
+    });
+    setActiveImageIndex(0);
   };
 
   const handleSubmit = async () => {
