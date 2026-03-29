@@ -150,72 +150,77 @@ const Index = () => {
         </section>
 
         {/* Today's Stories */}
-        <section className="px-6 lg:px-20 py-16 mx-auto max-w-[1200px]">
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">Today's Stories</h2>
-              <p className="text-muted-foreground">Catch the buzz before it's gone.</p>
+        <section className="px-6 lg:px-20 pt-16 pb-8 bg-secondary/50">
+          <div className="mx-auto max-w-[1200px]">
+            <div className="flex justify-between items-end mb-8">
+              <div>
+                <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">Today's Stories</h2>
+                <p className="text-muted-foreground">Catch the buzz before it's gone.</p>
+              </div>
+              <Link to="/events" className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors">
+                View All Stories <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </Link>
             </div>
-            <Link to="/events" className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors">
-              View All Stories <span className="material-symbols-outlined text-sm">arrow_forward</span>
-            </Link>
-          </div>
-          <div className="relative">
-            <div
-              ref={storiesRef}
-              className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"
-              style={{ scrollBehavior: "smooth" }}
-            >
-              {(stories.length > 0
-                ? stories.map((story) => ({
-                    id: story.id,
-                    title: story.title,
-                    image: story.image_url,
-                    category: story.category,
-                    link: `/events/${story.id}`,
-                  }))
-                : [
-                    { id: "p1", title: "Athas Hackathon: Final 3 Hours!", image: story1, category: "TRENDING", link: "#" },
-                    { id: "p2", title: "Pizza & Politics in the Courtyard", image: story2, category: "CLUB MEET", link: "#" },
-                    { id: "p3", title: "Jazz Night at the Hub", image: story3, category: "LIVE", link: "#" },
-                    { id: "p4", title: "Tech Internship Workshop", image: story4, category: "CAREER", link: "#" },
-                    { id: "p5", title: "Campus Music Festival", image: story5, category: "FESTIVAL", link: "#" },
-                  ]
-              ).map((item) => (
-                <Link
-                  key={item.id}
-                  to={item.link}
-                  className="flex-shrink-0 w-[160px] md:w-[180px] group"
-                >
-                  <div className="relative h-[240px] md:h-[280px] rounded-2xl overflow-hidden border-[3px] border-primary/30 hover:border-primary transition-colors">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-dark-bg flex items-center justify-center">
-                        <CalendarDays className="h-8 w-8 text-primary/40" />
+            <div className="relative">
+              <div
+                ref={storiesRef}
+                className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide"
+                style={{ scrollBehavior: "smooth" }}
+              >
+                {(stories.length > 0
+                  ? stories.map((story) => ({
+                      id: story.id,
+                      title: story.title,
+                      image: story.image_url,
+                      category: story.category,
+                      link: `/events/${story.id}`,
+                    }))
+                  : [
+                      { id: "p1", title: "Athas Hackathon: Final 3 Hours!", image: story1, category: "TRENDING", link: "#" },
+                      { id: "p2", title: "Pizza & Politics in the Courtyard", image: story2, category: "CLUB MEET", link: "#" },
+                      { id: "p3", title: "Jazz Night at the Hub", image: story3, category: "LIVE", link: "#" },
+                      { id: "p4", title: "Tech Internship Workshop", image: story4, category: "CAREER", link: "#" },
+                      { id: "p5", title: "Campus Music Festival", image: story5, category: "FESTIVAL", link: "#" },
+                    ]
+                ).map((item) => (
+                  <Link
+                    key={item.id}
+                    to={item.link}
+                    className="flex-shrink-0 w-[200px] md:w-[220px] group"
+                  >
+                    <div className="relative h-[270px] md:h-[300px] rounded-2xl overflow-hidden border-[3px] border-primary/30 hover:border-primary transition-colors shadow-md">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-dark-bg flex items-center justify-center">
+                          <CalendarDays className="h-8 w-8 text-primary/40" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
+                      {item.category && (
+                        <span className="absolute bottom-14 left-3 text-[9px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2.5 py-1 rounded">
+                          {item.category}
+                        </span>
+                      )}
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <p className="text-sm font-bold text-primary-foreground leading-snug line-clamp-2">{item.title}</p>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
-                    {item.category && (
-                      <span className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded">
-                        {item.category}
-                      </span>
-                    )}
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <p className="text-xs font-bold text-primary-foreground leading-tight line-clamp-2">{item.title}</p>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </section>
-        <section className="px-6 lg:px-20 py-20 mx-auto max-w-[1200px]" id="events">
+
+        {/* Upcoming Events */}
+        <section className="px-6 lg:px-20 pt-16 pb-20 bg-secondary/50">
+          <div className="mx-auto max-w-[1200px]">
           <div className="flex justify-between items-end mb-12">
             <div>
               <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">Upcoming Events</h2>
@@ -289,6 +294,7 @@ const Index = () => {
           <Link to="/events" className="md:hidden flex items-center justify-center gap-2 mt-8 text-sm font-bold text-primary">
             View All Events <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
+          </div>
         </section>
 
         {/* CTA Section */}
