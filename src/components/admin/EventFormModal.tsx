@@ -8,13 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, Upload, X, ZoomIn, ZoomOut, Move } from "lucide-react";
+import { CalendarIcon, Clock, Upload, X, Star } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
-import { Slider } from "@/components/ui/slider";
+
 
 interface EventFormModalProps {
   open: boolean;
@@ -37,9 +37,6 @@ interface EventFormModalProps {
 interface ImageItem {
   file?: File;
   url: string;
-  zoom: number;
-  offsetX: number;
-  offsetY: number;
 }
 
 const categories = ["Sports", "Culture", "Entrepreneurship"];
