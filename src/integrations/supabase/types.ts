@@ -133,6 +133,7 @@ export type Database = {
           created_by: string | null
           date: string
           description: string | null
+          end_time: string | null
           id: string
           image_url: string | null
           is_published: boolean | null
@@ -148,6 +149,7 @@ export type Database = {
           created_by?: string | null
           date: string
           description?: string | null
+          end_time?: string | null
           id?: string
           image_url?: string | null
           is_published?: boolean | null
@@ -163,6 +165,7 @@ export type Database = {
           created_by?: string | null
           date?: string
           description?: string | null
+          end_time?: string | null
           id?: string
           image_url?: string | null
           is_published?: boolean | null
