@@ -8,13 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, Upload, X, ZoomIn, ZoomOut, Move } from "lucide-react";
+import { CalendarIcon, Clock, Upload, X, Star } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
-import { Slider } from "@/components/ui/slider";
+
 
 interface EventFormModalProps {
   open: boolean;
@@ -37,9 +37,6 @@ interface EventFormModalProps {
 interface ImageItem {
   file?: File;
   url: string;
-  zoom: number;
-  offsetX: number;
-  offsetY: number;
 }
 
 const categories = ["Sports", "Culture", "Entrepreneurship"];
@@ -80,7 +77,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
           .eq("event_id", event.id)
           .eq("media_type", "image");
         if (data && data.length > 0) {
-          setImages(data.map((m) => ({ url: m.url, zoom: 1, offsetX: 0, offsetY: 0 })));
+          setImages(data.map((m) => ({ url: m.url })));
         }
       };
       loadMedia();
@@ -89,7 +86,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
     if (event?.image_url) {
       setImages((prev) => {
         if (prev.some((p) => p.url === event.image_url)) return prev;
-        return [{ url: event.image_url!, zoom: 1, offsetX: 0, offsetY: 0 }, ...prev];
+        return [{ url: event.image_url! }, ...prev];
       });
     }
   }, [isEditing, event?.id, event?.image_url]);
@@ -125,9 +122,6 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
     const newImages: ImageItem[] = Array.from(files).slice(0, remaining).map((file) => ({
       file,
       url: URL.createObjectURL(file),
-      zoom: 1,
-      offsetX: 0,
-      offsetY: 0,
     }));
     setImages((prev) => [...prev, ...newImages]);
   };
@@ -140,12 +134,15 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
     }
   };
 
-  const updateImageZoom = (index: number, zoom: number) => {
-    setImages((prev) => prev.map((img, i) => i === index ? { ...img, zoom } : img));
-  };
-
-  const updateImageOffset = (index: number, axis: "offsetX" | "offsetY", value: number) => {
-    setImages((prev) => prev.map((img, i) => i === index ? { ...img, [axis]: value } : img));
+  const setAsMain = (index: number) => {
+    if (index === 0) return;
+    setImages((prev) => {
+      const newArr = [...prev];
+      const [item] = newArr.splice(index, 1);
+      newArr.unshift(item);
+      return newArr;
+    });
+    setActiveImageIndex(0);
   };
 
   const handleSubmit = async () => {
@@ -378,14 +375,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
                       )}
                       onClick={() => setActiveImageIndex(activeImageIndex === i ? null : i)}
                     >
-                      <img
-                        src={img.url}
-                        alt={`Image ${i + 1}`}
-                        className="h-full w-full object-cover"
-                        style={{
-                          transform: `scale(${img.zoom}) translate(${img.offsetX}%, ${img.offsetY}%)`,
-                        }}
-                      />
+                      <img src={img.url} alt={`Image ${i + 1}`} className="h-full w-full object-cover" />
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); removeImage(i); }}
@@ -403,59 +393,30 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
                 </div>
               )}
 
-              {/* Image adjustment panel */}
+              {/* Image preview panel */}
               {activeImageIndex !== null && images[activeImageIndex] && (
                 <div className="rounded-md border border-border p-3 space-y-3 bg-muted/30">
-                  <p className="text-xs font-medium text-foreground flex items-center gap-1">
-                    <Move size={12} /> Adjust Image {activeImageIndex + 1}
+                  <p className="text-xs font-medium text-foreground">
+                    Preview — Image {activeImageIndex + 1}
                   </p>
-                  {/* Preview */}
                   <div className="relative w-full aspect-video rounded-md overflow-hidden border border-border bg-muted">
                     <img
                       src={images[activeImageIndex].url}
                       alt="Preview"
-                      className="h-full w-full object-cover transition-transform"
-                      style={{
-                        transform: `scale(${images[activeImageIndex].zoom}) translate(${images[activeImageIndex].offsetX}%, ${images[activeImageIndex].offsetY}%)`,
-                      }}
+                      className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <ZoomOut size={14} className="text-muted-foreground" />
-                      <Slider
-                        value={[images[activeImageIndex].zoom]}
-                        onValueChange={([v]) => updateImageZoom(activeImageIndex, v)}
-                        min={1}
-                        max={3}
-                        step={0.05}
-                        className="flex-1"
-                      />
-                      <ZoomIn size={14} className="text-muted-foreground" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground w-6">X</span>
-                      <Slider
-                        value={[images[activeImageIndex].offsetX]}
-                        onValueChange={([v]) => updateImageOffset(activeImageIndex, "offsetX", v)}
-                        min={-30}
-                        max={30}
-                        step={1}
-                        className="flex-1"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground w-6">Y</span>
-                      <Slider
-                        value={[images[activeImageIndex].offsetY]}
-                        onValueChange={([v]) => updateImageOffset(activeImageIndex, "offsetY", v)}
-                        min={-30}
-                        max={30}
-                        step={1}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
+                  {activeImageIndex !== 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full gap-1.5 text-xs"
+                      onClick={() => setAsMain(activeImageIndex)}
+                    >
+                      <Star size={12} /> Set as main image
+                    </Button>
+                  )}
                 </div>
               )}
 
