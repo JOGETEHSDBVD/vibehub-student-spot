@@ -379,6 +379,21 @@ const EventDetail = () => {
             </div>
           </div>
         )}
+
+        <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Leave this event?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to leave "{event.title}"? You can always join again later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>No, stay</AlertDialogCancel>
+              <AlertDialogAction onClick={handleLeaveConfirm}>Yes, leave</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
       <Footer />
     </div>
