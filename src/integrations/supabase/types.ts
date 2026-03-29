@@ -65,6 +65,38 @@ export type Database = {
         }
         Relationships: []
       }
+      event_media: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          media_type: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          media_type?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          media_type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_media_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_participants: {
         Row: {
           event_id: string
@@ -106,6 +138,7 @@ export type Database = {
           is_published: boolean | null
           location: string | null
           pole: string | null
+          recap: string | null
           tags: string[] | null
           title: string
         }
@@ -120,6 +153,7 @@ export type Database = {
           is_published?: boolean | null
           location?: string | null
           pole?: string | null
+          recap?: string | null
           tags?: string[] | null
           title: string
         }
@@ -134,6 +168,7 @@ export type Database = {
           is_published?: boolean | null
           location?: string | null
           pole?: string | null
+          recap?: string | null
           tags?: string[] | null
           title?: string
         }
