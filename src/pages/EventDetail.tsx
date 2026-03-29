@@ -313,11 +313,11 @@ const EventDetail = () => {
           <div className="border-t border-dark-bg-foreground/10 pt-8">
             <h2 className="text-xl font-black text-dark-bg-foreground mb-4">Description</h2>
             {event.description ? (
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap max-w-2xl">
+              <p className="text-sm text-dark-bg-foreground/60 leading-relaxed whitespace-pre-wrap max-w-2xl">
                 {event.description}
               </p>
             ) : (
-              <p className="text-sm text-muted-foreground italic">No description provided.</p>
+              <p className="text-sm text-dark-bg-foreground/50 italic">No description provided.</p>
             )}
           </div>
         </div>
@@ -325,25 +325,25 @@ const EventDetail = () => {
         {/* Organizer */}
         {organizer && (
           <div className="max-w-5xl mx-auto px-4 pb-10">
-            <div className="border-t border-border pt-8">
-              <h2 className="text-xl font-black text-foreground mb-4">Organized By</h2>
+            <div className="border-t border-dark-bg-foreground/10 pt-8">
+              <h2 className="text-xl font-black text-dark-bg-foreground mb-4">Organized By</h2>
               <Link
                 to={`/organizer/${organizer.id}`}
                 className="flex items-center gap-4 group"
               >
                 {organizer.avatar_url ? (
-                  <img src={organizer.avatar_url} alt="" className="h-14 w-14 rounded-full object-cover border-2 border-border group-hover:border-primary transition-colors" />
+                  <img src={organizer.avatar_url} alt="" className="h-14 w-14 rounded-full object-cover border-2 border-dark-bg-foreground/20 group-hover:border-primary transition-colors" />
                 ) : (
-                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border-2 border-border group-hover:border-primary transition-colors">
+                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border-2 border-dark-bg-foreground/20 group-hover:border-primary transition-colors">
                     <User size={24} className="text-primary" />
                   </div>
                 )}
                 <div>
-                  <p className="font-bold text-foreground group-hover:text-primary transition-colors">
+                  <p className="font-bold text-dark-bg-foreground group-hover:text-primary transition-colors">
                     {organizer.full_name ?? "Unknown Organizer"}
                   </p>
                   {organizer.pole && (
-                    <p className="text-xs text-muted-foreground">{organizer.pole}</p>
+                    <p className="text-xs text-dark-bg-foreground/50">{organizer.pole}</p>
                   )}
                 </div>
               </Link>
@@ -354,10 +354,10 @@ const EventDetail = () => {
         {/* Organizer's other events */}
         {(upcomingOrgEvents.length > 0 || pastOrgEvents.length > 0) && (
           <div className="max-w-5xl mx-auto px-4 pb-16">
-            <div className="border-t border-border pt-8">
+            <div className="border-t border-dark-bg-foreground/10 pt-8">
               {upcomingOrgEvents.length > 0 && (
                 <div className="mb-10">
-                  <h2 className="text-lg font-black uppercase tracking-wide text-foreground mb-6">Upcoming Events</h2>
+                  <h2 className="text-lg font-black uppercase tracking-wide text-dark-bg-foreground mb-6">Upcoming Events</h2>
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {upcomingOrgEvents.map((e) => (
                       <EventMiniCard key={e.id} event={e} />
@@ -368,7 +368,7 @@ const EventDetail = () => {
 
               {pastOrgEvents.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-black uppercase tracking-wide text-foreground mb-6">Past Events</h2>
+                  <h2 className="text-lg font-black uppercase tracking-wide text-dark-bg-foreground mb-6">Past Events</h2>
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {pastOrgEvents.map((e) => (
                       <EventMiniCard key={e.id} event={e} />
