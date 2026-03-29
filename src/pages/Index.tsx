@@ -294,6 +294,7 @@ const Index = () => {
           <Link to="/events" className="md:hidden flex items-center justify-center gap-2 mt-8 text-sm font-bold text-primary">
             View All Events <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
+          </div>
         </section>
 
         {/* CTA Section */}
