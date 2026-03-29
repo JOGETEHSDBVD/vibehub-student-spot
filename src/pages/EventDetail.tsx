@@ -116,22 +116,30 @@ const EventDetail = () => {
   const handleParticipate = async () => {
     if (!user) { toast.error("Please sign in to participate"); return; }
     if (!id) return;
-    setJoining(true);
     if (hasJoined) {
-      await supabase.from("event_participants").delete().eq("event_id", id).eq("user_id", user.id);
-      setHasJoined(false);
-      setParticipantCount((c) => c - 1);
-      toast.success("You left the event");
-    } else {
-      const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id });
-      if (!error) {
-        setHasJoined(true);
-        setParticipantCount((c) => c + 1);
-        toast.success("You joined the event!");
-      } else {
-        toast.error("Failed to join");
-      }
+      setShowLeaveDialog(true);
+      return;
     }
+    setJoining(true);
+    const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id });
+    if (!error) {
+      setHasJoined(true);
+      setParticipantCount((c) => c + 1);
+      toast.success("You joined the event!");
+    } else {
+      toast.error("Failed to join");
+    }
+    setJoining(false);
+  };
+
+  const handleLeaveConfirm = async () => {
+    if (!user || !id) return;
+    setShowLeaveDialog(false);
+    setJoining(true);
+    await supabase.from("event_participants").delete().eq("event_id", id).eq("user_id", user.id);
+    setHasJoined(false);
+    setParticipantCount((c) => c - 1);
+    toast.success("You left the event");
     setJoining(false);
   };
 
