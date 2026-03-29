@@ -115,31 +115,29 @@ const OrganizerProfile = () => {
               <p className="text-sm text-muted-foreground mt-1">{organizer.pole}</p>
             )}
             <p className="text-xs text-muted-foreground mt-1">{events.length} event{events.length !== 1 ? "s" : ""}</p>
+            {(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && (
+              <div className="flex items-center gap-2 mt-3">
+                {organizer.linkedin_url && (
+                  <a href={organizer.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                    <Linkedin size={14} className="text-[#0A66C2]" /> LinkedIn
+                  </a>
+                )}
+                {organizer.instagram_url && (
+                  <a href={organizer.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                    <Instagram size={14} className="text-[#E4405F]" /> Instagram
+                  </a>
+                )}
+                {organizer.facebook_url && (
+                  <a href={organizer.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                    <Facebook size={14} className="text-[#1877F2]" /> Facebook
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Social Links */}
-        {(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && (
-          <div className="flex items-center gap-3 mb-12">
-            {organizer.linkedin_url && (
-              <a href={organizer.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
-                <Linkedin size={14} className="text-[#0A66C2]" /> LinkedIn
-              </a>
-            )}
-            {organizer.instagram_url && (
-              <a href={organizer.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
-                <Instagram size={14} className="text-[#E4405F]" /> Instagram
-              </a>
-            )}
-            {organizer.facebook_url && (
-              <a href={organizer.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
-                <Facebook size={14} className="text-[#1877F2]" /> Facebook
-              </a>
-            )}
-          </div>
-        )}
-
-        {!(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && <div className="mb-12" />}
+        <div className="mb-12" />
 
         {/* Upcoming Events */}
         {upcoming.length > 0 && (
