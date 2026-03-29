@@ -99,12 +99,6 @@ const OrganizerProfile = () => {
           <span className="text-foreground">{organizer.full_name ?? "Organizer"}</span>
         </div>
 
-        {/* Cover Photo */}
-        {organizer.cover_url && (
-          <div className="rounded-xl overflow-hidden border border-border mb-8">
-            <img src={organizer.cover_url} alt="" className="w-full h-48 md:h-64 object-cover" />
-          </div>
-        )}
 
         {/* Organizer header */}
         <div className="flex items-center gap-5 mb-4">
