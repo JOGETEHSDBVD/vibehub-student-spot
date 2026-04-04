@@ -72,7 +72,7 @@ const Onboarding = () => {
   const handleNext = async () => {
     if (step === "role") {
       if (!selectedRole) return;
-      if (isStudent) {
+      if (needsPole) {
         setStep("pole");
       } else {
         await saveProfile();
