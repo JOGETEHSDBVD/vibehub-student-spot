@@ -303,7 +303,7 @@ const Onboarding = () => {
             disabled={!canProceed || saving}
             className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {saving ? "Enregistrement..." : step === "filiere" || !isStudent ? "Terminer" : "Suivant"}
+            {saving ? "Enregistrement..." : step === "filiere" || !needsPole ? "Terminer" : "Suivant"}
           </button>
         </div>
       </div>
