@@ -164,7 +164,7 @@ const Onboarding = () => {
   };
 
   const stepNumber = step === "role" ? 1 : step === "pole" ? 2 : 3;
-  const totalSteps = isStudent ? 3 : 1;
+  const totalSteps = needsPole ? 3 : 1;
 
   if (step === "verify-email") {
     const displayEmail = signupEmail || user?.email || localStorage.getItem("onboarding_email") || "";
