@@ -41,7 +41,7 @@ const Onboarding = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const isStudent = selectedRole === "1ere_annee" || selectedRole === "2eme_annee";
+  const needsPole = selectedRole === "1ere_annee" || selectedRole === "2eme_annee" || selectedRole === "trainer";
 
   // Listen for email confirmation while on verify-email step
   useEffect(() => {
