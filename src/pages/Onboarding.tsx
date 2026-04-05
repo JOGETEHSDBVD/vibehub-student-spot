@@ -38,12 +38,13 @@ const Onboarding = () => {
   const [resending, setResending] = useState(false);
   const [signupEmail, setSignupEmail] = useState<string | null>(null);
   const [emailConfirmed, setEmailConfirmed] = useState(false);
-  const { user, refreshProfile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const needsPole = selectedRole === "1ere_annee" || selectedRole === "2eme_annee" || selectedRole === "trainer";
   const needsFiliere = selectedRole === "2eme_annee";
+  const canAccessPlatform = Boolean(profile?.member_type);
 
   // Listen for email confirmation while on verify-email step
   useEffect(() => {
@@ -131,7 +132,7 @@ const Onboarding = () => {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     } else {
       localStorage.removeItem("onboarding_data");
-      refreshProfile();
+      await refreshProfile();
       setStep("verify-email");
     }
   };
@@ -196,12 +197,19 @@ const Onboarding = () => {
               <p className="text-muted-foreground text-sm leading-relaxed mb-8">
                 Votre compte est maintenant actif. Bienvenue sur la plateforme !
               </p>
-              <button
-                onClick={() => navigate("/")}
-                className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors animate-in fade-in slide-in-from-bottom-4 duration-500"
-              >
-                Accéder à la plateforme
-              </button>
+              {canAccessPlatform ? (
+                <button
+                  onClick={() => navigate("/", { replace: true })}
+                  className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors animate-in fade-in slide-in-from-bottom-4 duration-500"
+                >
+                  Accéder à la plateforme
+                </button>
+              ) : (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground animate-in fade-in duration-500">
+                  <RefreshCw size={14} className="animate-spin" />
+                  Finalisation de votre accès...
+                </div>
+              )}
             </>
           ) : (
             <>
