@@ -50,6 +50,7 @@ const AdminMembers = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [filterType, setFilterType] = useState<string>("all");
   const [filterPole, setFilterPole] = useState<string>("all");
+  const [filterRole, setFilterRole] = useState<string>("all");
   const [availablePoles, setAvailablePoles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -82,6 +83,7 @@ const AdminMembers = () => {
         .select("user_id")
         .eq("role", "admin");
       const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
+      const adminIdArray = Array.from(adminIds);
 
       let query = supabase
         .from("profiles")
@@ -100,6 +102,12 @@ const AdminMembers = () => {
         query = query.eq("pole", filterPole);
       }
 
+      if (filterRole === "admin" && adminIdArray.length > 0) {
+        query = query.in("id", adminIdArray);
+      } else if (filterRole === "member" && adminIdArray.length > 0) {
+        query = query.not("id", "in", `(${adminIdArray.join(",")})`);
+      }
+
       const from = page * PAGE_SIZE;
       query = query.range(from, from + PAGE_SIZE - 1);
 
@@ -111,7 +119,7 @@ const AdminMembers = () => {
       setFetching(false);
     };
     fetchMembers();
-  }, [isAdmin, search, page, refreshKey, filterType, filterPole]);
+  }, [isAdmin, search, page, refreshKey, filterType, filterPole, filterRole]);
 
   const refreshMembers = () => setRefreshKey((k) => k + 1);
 
@@ -154,6 +162,18 @@ const AdminMembers = () => {
 
             <div className="flex flex-wrap items-center gap-2">
               <Filter size={16} className="text-muted-foreground" />
+
+              <Select value={filterRole} onValueChange={(v) => { setFilterRole(v); setPage(0); }}>
+                <SelectTrigger className="w-[140px] h-8 text-xs">
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="member">Member</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(0); }}>
                 <SelectTrigger className="w-[160px] h-8 text-xs">
                   <SelectValue placeholder="Member Type" />
@@ -178,8 +198,8 @@ const AdminMembers = () => {
                 </SelectContent>
               </Select>
 
-              {(filterType !== "all" || filterPole !== "all") && (
-                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => { setFilterType("all"); setFilterPole("all"); setPage(0); }}>
+              {(filterType !== "all" || filterPole !== "all" || filterRole !== "all") && (
+                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => { setFilterType("all"); setFilterPole("all"); setFilterRole("all"); setPage(0); }}>
                   Clear filters
                 </Button>
               )}
