@@ -217,6 +217,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         location: location.trim() || null,
         category,
         pole: pole === "Not specified" ? null : pole,
+        target_annee: targetAnnee === "Not specified" ? null : targetAnnee,
         image_url: mainImageUrl,
         tags,
       };
