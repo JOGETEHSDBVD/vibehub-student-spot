@@ -29,18 +29,13 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Don't redirect if verification tokens in hash
     const hash = window.location.hash;
     const isVerificationCallback = hash.includes("type=signup") || hash.includes("type=email") || hash.includes("type=recovery") || hash.includes("access_token");
-    
-    // Don't redirect if onboarding was already completed but email not yet verified
-    const hasPendingOnboarding = !!localStorage.getItem("onboarding_data");
-    
-    // Skip redirect on excluded paths
+
     const excludedPaths = ["/onboarding", "/email-verified"];
     const isExcluded = excludedPaths.includes(location.pathname);
 
-    if (loading || profileLoading || !user || !emailVerified || isVerificationCallback || hasPendingOnboarding || isExcluded) {
+    if (loading || profileLoading || !user || !emailVerified || isVerificationCallback || isExcluded) {
       return;
     }
 
