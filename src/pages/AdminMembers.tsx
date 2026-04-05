@@ -30,7 +30,12 @@ interface Member {
 
 const PAGE_SIZE = 10;
 
-const MEMBER_TYPES = ["1ère Année", "2ème Année", "Formateur", "Administration"];
+const MEMBER_TYPES = [
+  { value: "1ere_annee", label: "1ère Année" },
+  { value: "2eme_annee", label: "2ème Année" },
+  { value: "trainer", label: "Formateur" },
+  { value: "administration", label: "Administration" },
+];
 
 const AdminMembers = () => {
   const { isAdmin, loading } = useAdminCheck();
@@ -156,7 +161,7 @@ const AdminMembers = () => {
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
                   {MEMBER_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -226,7 +231,7 @@ const AdminMembers = () => {
                         )}
                       </td>
                       <td className="px-5 py-3">
-                        <span className="text-xs font-medium text-foreground">{m.member_type || "—"}</span>
+                        <span className="text-xs font-medium text-foreground">{MEMBER_TYPES.find(t => t.value === m.member_type)?.label || m.member_type || "—"}</span>
                       </td>
                       <td className="px-5 py-3 text-muted-foreground">{m.isAdmin ? "Administration" : "General"}</td>
                       <td className="px-5 py-3">
