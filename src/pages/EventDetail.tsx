@@ -316,6 +316,13 @@ const EventDetail = () => {
                 </div>
               )}
 
+              {/* Restriction notice */}
+              {restrictionMessage && !hasJoined && (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3">
+                  <p className="text-sm font-medium text-destructive">{restrictionMessage}</p>
+                </div>
+              )}
+
               {/* Participants count */}
               <p className="text-sm text-dark-bg-foreground/50">
                 <span className="font-bold text-dark-bg-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
