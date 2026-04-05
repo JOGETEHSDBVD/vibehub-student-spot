@@ -231,7 +231,7 @@ const AdminMembers = () => {
                         )}
                       </td>
                       <td className="px-5 py-3">
-                        <span className="text-xs font-medium text-foreground">{m.member_type || "—"}</span>
+                        <span className="text-xs font-medium text-foreground">{MEMBER_TYPES.find(t => t.value === m.member_type)?.label || m.member_type || "—"}</span>
                       </td>
                       <td className="px-5 py-3 text-muted-foreground">{m.isAdmin ? "Administration" : "General"}</td>
                       <td className="px-5 py-3">
