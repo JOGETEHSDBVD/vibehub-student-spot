@@ -16,7 +16,7 @@ const AboutSection = () => (
 
         <div>
           <h2 className="font-display text-4xl text-foreground">About VibeHub Club</h2>
-          <div className="mt-3 h-1 w-16 rounded bg-primary" />
+          <div className="mt-3 h-1 w-16 rounded bg-accent" />
           <p className="mt-6 text-body-text leading-relaxed">
             VibeHub is more than just a club; it's a movement within the university. We bridge the gap between passion and professional growth by providing a platform for students to excel in physical sports, express their cultural identities, and launch innovative entrepreneurial ventures.
           </p>

@@ -38,7 +38,7 @@ const HeroSection = () => {
               </div>
             </div>
             <div className="absolute -bottom-6 left-6 rounded-xl bg-background p-4 shadow-lg">
-              <span className="block text-3xl font-bold text-primary">2026</span>
+              <span className="block text-3xl font-bold text-accent">2026</span>
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Membership Open</span>
             </div>
           </div>

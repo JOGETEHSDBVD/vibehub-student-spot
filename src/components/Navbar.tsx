@@ -120,7 +120,7 @@ const Navbar = () => {
                   Sign In
                 </button>
                 <button onClick={() => setAuthMode("signup")}
-                  className="bg-primary hover:bg-primary/80 text-primary-foreground px-8 py-2.5 rounded-full font-bold text-base transition-all">
+                  className="bg-accent hover:bg-accent/80 text-accent-foreground px-8 py-2.5 rounded-full font-bold text-base transition-all">
                   Join Club
                 </button>
               </>

@@ -29,7 +29,7 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Connect</h5>
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-accent">Connect</h5>
           <div className="flex gap-3">
             <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
               <span className="material-symbols-outlined text-sm">public</span>
