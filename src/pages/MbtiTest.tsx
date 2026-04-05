@@ -246,41 +246,71 @@ const MbtiTest = () => {
             </span>
           </div>
 
-          {/* Radar Chart */}
+          {/* Radar Chart (SVG) */}
           <div className="bg-card rounded-xl border border-border p-6 mb-6">
-            <ResponsiveContainer width="100%" height={320}>
-              <RadarChart
-                data={results.traitResults.map((t) => ({
-                  trait: t.traitLabel,
-                  score: t.score,
-                  fullMark: 100,
-                }))}
-                cx="50%"
-                cy="50%"
-                outerRadius="70%"
-              >
-                <PolarGrid stroke="hsl(var(--border))" />
-                <PolarAngleAxis
-                  dataKey="trait"
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                />
-                <PolarRadiusAxis
-                  angle={90}
-                  domain={[0, 100]}
-                  tick={false}
-                  axisLine={false}
-                />
-                <Radar
-                  name="Score"
-                  dataKey="score"
-                  stroke="hsl(var(--primary))"
-                  fill="hsl(var(--primary))"
-                  fillOpacity={0.25}
-                  strokeWidth={2}
-                  dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 2, stroke: "#fff" }}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
+            <svg viewBox="0 0 400 360" className="w-full max-w-md mx-auto">
+              {(() => {
+                const cx = 200, cy = 170, maxR = 120;
+                const n = results.traitResults.length;
+                const angles = results.traitResults.map((_, i) => (Math.PI * 2 * i) / n - Math.PI / 2);
+                const getPoint = (angle: number, r: number) => ({
+                  x: cx + r * Math.cos(angle),
+                  y: cy + r * Math.sin(angle),
+                });
+
+                // Grid rings
+                const rings = [0.25, 0.5, 0.75, 1];
+                const gridLines = rings.map((scale) => {
+                  const pts = angles.map((a) => getPoint(a, maxR * scale));
+                  return pts.map((p) => `${p.x},${p.y}`).join(" ");
+                });
+
+                // Data polygon
+                const dataPoints = results.traitResults.map((t, i) =>
+                  getPoint(angles[i], (t.score / 100) * maxR)
+                );
+                const dataPolygon = dataPoints.map((p) => `${p.x},${p.y}`).join(" ");
+
+                // Axis lines
+                const axisEnds = angles.map((a) => getPoint(a, maxR));
+
+                // Labels
+                const labelPoints = angles.map((a) => getPoint(a, maxR + 28));
+
+                return (
+                  <>
+                    {/* Grid */}
+                    {gridLines.map((pts, i) => (
+                      <polygon key={i} points={pts} fill="none" stroke="hsl(var(--border))" strokeWidth="1" opacity={0.6} />
+                    ))}
+                    {/* Axis lines */}
+                    {axisEnds.map((p, i) => (
+                      <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="hsl(var(--border))" strokeWidth="1" opacity={0.4} />
+                    ))}
+                    {/* Data polygon */}
+                    <polygon points={dataPolygon} fill="hsl(var(--primary))" fillOpacity={0.2} stroke="hsl(var(--primary))" strokeWidth="2" />
+                    {/* Data dots */}
+                    {dataPoints.map((p, i) => (
+                      <circle key={i} cx={p.x} cy={p.y} r={4} fill="hsl(var(--primary))" stroke="white" strokeWidth="2" />
+                    ))}
+                    {/* Labels */}
+                    {labelPoints.map((p, i) => (
+                      <text
+                        key={i}
+                        x={p.x}
+                        y={p.y}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="fill-muted-foreground"
+                        fontSize="11"
+                      >
+                        {results.traitResults[i].traitLabel}
+                      </text>
+                    ))}
+                  </>
+                );
+              })()}
+            </svg>
           </div>
 
           {/* Conflict or Archetype */}
