@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChevronRight, Brain, RotateCcw } from "lucide-react";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 
 const QUESTIONS_PER_PAGE = 5;
 
@@ -245,24 +246,41 @@ const MbtiTest = () => {
             </span>
           </div>
 
-          {/* Radar Chart (simple bar fallback) */}
+          {/* Radar Chart */}
           <div className="bg-card rounded-xl border border-border p-6 mb-6">
-            <div className="space-y-4">
-              {results.traitResults.map((t) => (
-                <div key={t.trait}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium text-sm text-foreground">{t.traitLabel}</span>
-                    <span className="text-xs font-medium text-muted-foreground">{t.score}%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2.5">
-                    <div
-                      className="h-2.5 rounded-full bg-primary transition-all duration-700"
-                      style={{ width: `${t.score}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ResponsiveContainer width="100%" height={320}>
+              <RadarChart
+                data={results.traitResults.map((t) => ({
+                  trait: t.traitLabel,
+                  score: t.score,
+                  fullMark: 100,
+                }))}
+                cx="50%"
+                cy="50%"
+                outerRadius="70%"
+              >
+                <PolarGrid stroke="hsl(var(--border))" />
+                <PolarAngleAxis
+                  dataKey="trait"
+                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                />
+                <PolarRadiusAxis
+                  angle={90}
+                  domain={[0, 100]}
+                  tick={false}
+                  axisLine={false}
+                />
+                <Radar
+                  name="Score"
+                  dataKey="score"
+                  stroke="hsl(var(--primary))"
+                  fill="hsl(var(--primary))"
+                  fillOpacity={0.25}
+                  strokeWidth={2}
+                  dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 2, stroke: "#fff" }}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
           </div>
 
           {/* Conflict or Archetype */}
