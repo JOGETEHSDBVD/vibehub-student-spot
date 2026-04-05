@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,80 +7,114 @@ import logoCmc from "@/assets/logo-cmc.png";
 
 const EmailVerified = () => {
   const [verified, setVerified] = useState(false);
-  const { user, refreshProfile, refreshSession } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const { user, refreshProfile } = useAuth();
   const navigate = useNavigate();
-
-  const savePendingOnboarding = useCallback(async () => {
-    const raw = localStorage.getItem("onboarding_data");
-    if (!raw) return;
-
-    try {
-      const data = JSON.parse(raw);
-      const { error } = await supabase.rpc("update_own_profile", {
-        _member_type: data.member_type,
-        _pole: data.pole,
-        _filiere: data.filiere,
-      });
-
-      if (!error) {
-        localStorage.removeItem("onboarding_data");
-        localStorage.removeItem("onboarding_email");
-      }
-    } catch {
-      // silent
-    }
-  }, []);
+  const savedRef = useRef(false);
 
   useEffect(() => {
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    // Listen for auth state change — this fires reliably after hash token exchange
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user?.email_confirmed_at && !savedRef.current) {
+        savedRef.current = true;
+        setSaving(true);
 
-    const syncVerificationState = async () => {
-      const currentSession = await refreshSession();
-      const verifiedUser = currentSession?.user ?? user;
-
-      if (verifiedUser?.email_confirmed_at) {
-        await savePendingOnboarding();
-        await refreshProfile();
-
-        if (!cancelled) {
-          setVerified(true);
-        }
-        return;
-      }
-
-      const hasPendingOnboarding = !!localStorage.getItem("onboarding_data");
-      if (!hasPendingOnboarding) {
-        timer = setTimeout(() => {
-          if (!cancelled) {
-            setVerified(true);
+        // Save pending onboarding data via RPC now that we have a valid session
+        const raw = localStorage.getItem("onboarding_data");
+        if (raw) {
+          try {
+            const data = JSON.parse(raw);
+            const { error } = await supabase.rpc("update_own_profile", {
+              _member_type: data.member_type,
+              _pole: data.pole,
+              _filiere: data.filiere,
+            });
+            if (!error) {
+              localStorage.removeItem("onboarding_data");
+              localStorage.removeItem("onboarding_email");
+            }
+          } catch {
+            // silent
           }
-        }, 3000);
-      }
-    };
+        }
 
-    void syncVerificationState();
+        await refreshProfile();
+        setSaving(false);
+        setVerified(true);
+      }
+    });
+
+    // Fallback: if no auth event fires within 4s (e.g., user already verified),
+    // show verified state anyway
+    const fallback = setTimeout(() => {
+      if (!savedRef.current) {
+        savedRef.current = true;
+        setVerified(true);
+      }
+    }, 4000);
+
+    // Also check immediately if user is already authenticated
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user?.email_confirmed_at && !savedRef.current) {
+        savedRef.current = true;
+        setSaving(true);
+
+        const raw = localStorage.getItem("onboarding_data");
+        if (raw) {
+          try {
+            const data = JSON.parse(raw);
+            const { error } = await supabase.rpc("update_own_profile", {
+              _member_type: data.member_type,
+              _pole: data.pole,
+              _filiere: data.filiere,
+            });
+            if (!error) {
+              localStorage.removeItem("onboarding_data");
+              localStorage.removeItem("onboarding_email");
+            }
+          } catch {
+            // silent
+          }
+        }
+
+        await refreshProfile();
+        setSaving(false);
+        setVerified(true);
+      }
+    });
 
     return () => {
-      cancelled = true;
-      if (timer) {
-        clearTimeout(timer);
-      }
+      subscription.unsubscribe();
+      clearTimeout(fallback);
     };
-  }, [refreshProfile, refreshSession, savePendingOnboarding, user]);
+  }, [refreshProfile]);
 
   const handleAccessPlatform = async () => {
-    const currentSession = await refreshSession();
-    const verifiedUser = currentSession?.user ?? user;
-
-    if (!verifiedUser?.email_confirmed_at) {
-      navigate("/onboarding", { replace: true });
-      return;
+    // Try one more time to save pending data if it still exists
+    const raw = localStorage.getItem("onboarding_data");
+    if (raw) {
+      try {
+        const data = JSON.parse(raw);
+        await supabase.rpc("update_own_profile", {
+          _member_type: data.member_type,
+          _pole: data.pole,
+          _filiere: data.filiere,
+        });
+        localStorage.removeItem("onboarding_data");
+        localStorage.removeItem("onboarding_email");
+      } catch {
+        // silent
+      }
     }
 
-    await savePendingOnboarding();
     const latestProfile = await refreshProfile();
-    navigate(latestProfile?.member_type ? "/" : "/onboarding", { replace: true });
+
+    // If profile has member_type → home, otherwise → onboarding
+    if (latestProfile?.member_type) {
+      navigate("/", { replace: true });
+    } else {
+      navigate("/onboarding", { replace: true });
+    }
   };
 
   return (
