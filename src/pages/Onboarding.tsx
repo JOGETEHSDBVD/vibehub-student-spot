@@ -17,6 +17,7 @@ const POLES = [
   { id: "agroalimentaire", label: "🍽️ Agroalimentaire / Industrie Alimentaire", filieres: ["Transformation alimentaire", "Contrôle qualité alimentaire"] },
   { id: "genie_mecanique", label: "⚙️ Génie Mécanique", filieres: ["Fabrication mécanique", "Construction métallique", "Usinage"] },
   { id: "electricite_auto", label: "⚡ Électricité & Automatisation", filieres: ["Électricité de maintenance", "Automatisation industrielle", "Froid et climatisation"] },
+  { id: "genie_energetique", label: "🔋 Génie Énergétique", filieres: ["Énergie renouvelable", "Thermique industrielle", "Efficacité énergétique"] },
 ];
 
 const ROLES = [
