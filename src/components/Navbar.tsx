@@ -10,7 +10,7 @@ const navLinks = [
   { to: "/", label: "Home" },
   { to: "#about", label: "About" },
   { to: "/events", label: "Events" },
-  { to: "#", label: "MBTI Test" },
+  { to: "/mbti-test", label: "MBTI Test" },
 ];
 
 const Navbar = () => {
