@@ -467,7 +467,7 @@ const MbtiTest = () => {
           <div className="text-center">
             <Button onClick={handleRetake} variant="outline" className="gap-2">
               <RotateCcw className="w-4 h-4" />
-              {uiText[lang].restart}
+              {lang === "ar" ? "إعادة الاختبار" : lang === "fr" ? "Reprendre le test" : "Retake Test"}
             </Button>
           </div>
         </div>
