@@ -358,6 +358,16 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
           </div>
 
           <div>
+            <Label>Année</Label>
+            <Select value={targetAnnee} onValueChange={setTargetAnnee}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {annees.map((a) => <SelectItem key={a} value={a}>{anneeLabels[a]}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
             <Label>Hashtags</Label>
             <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded-md border border-input px-3 py-2 focus-within:ring-2 focus-within:ring-ring">
               {tags.map((tag, i) => (
