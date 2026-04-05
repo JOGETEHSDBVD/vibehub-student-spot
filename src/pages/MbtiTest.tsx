@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -21,17 +21,104 @@ import {
 } from "@/data/mbtiData";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ChevronRight, Brain, RotateCcw } from "lucide-react";
-
+import { ChevronRight, Brain, RotateCcw, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const QUESTIONS_PER_PAGE = 5;
 
+interface SavedResult {
+  lang: Lang;
+  answers: Record<number, number>;
+  scores: Record<string, number>;
+  dna_code: string;
+  rarity_title: string;
+  rarity_color: string;
+}
+
+function buildResults(scores: Record<string, number>, lang: Lang) {
+  const levels: Record<string, string> = {};
+  const traitResults = TRAITS_ORDER.map((trait) => {
+    const lvl = getLevel(scores[trait]);
+    levels[trait] = lvl;
+    return {
+      trait,
+      traitLabel: scalableTitles[trait][lang],
+      score: scores[trait],
+      archetype: resultsText[trait][lvl][lang],
+      definition: traitDefinitions[trait][lvl][lang],
+    };
+  });
+
+  const dnaCode = getDnaCode(scores);
+  const rarity = getRarity(scores);
+  const conflict = conflicts.find((c) => c.cond(scores));
+
+  let archetypeText: string | null = null;
+  if (!conflict) {
+    const combo = combos.find((c) => c.cond(scores));
+    if (combo) {
+      archetypeText = adviceDb[combo.name]?.[lang] ?? null;
+    }
+  }
+
+  const strategyTitles: Record<Lang, string[]> = {
+    en: ["Social Strategy", "Team Dynamics", "Execution Style", "Stress Response", "Innovation Approach"],
+    fr: ["Stratégie Sociale", "Dynamique d'Équipe", "Style d'Exécution", "Réponse au Stress", "Approche de l'Innovation"],
+    ar: ["الاستراتيجية الاجتماعية", "ديناميكية الفريق", "أسلوب التنفيذ", "الاستجابة للضغوط", "منهجية الابتكار"],
+  };
+
+  const strategies = TRAITS_ORDER.map((trait, idx) => ({
+    title: strategyTitles[lang][idx],
+    text: adviceDb[trait]?.[levels[trait]]?.[lang] ?? "",
+  }));
+
+  return { scores, traitResults, dnaCode, rarity, conflict, archetypeText, strategies };
+}
+
 const MbtiTest = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<"lang" | "test" | "result">("lang");
+  const { user } = useAuth();
+  const [step, setStep] = useState<"loading" | "lang" | "test" | "result">("loading");
   const [lang, setLang] = useState<Lang>("en");
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [savedResult, setSavedResult] = useState<SavedResult | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Load saved results on mount
+  useEffect(() => {
+    const loadSaved = async () => {
+      if (!user) {
+        setStep("lang");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("mbti_results" as any)
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (data && !error) {
+        const d = data as any;
+        setSavedResult({
+          lang: d.lang as Lang,
+          answers: d.answers as Record<number, number>,
+          scores: d.scores as Record<string, number>,
+          dna_code: d.dna_code,
+          rarity_title: d.rarity_title,
+          rarity_color: d.rarity_color,
+        });
+        setLang(d.lang as Lang);
+        setAnswers(d.answers as Record<number, number>);
+        setStep("result");
+      } else {
+        setStep("lang");
+      }
+    };
+    loadSaved();
+  }, [user]);
 
   const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
   const pageQuestions = questions.slice(
@@ -41,65 +128,90 @@ const MbtiTest = () => {
 
   const answeredCount = Object.keys(answers).length;
   const progressPercent = Math.round((answeredCount / questions.length) * 100);
-
   const allPageAnswered = pageQuestions.every((q) => answers[q.id] !== undefined);
   const allAnswered = answeredCount === questions.length;
 
   const results = useMemo(() => {
     if (step !== "result") return null;
+    if (savedResult) {
+      return buildResults(savedResult.scores, lang);
+    }
     const scores = calculateScores(answers);
-    const levels: Record<string, string> = {};
-    const traitResults = TRAITS_ORDER.map((trait) => {
-      const lvl = getLevel(scores[trait]);
-      levels[trait] = lvl;
-      return {
-        trait,
-        traitLabel: scalableTitles[trait][lang],
-        score: scores[trait],
-        archetype: resultsText[trait][lvl][lang],
-        definition: traitDefinitions[trait][lvl][lang],
-      };
-    });
+    return buildResults(scores, lang);
+  }, [step, answers, lang, savedResult]);
 
+  // Save results to DB
+  const saveResults = useCallback(async () => {
+    if (!user) return;
+    const scores = calculateScores(answers);
     const dnaCode = getDnaCode(scores);
     const rarity = getRarity(scores);
 
-    // Find conflict
-    const conflict = conflicts.find((c) => c.cond(scores));
-
-    // Find archetype combo (only if no conflict)
-    let archetypeText: string | null = null;
-    if (!conflict) {
-      const combo = combos.find((c) => c.cond(scores));
-      if (combo) {
-        archetypeText = adviceDb[combo.name]?.[lang] ?? null;
-      }
-    }
-
-    // Strategy blocks
-    const strategyTitles: Record<Lang, string[]> = {
-      en: ["Social Strategy", "Team Dynamics", "Execution Style", "Stress Response", "Innovation Approach"],
-      fr: ["Stratégie Sociale", "Dynamique d'Équipe", "Style d'Exécution", "Réponse au Stress", "Approche de l'Innovation"],
-      ar: ["الاستراتيجية الاجتماعية", "ديناميكية الفريق", "أسلوب التنفيذ", "الاستجابة للضغوط", "منهجية الابتكار"],
+    setSaving(true);
+    const payload = {
+      user_id: user.id,
+      lang,
+      answers,
+      scores,
+      dna_code: dnaCode,
+      rarity_title: rarity.title,
+      rarity_color: rarity.color,
+      updated_at: new Date().toISOString(),
     };
 
-    const strategies = TRAITS_ORDER.map((trait, idx) => ({
-      title: strategyTitles[lang][idx],
-      text: adviceDb[trait]?.[levels[trait]]?.[lang] ?? "",
-    }));
+    const { error } = await supabase
+      .from("mbti_results" as any)
+      .upsert(payload as any, { onConflict: "user_id" });
 
-    return { scores, traitResults, dnaCode, rarity, conflict, archetypeText, strategies };
-  }, [step, answers, lang]);
+    setSaving(false);
+    if (error) {
+      console.error("Save error:", error);
+      toast.error("Failed to save results");
+    } else {
+      setSavedResult({
+        lang,
+        answers,
+        scores,
+        dna_code: dnaCode,
+        rarity_title: rarity.title,
+        rarity_color: rarity.color,
+      });
+      toast.success("Results saved!");
+    }
+  }, [user, answers, lang]);
+
+  const handleSubmit = async () => {
+    setStep("result");
+    setSavedResult(null); // use fresh calculation
+    // Save after render
+    setTimeout(() => {
+      if (user) saveResults();
+    }, 100);
+  };
 
   const handleAnswer = (questionId: number, value: number) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  const handleRestart = () => {
+  const handleRetake = () => {
+    setSavedResult(null);
     setStep("lang");
     setCurrentPage(0);
     setAnswers({});
   };
+
+  // Loading
+  if (step === "loading") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-primary/5">
+        <Navbar />
+        <div className="flex items-center justify-center py-40">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   // Language selection
   if (step === "lang") {
@@ -200,7 +312,7 @@ const MbtiTest = () => {
 
             {isLastPage ? (
               <Button
-                onClick={() => setStep("result")}
+                onClick={handleSubmit}
                 disabled={!allAnswered}
                 className="bg-primary text-primary-foreground"
               >
@@ -258,42 +370,31 @@ const MbtiTest = () => {
                   y: cy + r * Math.sin(angle),
                 });
 
-                // Grid rings
                 const rings = [0.25, 0.5, 0.75, 1];
                 const gridLines = rings.map((scale) => {
                   const pts = angles.map((a) => getPoint(a, maxR * scale));
                   return pts.map((p) => `${p.x},${p.y}`).join(" ");
                 });
 
-                // Data polygon
                 const dataPoints = results.traitResults.map((t, i) =>
                   getPoint(angles[i], (t.score / 100) * maxR)
                 );
                 const dataPolygon = dataPoints.map((p) => `${p.x},${p.y}`).join(" ");
-
-                // Axis lines
                 const axisEnds = angles.map((a) => getPoint(a, maxR));
-
-                // Labels
                 const labelPoints = angles.map((a) => getPoint(a, maxR + 28));
 
                 return (
                   <>
-                    {/* Grid */}
                     {gridLines.map((pts, i) => (
                       <polygon key={i} points={pts} fill="none" stroke="hsl(var(--border))" strokeWidth="1" opacity={0.6} />
                     ))}
-                    {/* Axis lines */}
                     {axisEnds.map((p, i) => (
                       <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="hsl(var(--border))" strokeWidth="1" opacity={0.4} />
                     ))}
-                    {/* Data polygon */}
                     <polygon points={dataPolygon} fill="hsl(var(--primary))" fillOpacity={0.2} stroke="hsl(var(--primary))" strokeWidth="2" />
-                    {/* Data dots */}
                     {dataPoints.map((p, i) => (
                       <circle key={i} cx={p.x} cy={p.y} r={4} fill="hsl(var(--primary))" stroke="white" strokeWidth="2" />
                     ))}
-                    {/* Labels */}
                     {labelPoints.map((p, i) => (
                       <text
                         key={i}
@@ -364,7 +465,7 @@ const MbtiTest = () => {
           </div>
 
           <div className="text-center">
-            <Button onClick={handleRestart} variant="outline" className="gap-2">
+            <Button onClick={handleRetake} variant="outline" className="gap-2">
               <RotateCcw className="w-4 h-4" />
               {uiText[lang].restart}
             </Button>
