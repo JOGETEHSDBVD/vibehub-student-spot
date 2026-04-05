@@ -7,13 +7,13 @@ const HeroSection = () => {
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground">
-              <Sparkles size={14} className="text-primary" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent bg-accent/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+              <Sparkles size={14} className="text-accent" />
               Join the University Pulse
             </div>
             <h1 className="font-display text-5xl md:text-6xl leading-tight text-foreground">
               Connect, Create, &{" "}
-              <em className="text-primary">Compete</em> at VibeHub
+              <em className="text-accent">Compete</em> at VibeHub
             </h1>
             <p className="mt-6 max-w-lg text-body-text leading-relaxed">
               The ultimate university hub for Sports, Culture, and Entrepreneurship. Join a community that vibes with your passions and fuels your ambition.
