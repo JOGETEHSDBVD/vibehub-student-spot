@@ -93,6 +93,20 @@ const EventDetail = () => {
     fetchOrganizer();
   }, [event?.created_by, event?.id]);
 
+  // Fetch user profile for restriction check
+  useEffect(() => {
+    if (!user) return;
+    const fetchProfile = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("pole, member_type")
+        .eq("id", user.id)
+        .single();
+      setUserProfile(data);
+    };
+    fetchProfile();
+  }, [user]);
+
   // Check participation + count
   useEffect(() => {
     if (!id) return;
