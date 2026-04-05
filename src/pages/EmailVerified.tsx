@@ -71,20 +71,14 @@ const EmailVerified = () => {
             : "Merci de patienter quelques instants pendant que nous vérifions votre email..."}
         </p>
 
-        {verified &&
-          (canAccessPlatform ? (
+        {verified && (
             <button
               onClick={() => navigate("/", { replace: true })}
               className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
               Accéder à la plateforme
             </button>
-          ) : (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground animate-in fade-in duration-500">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Finalisation de votre accès...
-            </div>
-          ))}
+          )}
       </div>
     </div>
   );
