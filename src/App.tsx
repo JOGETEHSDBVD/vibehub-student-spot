@@ -20,6 +20,7 @@ import OrganizerProfile from "./pages/OrganizerProfile.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import EmailVerified from "./pages/EmailVerified.tsx";
 import MyAccount from "./pages/MyAccount.tsx";
+import MBTITest from "./pages/MBTITest.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const AppRoutes = () => (
         <Route path="/admin/announcements" element={<AdminAnnouncements />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/account" element={<MyAccount />} />
+        <Route path="/mbti-test" element={<MBTITest />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </OnboardingGuard>
