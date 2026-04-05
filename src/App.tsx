@@ -67,6 +67,7 @@ const AppRoutes = () => (
         <Route path="/admin/announcements" element={<AdminAnnouncements />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/account" element={<MyAccount />} />
+        <Route path="/mbti-test" element={<MbtiTest />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </OnboardingGuard>
