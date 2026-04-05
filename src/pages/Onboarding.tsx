@@ -80,6 +80,13 @@ const Onboarding = () => {
       }
     } else if (step === "pole") {
       if (!selectedPole) return;
+      if (needsFiliere) {
+        setStep("filiere");
+      } else {
+        await saveProfile();
+      }
+    } else if (step === "filiere") {
+      if (!selectedPole) return;
       setStep("filiere");
     } else if (step === "filiere") {
       if (!selectedFiliere) return;
