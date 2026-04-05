@@ -259,31 +259,20 @@ export type Database = {
         Returns: boolean
       }
       is_not_banned: { Args: never; Returns: boolean }
-      update_own_profile:
-        | {
-            Args: {
-              _avatar_url?: string
-              _filiere?: string
-              _full_name?: string
-              _member_type?: string
-              _pole?: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              _avatar_url?: string
-              _cover_url?: string
-              _facebook_url?: string
-              _filiere?: string
-              _full_name?: string
-              _instagram_url?: string
-              _linkedin_url?: string
-              _member_type?: string
-              _pole?: string
-            }
-            Returns: undefined
-          }
+      update_own_profile: {
+        Args: {
+          _avatar_url?: string
+          _cover_url?: string
+          _facebook_url?: string
+          _filiere?: string
+          _full_name?: string
+          _instagram_url?: string
+          _linkedin_url?: string
+          _member_type?: string
+          _pole?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
