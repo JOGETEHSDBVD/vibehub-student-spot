@@ -6,7 +6,7 @@ const AboutSection = () => (
     <div className="container mx-auto px-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="flex gap-4">
-          <div className="overflow-hidden rounded-2xl border-4 border-primary/30 w-1/2">
+          <div className="overflow-hidden rounded-2xl border-4 border-accent/30 w-1/2">
             <img src={aboutEvent} alt="Event presentation" className="h-full w-full object-cover" />
           </div>
           <div className="overflow-hidden rounded-2xl w-1/2 mt-8">
