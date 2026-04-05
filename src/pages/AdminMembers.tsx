@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Shield } from "lucide-react";
+import { Search, Shield, Filter } from "lucide-react";
 import MemberActionsMenu from "@/components/admin/MemberActionsMenu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,13 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Member {
   id: string;
@@ -17,9 +24,13 @@ interface Member {
   created_at: string;
   isAdmin: boolean;
   is_banned: boolean;
+  member_type: string | null;
+  pole: string | null;
 }
 
 const PAGE_SIZE = 10;
+
+const MEMBER_TYPES = ["1ère Année", "2ème Année", "Formateur", "Administration"];
 
 const AdminMembers = () => {
   const { isAdmin, loading } = useAdminCheck();
@@ -32,12 +43,30 @@ const AdminMembers = () => {
   const [page, setPage] = useState(0);
   const [fetching, setFetching] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [filterType, setFilterType] = useState<string>("all");
+  const [filterPole, setFilterPole] = useState<string>("all");
+  const [availablePoles, setAvailablePoles] = useState<string[]>([]);
 
   useEffect(() => {
     if (!loading && !authLoading) {
       if (!user || !isAdmin) navigate("/");
     }
   }, [isAdmin, loading, authLoading, user, navigate]);
+
+  // Fetch distinct poles for the filter
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchPoles = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("pole")
+        .not("pole", "is", null)
+        .neq("pole", "");
+      const poles = [...new Set((data ?? []).map((p: any) => p.pole).filter(Boolean))] as string[];
+      setAvailablePoles(poles.sort());
+    };
+    fetchPoles();
+  }, [isAdmin]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -51,11 +80,19 @@ const AdminMembers = () => {
 
       let query = supabase
         .from("profiles")
-        .select("id, full_name, email, avatar_url, created_at, is_banned", { count: "exact" })
+        .select("id, full_name, email, avatar_url, created_at, is_banned, member_type, pole", { count: "exact" })
         .order("created_at", { ascending: false });
 
       if (search.trim()) {
         query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
+      }
+
+      if (filterType !== "all") {
+        query = query.eq("member_type", filterType);
+      }
+
+      if (filterPole !== "all") {
+        query = query.eq("pole", filterPole);
       }
 
       const from = page * PAGE_SIZE;
@@ -69,7 +106,7 @@ const AdminMembers = () => {
       setFetching(false);
     };
     fetchMembers();
-  }, [isAdmin, search, page, refreshKey]);
+  }, [isAdmin, search, page, refreshKey, filterType, filterPole]);
 
   const refreshMembers = () => setRefreshKey((k) => k + 1);
 
@@ -96,16 +133,51 @@ const AdminMembers = () => {
         </div>
 
         <div className="rounded-xl border border-border bg-card">
-          <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="text-lg font-bold text-foreground">All Members ({total})</h3>
-            <div className="relative w-full sm:w-56">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search members..."
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                className="pl-9"
-              />
+          <div className="flex flex-col gap-3 p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="text-lg font-bold text-foreground">All Members ({total})</h3>
+              <div className="relative w-full sm:w-56">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search members..."
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                  className="pl-9"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Filter size={16} className="text-muted-foreground" />
+              <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(0); }}>
+                <SelectTrigger className="w-[160px] h-8 text-xs">
+                  <SelectValue placeholder="Member Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {MEMBER_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={filterPole} onValueChange={(v) => { setFilterPole(v); setPage(0); }}>
+                <SelectTrigger className="w-[180px] h-8 text-xs">
+                  <SelectValue placeholder="Pôle" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Pôles</SelectItem>
+                  {availablePoles.map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {(filterType !== "all" || filterPole !== "all") && (
+                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => { setFilterType("all"); setFilterPole("all"); setPage(0); }}>
+                  Clear filters
+                </Button>
+              )}
             </div>
           </div>
 
@@ -115,7 +187,9 @@ const AdminMembers = () => {
                 <tr className="border-t border-border text-left text-xs font-semibold uppercase text-muted-foreground">
                   <th className="px-5 py-3">Member</th>
                   <th className="px-5 py-3">Role</th>
+                  <th className="px-5 py-3">Type</th>
                   <th className="px-5 py-3">Department</th>
+                  <th className="px-5 py-3">Pôle</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3">Joined</th>
                   <th className="px-5 py-3">Action</th>
@@ -123,9 +197,9 @@ const AdminMembers = () => {
               </thead>
               <tbody>
                 {fetching ? (
-                  <tr><td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">Loading members...</td></tr>
+                  <tr><td colSpan={8} className="px-5 py-8 text-center text-muted-foreground">Loading members...</td></tr>
                 ) : members.length === 0 ? (
-                  <tr><td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">No members found.</td></tr>
+                  <tr><td colSpan={8} className="px-5 py-8 text-center text-muted-foreground">No members found.</td></tr>
                 ) : (
                   members.map((m, i) => (
                     <tr key={m.id} className={`border-t border-border ${m.isAdmin ? "bg-primary/5" : ""}`}>
@@ -151,7 +225,13 @@ const AdminMembers = () => {
                           <span className="text-muted-foreground">Member</span>
                         )}
                       </td>
+                      <td className="px-5 py-3">
+                        <span className="text-xs font-medium text-foreground">{m.member_type || "—"}</span>
+                      </td>
                       <td className="px-5 py-3 text-muted-foreground">{m.isAdmin ? "Administration" : "General"}</td>
+                      <td className="px-5 py-3">
+                        <span className="text-xs text-muted-foreground">{m.pole || "—"}</span>
+                      </td>
                       <td className="px-5 py-3">
                         {m.is_banned ? (
                           <span className="rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">BANNED</span>
