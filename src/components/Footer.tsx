@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logoClub from "@/assets/logo-club.png";
 
 const Footer = () => {
   return (
@@ -6,7 +7,7 @@ const Footer = () => {
       <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="col-span-1 md:col-span-1 flex flex-col gap-6">
           <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 text-primary font-bold text-sm">HL</div>
+            <img src={logoClub} alt="Club Logo" className="h-10 w-auto object-contain brightness-0 invert" />
             <h2 className="font-display text-2xl font-black tracking-tight">VibeHub</h2>
           </Link>
           <p className="text-slate-400 text-sm leading-relaxed">The premier student-led organization for well-rounded university experiences.</p>
