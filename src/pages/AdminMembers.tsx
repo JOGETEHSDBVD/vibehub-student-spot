@@ -30,7 +30,12 @@ interface Member {
 
 const PAGE_SIZE = 10;
 
-const MEMBER_TYPES = ["1ère Année", "2ème Année", "Formateur", "Administration"];
+const MEMBER_TYPES = [
+  { value: "1ere_annee", label: "1ère Année" },
+  { value: "2eme_annee", label: "2ème Année" },
+  { value: "trainer", label: "Formateur" },
+  { value: "administration", label: "Administration" },
+];
 
 const AdminMembers = () => {
   const { isAdmin, loading } = useAdminCheck();
