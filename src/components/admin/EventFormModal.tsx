@@ -41,10 +41,25 @@ interface ImageItem {
 
 const categories = ["Sports", "Culture", "Entrepreneurship"];
 const poles = [
-  "Not specified", "Administration", "Tourisme", "Arts et Graphique",
-  "Service à la Personne", "Artisanat", "Agro-industrie", "Agriculture",
-  "Gestion et Commerce", "Digital et Intelligence Artificielle", "Industrie",
+  "Not specified",
+  "Digital & IT",
+  "Industrie",
+  "Gestion & Commerce",
+  "Tourisme & Hôtellerie",
+  "Agriculture",
+  "Services à la personne",
+  "BTP",
+  "Agroalimentaire / Industrie Alimentaire",
+  "Génie Mécanique",
+  "Électricité & Automatisation",
+  "Génie Énergétique",
 ];
+const annees = ["Not specified", "1ere_annee", "2eme_annee"];
+const anneeLabels: Record<string, string> = {
+  "Not specified": "Not specified",
+  "1ere_annee": "1ère Année",
+  "2eme_annee": "2ème Année",
+};
 
 const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) => {
   const { user } = useAuth();
