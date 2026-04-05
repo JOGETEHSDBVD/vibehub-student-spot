@@ -30,6 +30,7 @@ interface EventFormModalProps {
     image_url: string | null;
     category: string | null;
     pole: string | null;
+    target_annee?: string | null;
     tags?: string[] | null;
   } | null;
 }
