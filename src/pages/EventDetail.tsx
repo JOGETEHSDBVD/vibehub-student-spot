@@ -52,6 +52,7 @@ const EventDetail = () => {
   const [joining, setJoining] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [userProfile, setUserProfile] = useState<{ pole: string | null; member_type: string | null } | null>(null);
 
   // Fetch event
   useEffect(() => {
