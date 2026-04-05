@@ -4,7 +4,7 @@ import { Menu, X, User, LogOut, ExternalLink, Ticket } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import logoClub from "@/assets/logo-club.png";
+import logoCmc from "@/assets/logo-cmc.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -49,7 +49,7 @@ const Navbar = () => {
       <header className={`sticky top-0 z-50 w-full border-b px-8 lg:px-24 py-5 ${isDarkPage ? "border-dark-bg-foreground/10 bg-dark-bg/90 backdrop-blur-md" : "border-primary/20 bg-background/80 backdrop-blur-md"}`}>
         <div className="mx-auto max-w-7xl flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <img src={logoClub} alt="Club Logo" className="h-12 w-auto object-contain" />
+            <img src={logoCmc} alt="CMC Logo" className="h-12 w-auto object-contain" />
             <h2 className={`font-display text-3xl font-black tracking-tight ${isDarkPage ? "text-dark-bg-foreground" : "text-foreground"}`}>VibeHub</h2>
           </Link>
           <nav className="hidden md:flex items-center gap-12">
@@ -120,7 +120,7 @@ const Navbar = () => {
                   Sign In
                 </button>
                 <button onClick={() => setAuthMode("signup")}
-                  className="bg-accent hover:bg-accent/80 text-accent-foreground px-8 py-2.5 rounded-full font-bold text-base transition-all">
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground px-8 py-2.5 rounded-full font-bold text-base transition-all">
                   Join Club
                 </button>
               </>

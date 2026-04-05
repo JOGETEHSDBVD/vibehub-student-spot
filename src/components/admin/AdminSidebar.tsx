@@ -1,7 +1,7 @@
 import { LayoutDashboard, Users, CalendarDays, CalendarCheck, History, BarChart3, Megaphone, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import logoClub from "@/assets/logo-club.png";
+import logoCmc from "@/assets/logo-cmc.png";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
@@ -26,7 +26,7 @@ const AdminSidebar = () => {
     <aside className="flex h-screen w-60 flex-col border-r border-border bg-background">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5">
-        <img src={logoClub} alt="Club Logo" className="h-10 w-auto object-contain" />
+        <img src={logoCmc} alt="CMC Logo" className="h-10 w-auto object-contain" />
         <div>
           <p className="text-sm font-bold text-foreground">VibeHub Club</p>
           <p className="text-xs text-muted-foreground">ADMIN PANEL</p>
