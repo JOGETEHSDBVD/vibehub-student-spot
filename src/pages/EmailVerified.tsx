@@ -46,15 +46,6 @@ const EmailVerified = () => {
     }
   }, [user]);
 
-  // Auto-redirect to home after 4 seconds once verified and profile is ready
-  useEffect(() => {
-    if (!verified || !canAccessPlatform) return;
-    const timer = setTimeout(() => {
-      navigate("/", { replace: true });
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, [verified, canAccessPlatform, navigate]);
-
   return (
     <div className="min-h-screen bg-[hsl(var(--dark-bg))] flex flex-col items-center justify-center px-4 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(174,72%,40%,0.08),transparent_70%)]" />
@@ -82,15 +73,12 @@ const EmailVerified = () => {
 
         {verified &&
           (canAccessPlatform ? (
-            <div className="flex flex-col items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <button
-                onClick={() => navigate("/", { replace: true })}
-                className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                Accéder à la plateforme
-              </button>
-              <p className="text-xs text-muted-foreground">Redirection automatique dans quelques secondes...</p>
-            </div>
+            <button
+              onClick={() => navigate("/", { replace: true })}
+              className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
+              Accéder à la plateforme
+            </button>
           ) : (
             <div className="flex items-center gap-2 text-sm text-muted-foreground animate-in fade-in duration-500">
               <Loader2 className="h-4 w-4 animate-spin" />
