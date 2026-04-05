@@ -55,14 +55,13 @@ const Onboarding = () => {
         if (raw) {
           try {
             const data = JSON.parse(raw);
-            supabase.rpc("update_own_profile", {
+            await supabase.rpc("update_own_profile", {
               _member_type: data.member_type,
               _pole: data.pole,
               _filiere: data.filiere,
-            }).then(() => {
-              localStorage.removeItem("onboarding_data");
-              refreshProfile();
             });
+            localStorage.removeItem("onboarding_data");
+            await refreshProfile();
           } catch {}
         }
         setEmailConfirmed(true);
