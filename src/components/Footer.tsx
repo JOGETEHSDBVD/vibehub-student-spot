@@ -13,7 +13,7 @@ const Footer = () => {
           <p className="text-slate-400 text-sm leading-relaxed">The premier student-led organization for well-rounded university experiences.</p>
         </div>
         <div>
-          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Quick Links</h5>
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-accent">Quick Links</h5>
           <ul className="flex flex-col gap-4 text-sm text-slate-400">
             <li><Link className="hover:text-white transition-colors" to="#about">About Us</Link></li>
             <li><Link className="hover:text-white transition-colors" to="/events">Events</Link></li>
@@ -21,7 +21,7 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Support</h5>
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-accent">Support</h5>
           <ul className="flex flex-col gap-4 text-sm text-slate-400">
             <li><a className="hover:text-white transition-colors" href="#">FAQ</a></li>
             <li><a className="hover:text-white transition-colors" href="#">Contact Support</a></li>
@@ -29,7 +29,7 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Connect</h5>
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-accent">Connect</h5>
           <div className="flex gap-3">
             <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
               <span className="material-symbols-outlined text-sm">public</span>
