@@ -130,11 +130,39 @@ const EventDetail = () => {
     fetchParticipation();
   }, [id, user]);
 
+  // Build restriction message
+  const getRestrictionMessage = (): string | null => {
+    if (!event) return null;
+    const hasPoleRestriction = !!event.pole;
+    const hasAnneeRestriction = !!event.target_annee;
+    if (!hasPoleRestriction && !hasAnneeRestriction) return null;
+
+    const anneeLabel = event.target_annee === "1ere_annee" ? "1ère Année" : event.target_annee === "2eme_annee" ? "2ème Année" : null;
+
+    // Check if user matches
+    if (userProfile) {
+      const poleMatch = !hasPoleRestriction || userProfile.pole === event.pole;
+      const anneeMatch = !hasAnneeRestriction || userProfile.member_type === event.target_annee;
+      if (poleMatch && anneeMatch) return null;
+    }
+
+    const parts: string[] = [];
+    if (hasAnneeRestriction && anneeLabel) parts.push(anneeLabel);
+    if (hasPoleRestriction) parts.push(`Pôle ${event.pole}`);
+    return `Désolé, cet événement est réservé aux ${parts.join(" — ")}`;
+  };
+
+  const restrictionMessage = event ? getRestrictionMessage() : null;
+
   const handleParticipate = async () => {
     if (!user) { toast.error("Please sign in to participate"); return; }
     if (!id) return;
     if (hasJoined) {
       setShowLeaveDialog(true);
+      return;
+    }
+    if (restrictionMessage) {
+      toast.error(restrictionMessage);
       return;
     }
     setJoining(true);
