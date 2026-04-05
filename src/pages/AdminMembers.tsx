@@ -83,6 +83,7 @@ const AdminMembers = () => {
         .select("user_id")
         .eq("role", "admin");
       const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
+      const adminIdArray = Array.from(adminIds);
 
       let query = supabase
         .from("profiles")
@@ -101,6 +102,12 @@ const AdminMembers = () => {
         query = query.eq("pole", filterPole);
       }
 
+      if (filterRole === "admin" && adminIdArray.length > 0) {
+        query = query.in("id", adminIdArray);
+      } else if (filterRole === "member" && adminIdArray.length > 0) {
+        query = query.not("id", "in", `(${adminIdArray.join(",")})`);
+      }
+
       const from = page * PAGE_SIZE;
       query = query.range(from, from + PAGE_SIZE - 1);
 
@@ -112,7 +119,7 @@ const AdminMembers = () => {
       setFetching(false);
     };
     fetchMembers();
-  }, [isAdmin, search, page, refreshKey, filterType, filterPole]);
+  }, [isAdmin, search, page, refreshKey, filterType, filterPole, filterRole]);
 
   const refreshMembers = () => setRefreshKey((k) => k + 1);
 
