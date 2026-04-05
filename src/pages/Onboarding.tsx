@@ -42,6 +42,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   const needsPole = selectedRole === "1ere_annee" || selectedRole === "2eme_annee" || selectedRole === "trainer";
+  const needsFiliere = selectedRole === "1ere_annee" || selectedRole === "2eme_annee";
 
   // Listen for email confirmation while on verify-email step
   useEffect(() => {
@@ -79,7 +80,11 @@ const Onboarding = () => {
       }
     } else if (step === "pole") {
       if (!selectedPole) return;
-      setStep("filiere");
+      if (needsFiliere) {
+        setStep("filiere");
+      } else {
+        await saveProfile();
+      }
     } else if (step === "filiere") {
       if (!selectedFiliere) return;
       await saveProfile();
@@ -164,7 +169,7 @@ const Onboarding = () => {
   };
 
   const stepNumber = step === "role" ? 1 : step === "pole" ? 2 : 3;
-  const totalSteps = needsPole ? 3 : 1;
+  const totalSteps = needsFiliere ? 3 : needsPole ? 2 : 1;
 
   if (step === "verify-email") {
     const displayEmail = signupEmail || user?.email || localStorage.getItem("onboarding_email") || "";
@@ -303,7 +308,7 @@ const Onboarding = () => {
             disabled={!canProceed || saving}
             className="px-8 py-2.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {saving ? "Enregistrement..." : step === "filiere" || !needsPole ? "Terminer" : "Suivant"}
+            {saving ? "Enregistrement..." : step === "filiere" || (step === "pole" && !needsFiliere) || !needsPole ? "Terminer" : "Suivant"}
           </button>
         </div>
       </div>
