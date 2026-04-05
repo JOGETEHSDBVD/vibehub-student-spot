@@ -94,8 +94,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
   };
 
-  const refreshProfile = () => {
-    if (user) fetchProfile(user.id);
+  const refreshProfile = async () => {
+    if (user) await fetchProfile(user.id);
   };
 
   return (

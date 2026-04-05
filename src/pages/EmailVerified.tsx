@@ -24,7 +24,7 @@ const EmailVerified = () => {
           _filiere: data.filiere,
         });
         localStorage.removeItem("onboarding_data");
-        refreshProfile();
+        await refreshProfile();
       } catch {
         // silent
       } finally {
