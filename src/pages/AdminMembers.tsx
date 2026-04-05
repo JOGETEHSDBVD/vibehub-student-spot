@@ -161,7 +161,7 @@ const AdminMembers = () => {
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
                   {MEMBER_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
