@@ -162,6 +162,18 @@ const AdminMembers = () => {
 
             <div className="flex flex-wrap items-center gap-2">
               <Filter size={16} className="text-muted-foreground" />
+
+              <Select value={filterRole} onValueChange={(v) => { setFilterRole(v); setPage(0); }}>
+                <SelectTrigger className="w-[140px] h-8 text-xs">
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="member">Member</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(0); }}>
                 <SelectTrigger className="w-[160px] h-8 text-xs">
                   <SelectValue placeholder="Member Type" />
@@ -186,8 +198,8 @@ const AdminMembers = () => {
                 </SelectContent>
               </Select>
 
-              {(filterType !== "all" || filterPole !== "all") && (
-                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => { setFilterType("all"); setFilterPole("all"); setPage(0); }}>
+              {(filterType !== "all" || filterPole !== "all" || filterRole !== "all") && (
+                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => { setFilterType("all"); setFilterPole("all"); setFilterRole("all"); setPage(0); }}>
                   Clear filters
                 </Button>
               )}
