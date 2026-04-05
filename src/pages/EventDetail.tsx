@@ -83,7 +83,7 @@ const EventDetail = () => {
 
       const { data: events } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published")
+        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee")
         .eq("created_by", event.created_by!)
         .eq("is_published", true)
         .neq("id", event.id)
