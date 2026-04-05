@@ -42,6 +42,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   const needsPole = selectedRole === "1ere_annee" || selectedRole === "2eme_annee" || selectedRole === "trainer";
+  const needsFiliere = selectedRole === "1ere_annee" || selectedRole === "2eme_annee";
 
   // Listen for email confirmation while on verify-email step
   useEffect(() => {
