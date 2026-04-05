@@ -107,14 +107,13 @@ const Onboarding = () => {
     (step === "pole" && selectedPole) ||
     (step === "filiere" && selectedFiliere);
 
-  const stepTitle = {
+  const stepTitle: Record<Step, string> = {
     role: "Quel est votre statut ?",
     pole: "Choisissez votre pôle",
     filiere: "Choisissez votre filière",
-    "verify-email": "",
   };
 
-  const stepNumber = step === "role" ? 1 : step === "pole" ? 2 : step === "filiere" ? 3 : 1;
+  const stepNumber = step === "role" ? 1 : step === "pole" ? 2 : 3;
   const totalSteps = needsFiliere ? 3 : needsPole ? 2 : 1;
 
   return (
