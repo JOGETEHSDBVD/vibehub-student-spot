@@ -20,6 +20,7 @@ import OrganizerProfile from "./pages/OrganizerProfile.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import EmailVerified from "./pages/EmailVerified.tsx";
 import MyAccount from "./pages/MyAccount.tsx";
+import MbtiTest from "./pages/MbtiTest.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
