@@ -44,34 +44,38 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const AppRoutes = () => (
+  <BrowserRouter>
+    <OnboardingGuard>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/email-verified" element={<EmailVerified />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/organizer/:id" element={<OrganizerProfile />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/events" element={<AdminEvents />} />
+        <Route path="/admin/active-events" element={<AdminActiveEvents />} />
+        <Route path="/admin/past-events" element={<AdminPastEvents />} />
+        <Route path="/admin/members" element={<AdminMembers />} />
+        <Route path="/admin/analytics" element={<AdminAnalytics />} />
+        <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/account" element={<MyAccount />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </OnboardingGuard>
+  </BrowserRouter>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <OnboardingGuard>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/email-verified" element={<EmailVerified />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/events/:id" element={<EventDetail />} />
-              <Route path="/organizer/:id" element={<OrganizerProfile />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/events" element={<AdminEvents />} />
-              <Route path="/admin/active-events" element={<AdminActiveEvents />} />
-              <Route path="/admin/past-events" element={<AdminPastEvents />} />
-              <Route path="/admin/members" element={<AdminMembers />} />
-              <Route path="/admin/analytics" element={<AdminAnalytics />} />
-              <Route path="/admin/announcements" element={<AdminAnnouncements />} />
-              <Route path="/admin/settings" element={<AdminSettings />} />
-              <Route path="/account" element={<MyAccount />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </OnboardingGuard>
-        </BrowserRouter>
+        <AppRoutes />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
