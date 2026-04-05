@@ -50,6 +50,7 @@ const AdminMembers = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [filterType, setFilterType] = useState<string>("all");
   const [filterPole, setFilterPole] = useState<string>("all");
+  const [filterRole, setFilterRole] = useState<string>("all");
   const [availablePoles, setAvailablePoles] = useState<string[]>([]);
 
   useEffect(() => {
