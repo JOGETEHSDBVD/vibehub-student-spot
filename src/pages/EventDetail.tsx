@@ -61,7 +61,7 @@ const EventDetail = () => {
       setLoading(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published")
+        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee")
         .eq("id", id)
         .single();
       setEvent(data as EventFull | null);
