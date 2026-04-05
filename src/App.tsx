@@ -29,14 +29,18 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Don't redirect if verification tokens in hash (may be consumed quickly by Supabase)
+    // Don't redirect if verification tokens in hash
     const hash = window.location.hash;
-    const isVerificationCallback = hash.includes("type=signup") || hash.includes("type=email") || hash.includes("type=recovery");
+    const isVerificationCallback = hash.includes("type=signup") || hash.includes("type=email") || hash.includes("type=recovery") || hash.includes("access_token");
     
     // Don't redirect if onboarding was already completed but email not yet verified
     const hasPendingOnboarding = !!localStorage.getItem("onboarding_data");
     
-    if (!loading && user && profile && !profile.member_type && !isVerificationCallback && !hasPendingOnboarding && location.pathname !== "/onboarding" && location.pathname !== "/email-verified") {
+    // Skip redirect on excluded paths
+    const excludedPaths = ["/onboarding", "/email-verified"];
+    const isExcluded = excludedPaths.includes(location.pathname);
+    
+    if (!loading && user && profile && !profile.member_type && !isVerificationCallback && !hasPendingOnboarding && !isExcluded) {
       navigate("/onboarding", { replace: true });
     }
   }, [loading, user, profile, location.pathname, navigate]);

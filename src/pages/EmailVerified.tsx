@@ -8,9 +8,9 @@ import logoCmc from "@/assets/logo-cmc.png";
 const EmailVerified = () => {
   const [verified, setVerified] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [profileReady, setProfileReady] = useState(false);
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const canAccessPlatform = !user || Boolean(profile?.member_type);
 
   useEffect(() => {
     const savePendingOnboarding = async (userId: string) => {
@@ -25,6 +25,7 @@ const EmailVerified = () => {
           _filiere: data.filiere,
         });
         localStorage.removeItem("onboarding_data");
+        localStorage.removeItem("onboarding_email");
         await refreshProfile();
       } catch {
         // silent
@@ -36,6 +37,7 @@ const EmailVerified = () => {
     if (user) {
       savePendingOnboarding(user.id).then(() => {
         setVerified(true);
+        setProfileReady(true);
       });
     } else {
       const hasPendingOnboarding = !!localStorage.getItem("onboarding_data");
@@ -45,6 +47,14 @@ const EmailVerified = () => {
       return () => clearTimeout(timer);
     }
   }, [user]);
+
+  const handleAccessPlatform = async () => {
+    // Ensure profile is fresh before navigating so the guard doesn't redirect
+    if (user) {
+      await refreshProfile();
+    }
+    navigate("/", { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-[hsl(var(--dark-bg))] flex flex-col items-center justify-center px-4 relative overflow-hidden">
