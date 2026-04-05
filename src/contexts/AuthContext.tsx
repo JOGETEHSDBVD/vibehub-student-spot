@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,10 +19,14 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  profileLoading: boolean;
+  emailVerified: boolean;
+  onboardingCompleted: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
-  refreshProfile: () => void;
+  refreshProfile: () => Promise<Profile | null>;
+  refreshSession: () => Promise<Session | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,46 +36,69 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const latestProfileRequestRef = useRef(0);
 
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("full_name, avatar_url, member_type, pole, filiere, cover_url, linkedin_url, instagram_url, facebook_url")
-      .eq("id", userId)
-      .single();
-    setProfile(data as Profile | null);
-  };
+  const resetProfileState = useCallback(() => {
+    latestProfileRequestRef.current += 1;
+    setProfile(null);
+    setProfileLoading(false);
+  }, []);
+
+  const fetchProfile = useCallback(async (userId: string) => {
+    const requestId = ++latestProfileRequestRef.current;
+    setProfileLoading(true);
+
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url, member_type, pole, filiere, cover_url, linkedin_url, instagram_url, facebook_url")
+        .eq("id", userId)
+        .single();
+
+      const nextProfile = data as Profile | null;
+
+      if (requestId === latestProfileRequestRef.current) {
+        setProfile(nextProfile);
+      }
+
+      return nextProfile;
+    } finally {
+      if (requestId === latestProfileRequestRef.current) {
+        setProfileLoading(false);
+      }
+    }
+  }, []);
+
+  const syncAuthState = useCallback(async (nextSession: Session | null) => {
+    setSession(nextSession);
+    const nextUser = nextSession?.user ?? null;
+    setUser(nextUser);
+
+    try {
+      if (!nextUser) {
+        resetProfileState();
+        return nextSession;
+      }
+
+      await fetchProfile(nextUser.id);
+      return nextSession;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchProfile, resetProfileState]);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          setTimeout(() => fetchProfile(session.user.id), 0);
-        } else {
-          setProfile(null);
-        }
-        setLoading(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      void syncAuthState(nextSession);
+    });
 
-        // Redirect to verified page after email confirmation
-        if (event === "SIGNED_IN" && window.location.pathname === "/email-verified") {
-          // Already on the verified page, no redirect needed
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      }
-      setLoading(false);
+    void supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      void syncAuthState(initialSession);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [syncAuthState]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({
@@ -92,14 +119,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    resetProfileState();
   };
 
-  const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
-  };
+  const refreshProfile = useCallback(async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    const activeSession = currentSession ?? session;
+    const activeUser = activeSession?.user ?? user;
+
+    if (!activeUser) {
+      resetProfileState();
+      return null;
+    }
+
+    if (currentSession) {
+      setSession(currentSession);
+      setUser(currentSession.user);
+    }
+
+    return fetchProfile(activeUser.id);
+  }, [fetchProfile, resetProfileState, session, user]);
+
+  const refreshSession = useCallback(async () => {
+    setLoading(true);
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+
+    if (!currentSession) {
+      await syncAuthState(null);
+      return null;
+    }
+
+    const { data: { user: freshUser } } = await supabase.auth.getUser();
+    const nextSession = freshUser ? { ...currentSession, user: freshUser } : currentSession;
+
+    await syncAuthState(nextSession);
+    return nextSession;
+  }, [syncAuthState]);
+
+  const emailVerified = Boolean(user?.email_confirmed_at);
+  const onboardingCompleted = Boolean(profile?.member_type);
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, loading, signUp, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{
+      session,
+      user,
+      profile,
+      loading,
+      profileLoading,
+      emailVerified,
+      onboardingCompleted,
+      signUp,
+      signIn,
+      signOut,
+      refreshProfile,
+      refreshSession,
+    }}>
       {children}
     </AuthContext.Provider>
   );
