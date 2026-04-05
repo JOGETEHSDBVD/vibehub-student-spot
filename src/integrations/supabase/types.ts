@@ -177,6 +177,45 @@ export type Database = {
         }
         Relationships: []
       }
+      mbti_results: {
+        Row: {
+          answers: Json
+          created_at: string
+          dna_code: string
+          id: string
+          lang: string
+          rarity_color: string
+          rarity_title: string
+          scores: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answers: Json
+          created_at?: string
+          dna_code: string
+          id?: string
+          lang?: string
+          rarity_color: string
+          rarity_title: string
+          scores: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          dna_code?: string
+          id?: string
+          lang?: string
+          rarity_color?: string
+          rarity_title?: string
+          scores?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
