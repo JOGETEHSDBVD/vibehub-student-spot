@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,53 +7,80 @@ import logoCmc from "@/assets/logo-cmc.png";
 
 const EmailVerified = () => {
   const [verified, setVerified] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [profileReady, setProfileReady] = useState(false);
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, refreshProfile, refreshSession } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savePendingOnboarding = async (userId: string) => {
-      const raw = localStorage.getItem("onboarding_data");
-      if (!raw) return;
-      try {
-        const data = JSON.parse(raw);
-        setSaving(true);
-        await supabase.rpc("update_own_profile", {
-          _member_type: data.member_type,
-          _pole: data.pole,
-          _filiere: data.filiere,
-        });
+  const savePendingOnboarding = useCallback(async () => {
+    const raw = localStorage.getItem("onboarding_data");
+    if (!raw) return;
+
+    try {
+      const data = JSON.parse(raw);
+      const { error } = await supabase.rpc("update_own_profile", {
+        _member_type: data.member_type,
+        _pole: data.pole,
+        _filiere: data.filiere,
+      });
+
+      if (!error) {
         localStorage.removeItem("onboarding_data");
         localStorage.removeItem("onboarding_email");
+      }
+    } catch {
+      // silent
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const syncVerificationState = async () => {
+      const currentSession = await refreshSession();
+      const verifiedUser = currentSession?.user ?? user;
+
+      if (verifiedUser?.email_confirmed_at) {
+        await savePendingOnboarding();
         await refreshProfile();
-      } catch {
-        // silent
-      } finally {
-        setSaving(false);
+
+        if (!cancelled) {
+          setVerified(true);
+        }
+        return;
+      }
+
+      const hasPendingOnboarding = !!localStorage.getItem("onboarding_data");
+      if (!hasPendingOnboarding) {
+        timer = setTimeout(() => {
+          if (!cancelled) {
+            setVerified(true);
+          }
+        }, 3000);
       }
     };
 
-    if (user) {
-      savePendingOnboarding(user.id).then(() => {
-        setVerified(true);
-        setProfileReady(true);
-      });
-    } else {
-      const hasPendingOnboarding = !!localStorage.getItem("onboarding_data");
-      if (hasPendingOnboarding) return;
+    void syncVerificationState();
 
-      const timer = setTimeout(() => setVerified(true), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [user]);
+    return () => {
+      cancelled = true;
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [refreshProfile, refreshSession, savePendingOnboarding, user]);
 
   const handleAccessPlatform = async () => {
-    // Ensure profile is fresh before navigating so the guard doesn't redirect
-    if (user) {
-      await refreshProfile();
+    const currentSession = await refreshSession();
+    const verifiedUser = currentSession?.user ?? user;
+
+    if (!verifiedUser?.email_confirmed_at) {
+      navigate("/onboarding", { replace: true });
+      return;
     }
-    navigate("/", { replace: true });
+
+    await savePendingOnboarding();
+    const latestProfile = await refreshProfile();
+    navigate(latestProfile?.member_type ? "/" : "/onboarding", { replace: true });
   };
 
   return (

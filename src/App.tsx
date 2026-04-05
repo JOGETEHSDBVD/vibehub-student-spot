@@ -24,7 +24,7 @@ import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
-  const { user, profile, loading } = useAuth();
+  const { user, loading, profileLoading, emailVerified, onboardingCompleted } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -39,11 +39,15 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
     // Skip redirect on excluded paths
     const excludedPaths = ["/onboarding", "/email-verified"];
     const isExcluded = excludedPaths.includes(location.pathname);
-    
-    if (!loading && user && profile && !profile.member_type && !isVerificationCallback && !hasPendingOnboarding && !isExcluded) {
+
+    if (loading || profileLoading || !user || !emailVerified || isVerificationCallback || hasPendingOnboarding || isExcluded) {
+      return;
+    }
+
+    if (!onboardingCompleted) {
       navigate("/onboarding", { replace: true });
     }
-  }, [loading, user, profile, location.pathname, navigate]);
+  }, [loading, profileLoading, user, emailVerified, onboardingCompleted, location.pathname, navigate]);
 
   return <>{children}</>;
 };
