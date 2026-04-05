@@ -29,6 +29,8 @@ interface EventFull {
   tags: string[] | null;
   created_by: string | null;
   is_published: boolean | null;
+  pole: string | null;
+  target_annee: string | null;
 }
 
 interface OrganizerProfile {
