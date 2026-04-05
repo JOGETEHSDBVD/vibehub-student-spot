@@ -1,0 +1,1 @@
+ALTER TABLE public.events ADD COLUMN target_annee text DEFAULT NULL;

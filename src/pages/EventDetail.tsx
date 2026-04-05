@@ -29,6 +29,8 @@ interface EventFull {
   tags: string[] | null;
   created_by: string | null;
   is_published: boolean | null;
+  pole: string | null;
+  target_annee: string | null;
 }
 
 interface OrganizerProfile {
@@ -50,6 +52,7 @@ const EventDetail = () => {
   const [joining, setJoining] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [userProfile, setUserProfile] = useState<{ pole: string | null; member_type: string | null } | null>(null);
 
   // Fetch event
   useEffect(() => {
@@ -58,7 +61,7 @@ const EventDetail = () => {
       setLoading(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published")
+        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee")
         .eq("id", id)
         .single();
       setEvent(data as EventFull | null);
@@ -80,7 +83,7 @@ const EventDetail = () => {
 
       const { data: events } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published")
+        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee")
         .eq("created_by", event.created_by!)
         .eq("is_published", true)
         .neq("id", event.id)
@@ -89,6 +92,20 @@ const EventDetail = () => {
     };
     fetchOrganizer();
   }, [event?.created_by, event?.id]);
+
+  // Fetch user profile for restriction check
+  useEffect(() => {
+    if (!user) return;
+    const fetchProfile = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("pole, member_type")
+        .eq("id", user.id)
+        .single();
+      setUserProfile(data);
+    };
+    fetchProfile();
+  }, [user]);
 
   // Check participation + count
   useEffect(() => {
@@ -113,11 +130,39 @@ const EventDetail = () => {
     fetchParticipation();
   }, [id, user]);
 
+  // Build restriction message
+  const getRestrictionMessage = (): string | null => {
+    if (!event) return null;
+    const hasPoleRestriction = !!event.pole;
+    const hasAnneeRestriction = !!event.target_annee;
+    if (!hasPoleRestriction && !hasAnneeRestriction) return null;
+
+    const anneeLabel = event.target_annee === "1ere_annee" ? "1ère Année" : event.target_annee === "2eme_annee" ? "2ème Année" : null;
+
+    // Check if user matches
+    if (userProfile) {
+      const poleMatch = !hasPoleRestriction || userProfile.pole === event.pole;
+      const anneeMatch = !hasAnneeRestriction || userProfile.member_type === event.target_annee;
+      if (poleMatch && anneeMatch) return null;
+    }
+
+    const parts: string[] = [];
+    if (hasAnneeRestriction && anneeLabel) parts.push(anneeLabel);
+    if (hasPoleRestriction) parts.push(`Pôle ${event.pole}`);
+    return `Désolé, cet événement est réservé aux ${parts.join(" — ")}`;
+  };
+
+  const restrictionMessage = event ? getRestrictionMessage() : null;
+
   const handleParticipate = async () => {
     if (!user) { toast.error("Please sign in to participate"); return; }
     if (!id) return;
     if (hasJoined) {
       setShowLeaveDialog(true);
+      return;
+    }
+    if (restrictionMessage) {
+      toast.error(restrictionMessage);
       return;
     }
     setJoining(true);
@@ -268,6 +313,13 @@ const EventDetail = () => {
                       {tag}
                     </span>
                   ))}
+                </div>
+              )}
+
+              {/* Restriction notice */}
+              {restrictionMessage && !hasJoined && (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3">
+                  <p className="text-sm font-medium text-destructive">{restrictionMessage}</p>
                 </div>
               )}
 

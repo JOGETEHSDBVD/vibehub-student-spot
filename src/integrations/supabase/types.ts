@@ -141,6 +141,7 @@ export type Database = {
           pole: string | null
           recap: string | null
           tags: string[] | null
+          target_annee: string | null
           title: string
         }
         Insert: {
@@ -157,6 +158,7 @@ export type Database = {
           pole?: string | null
           recap?: string | null
           tags?: string[] | null
+          target_annee?: string | null
           title: string
         }
         Update: {
@@ -173,6 +175,7 @@ export type Database = {
           pole?: string | null
           recap?: string | null
           tags?: string[] | null
+          target_annee?: string | null
           title?: string
         }
         Relationships: []
