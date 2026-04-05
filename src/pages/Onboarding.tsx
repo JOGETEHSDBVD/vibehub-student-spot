@@ -87,7 +87,11 @@ const Onboarding = () => {
       _member_type: selectedRole,
       _pole: pole?.label ?? null,
       _filiere: selectedFiliere ?? null,
-    });
+      _cover_url: undefined,
+      _linkedin_url: undefined,
+      _instagram_url: undefined,
+      _facebook_url: undefined,
+    } as any);
 
     setSaving(false);
     if (error) {
