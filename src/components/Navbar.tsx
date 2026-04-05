@@ -4,7 +4,7 @@ import { Menu, X, User, LogOut, ExternalLink, Ticket } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import logoCmc from "@/assets/logo-cmc.png";
+import logoClub from "@/assets/logo-club.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
