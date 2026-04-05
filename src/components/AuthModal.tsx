@@ -39,11 +39,11 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
       if (error) {
         toast({ title: "Sign up failed", description: error, variant: "destructive" });
       } else {
-        toast({ title: "Compte créé !", description: "Complétez votre profil pour continuer." });
+        toast({ title: "Compte créé !", description: "Vérifiez votre email pour continuer." });
         localStorage.setItem("onboarding_email", email);
         setEmail(""); setPassword(""); setName("");
         onClose();
-        navigate("/onboarding");
+        navigate("/email-verified");
       }
     }
   };
