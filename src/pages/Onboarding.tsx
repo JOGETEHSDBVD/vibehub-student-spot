@@ -48,7 +48,7 @@ const Onboarding = () => {
   // Listen for email confirmation while on verify-email step
   useEffect(() => {
     if (step !== "verify-email") return;
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user?.email_confirmed_at) {
         // Save pending onboarding data
         const raw = localStorage.getItem("onboarding_data");
