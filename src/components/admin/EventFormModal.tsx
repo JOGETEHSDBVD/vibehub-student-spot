@@ -75,6 +75,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [location, setLocation] = useState(event?.location ?? "");
   const [category, setCategory] = useState(event?.category ?? "Sports");
   const [pole, setPole] = useState(event?.pole ?? "Not specified");
+  const [targetAnnee, setTargetAnnee] = useState(event?.target_annee ?? "Not specified");
   const [tags, setTags] = useState<string[]>(event?.tags ?? []);
   const [tagInput, setTagInput] = useState("");
   const [saving, setSaving] = useState(false);
