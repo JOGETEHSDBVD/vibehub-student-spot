@@ -21,7 +21,7 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">Support</h5>
+          <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-accent">Support</h5>
           <ul className="flex flex-col gap-4 text-sm text-slate-400">
             <li><a className="hover:text-white transition-colors" href="#">FAQ</a></li>
             <li><a className="hover:text-white transition-colors" href="#">Contact Support</a></li>
