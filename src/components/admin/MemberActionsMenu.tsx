@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreVertical, Shield, ShieldOff, Ban, Undo2, MessageSquare } from "lucide-react";
+import { MoreVertical, Shield, ShieldOff, Ban, Undo2, MessageSquare, Brain } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
