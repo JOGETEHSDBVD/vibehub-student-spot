@@ -76,6 +76,15 @@ const EventDetail = () => {
         .eq("id", id)
         .single();
       setEvent(data as EventFull | null);
+
+      // Fetch qr_enabled separately since it's not in the type
+      const { data: qrData } = await supabase
+        .from("events")
+        .select("qr_enabled")
+        .eq("id", id)
+        .single();
+      setQrEnabled((qrData as any)?.qr_enabled ?? false);
+
       setLoading(false);
     };
     fetchEvent();
