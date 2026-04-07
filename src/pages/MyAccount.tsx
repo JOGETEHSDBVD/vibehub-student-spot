@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ChangePasswordSection from "@/components/ChangePasswordSection";
 
 const MyAccount = () => {
   const { user, profile, loading, refreshProfile } = useAuth();
