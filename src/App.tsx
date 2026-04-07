@@ -21,6 +21,7 @@ import Onboarding from "./pages/Onboarding.tsx";
 import EmailVerified from "./pages/EmailVerified.tsx";
 import MyAccount from "./pages/MyAccount.tsx";
 import MbtiTest from "./pages/MbtiTest.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
