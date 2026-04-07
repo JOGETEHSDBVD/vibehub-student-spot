@@ -50,6 +50,8 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
   };
 
   return (
+    <>
+    <ResetEmailSentModal open={resetSent} email={email} onClose={() => setResetSent(false)} />
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4" onClick={onClose}>
       <div className="relative w-full max-w-md rounded-2xl border border-primary/30 bg-background p-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"><X size={20} /></button>
