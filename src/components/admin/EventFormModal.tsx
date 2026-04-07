@@ -78,6 +78,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [targetAnnee, setTargetAnnee] = useState(event?.target_annee ?? "Not specified");
   const [tags, setTags] = useState<string[]>(event?.tags ?? []);
   const [tagInput, setTagInput] = useState("");
+  const [qrEnabled, setQrEnabled] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Multi-image state
