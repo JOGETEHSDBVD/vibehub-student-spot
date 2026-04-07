@@ -236,6 +236,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         target_annee: targetAnnee === "Not specified" ? null : targetAnnee,
         image_url: mainImageUrl,
         tags,
+        qr_enabled: qrEnabled,
       };
 
       let eventId = event?.id;
