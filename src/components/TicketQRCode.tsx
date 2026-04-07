@@ -79,10 +79,10 @@ const TicketQRCode = ({ eventId, userId, eventTitle }: TicketQRCodeProps) => {
   };
 
   return (
-    <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5 space-y-4">
+    <div className="rounded-xl border border-primary/30 bg-primary/10 p-5 space-y-4">
       <div className="flex items-center gap-2">
         <Ticket size={18} className="text-primary" />
-        <h4 className="text-sm font-bold text-foreground">Your Event Ticket</h4>
+        <h4 className="text-sm font-bold text-dark-bg-foreground">Your Event Ticket</h4>
       </div>
 
       <div className="flex justify-center">
@@ -97,7 +97,7 @@ const TicketQRCode = ({ eventId, userId, eventTitle }: TicketQRCodeProps) => {
         </div>
       </div>
 
-      <p className="text-xs text-center text-muted-foreground">
+      <p className="text-xs text-center text-dark-bg-foreground/60">
         Show this QR code at the event entrance for check-in
       </p>
 
@@ -105,7 +105,7 @@ const TicketQRCode = ({ eventId, userId, eventTitle }: TicketQRCodeProps) => {
         variant="outline"
         size="sm"
         onClick={handleDownload}
-        className="w-full gap-2"
+        className="w-full gap-2 border-dark-bg-foreground/20 text-dark-bg-foreground hover:bg-dark-bg-foreground/10"
       >
         <Download size={14} /> Save Ticket
       </Button>
