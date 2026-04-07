@@ -61,6 +61,9 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
   const [banDialogOpen, setBanDialogOpen] = useState(false);
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+  const [mbtiDialogOpen, setMbtiDialogOpen] = useState(false);
+  const [mbtiResult, setMbtiResult] = useState<any>(null);
+  const [mbtiLoading, setMbtiLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
