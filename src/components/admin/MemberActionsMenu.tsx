@@ -28,6 +28,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  type Lang,
+  scalableTitles,
+  resultsText,
+  traitDefinitions,
+  adviceDb,
+  combos,
+  conflicts,
+  TRAITS_ORDER,
+  getLevel,
+  getDnaCode,
+  getRarity,
+} from "@/data/mbtiData";
 
 interface Member {
   id: string;
