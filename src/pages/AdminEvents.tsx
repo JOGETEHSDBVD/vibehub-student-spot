@@ -196,7 +196,8 @@ const AdminEvents = () => {
               </div>
             ))}
           </div>
-        )}
+          );
+        })()}
 
         {viewingEvent && (
           <EventDetailModal
