@@ -335,7 +335,7 @@ const EventDetail = () => {
                     onClick={handleParticipate}
                     disabled={joining}
                     variant={hasJoined ? "outline" : "default"}
-                    className="rounded-full px-6"
+                    className={`rounded-full px-6 ${hasJoined ? "border-red-400 text-red-400 hover:bg-red-400/10 hover:text-red-300" : ""}`}
                   >
                     {hasJoined ? "Leave Event" : "Participate"}
                   </Button>
