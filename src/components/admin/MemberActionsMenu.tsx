@@ -210,6 +210,9 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
                   <><Shield size={14} className="mr-2" /> Make Admin</>
                 )}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleViewMbti}>
+                <Brain size={14} className="mr-2" /> View MBTI Results
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setBanDialogOpen(true)}
                 className={member.is_banned ? "text-emerald-600" : "text-destructive focus:text-destructive"}
