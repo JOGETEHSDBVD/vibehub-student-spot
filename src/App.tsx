@@ -34,7 +34,7 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
     const hash = window.location.hash;
     const isVerificationCallback = hash.includes("type=signup") || hash.includes("type=email") || hash.includes("type=recovery") || hash.includes("access_token");
 
-    const excludedPaths = ["/onboarding", "/email-verified"];
+    const excludedPaths = ["/onboarding", "/email-verified", "/reset-password"];
     const isExcluded = excludedPaths.includes(location.pathname);
 
     if (loading || profileLoading || !user || !emailVerified || isVerificationCallback || isExcluded) {
