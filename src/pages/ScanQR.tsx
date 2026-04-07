@@ -35,13 +35,6 @@ const ScanQR = () => {
     setProcessing(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("checkin", {
-        body: null,
-        headers: {},
-        method: "GET",
-      });
-
-      // Use fetch directly since invoke doesn't support query params well
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const url = `https://${projectId}.supabase.co/functions/v1/checkin?ticketId=${ticketId}`;
       const response = await fetch(url, {
