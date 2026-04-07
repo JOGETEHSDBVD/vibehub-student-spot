@@ -19,16 +19,29 @@ type ScanResult = {
 const ScanQR = () => {
   const { isAdmin, loading } = useAdminCheck();
   const { user, loading: authLoading } = useAuth();
+  const { ticketId: urlTicketId } = useParams<{ ticketId?: string }>();
   const navigate = useNavigate();
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [processing, setProcessing] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const processedUrlTicket = useRef(false);
 
   useEffect(() => {
     if (!loading && !authLoading && (!user || !isAdmin)) navigate("/");
   }, [isAdmin, loading, authLoading, user, navigate]);
+
+  // Auto-process if opened via /checkin/:ticketId URL
+  useEffect(() => {
+    if (urlTicketId && isAdmin && !processedUrlTicket.current) {
+      processedUrlTicket.current = true;
+      // Small delay to ensure processTicket is ready
+      setTimeout(() => {
+        processTicket(urlTicketId);
+      }, 100);
+    }
+  }, [urlTicketId, isAdmin]);
 
   const processTicket = useCallback(async (ticketId: string) => {
     if (processing) return;
