@@ -69,8 +69,54 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
 
   const isSelf = user?.id === member.id;
   const displayName = member.full_name || member.email || "this member";
+  const handleViewMbti = async () => {
+    setMbtiLoading(true);
+    setMbtiDialogOpen(true);
+    const { data, error } = await supabase
+      .from("mbti_results" as any)
+      .select("*")
+      .eq("user_id", member.id)
+      .maybeSingle();
+    if (error || !data) {
+      setMbtiResult(null);
+    } else {
+      setMbtiResult(data);
+    }
+    setMbtiLoading(false);
+  };
 
-  const handleToggleBan = async () => {
+  const mbtiResults = (() => {
+    if (!mbtiResult) return null;
+    const scores = mbtiResult.scores as Record<string, number>;
+    const lang = (mbtiResult.lang || "en") as Lang;
+    const levels: Record<string, string> = {};
+    const traitResults = TRAITS_ORDER.map((trait) => {
+      const lvl = getLevel(scores[trait]);
+      levels[trait] = lvl;
+      return {
+        trait,
+        traitLabel: scalableTitles[trait][lang],
+        score: scores[trait],
+        archetype: resultsText[trait][lvl][lang],
+        definition: traitDefinitions[trait][lvl][lang],
+      };
+    });
+    const dnaCode = getDnaCode(scores);
+    const rarity = getRarity(scores);
+    const conflict = conflicts.find((c) => c.cond(scores));
+    const strategyTitles: Record<Lang, string[]> = {
+      en: ["Social Strategy", "Team Dynamics", "Execution Style", "Stress Response", "Innovation Approach"],
+      fr: ["Stratégie Sociale", "Dynamique d'Équipe", "Style d'Exécution", "Réponse au Stress", "Approche de l'Innovation"],
+      ar: ["الاستراتيجية الاجتماعية", "ديناميكية الفريق", "أسلوب التنفيذ", "الاستجابة للضغوط", "منهجية الابتكار"],
+    };
+    const strategies = TRAITS_ORDER.map((trait, idx) => ({
+      title: strategyTitles[lang][idx],
+      text: adviceDb[trait]?.[levels[trait]]?.[lang] ?? "",
+    }));
+    return { traitResults, dnaCode, rarity, conflict, strategies, lang };
+  })();
+
+
     setLoading(true);
     const newBanned = !member.is_banned;
     const { error } = await supabase
