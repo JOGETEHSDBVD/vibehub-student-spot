@@ -1,9 +1,30 @@
-import { useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, MapPin, Users } from "lucide-react";
-import { useEventParticipants } from "@/hooks/useEventParticipants";
+import { Button } from "@/components/ui/button";
+import { CalendarDays, MapPin, Users, Download, Filter } from "lucide-react";
+import { useEventParticipants, type Participant } from "@/hooks/useEventParticipants";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const MEMBER_TYPES: Record<string, string> = {
+  "1ere_annee": "1ère Année",
+  "2eme_annee": "2ème Année",
+  trainer: "Formateur",
+  administration: "Administration",
+};
 
 interface EventDetailModalProps {
   open: boolean;
@@ -24,6 +45,64 @@ interface EventDetailModalProps {
 
 const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
   const { participants, loading: participantsLoading } = useEventParticipants(open ? event.id ?? null : null);
+  const [sortPole, setSortPole] = useState("all");
+  const [sortAnnee, setSortAnnee] = useState("all");
+
+  const availablePoles = useMemo(() => {
+    const poles = [...new Set(participants.map((p) => p.pole).filter(Boolean))] as string[];
+    return poles.sort();
+  }, [participants]);
+
+  const filtered = useMemo(() => {
+    let list = [...participants];
+    if (sortPole !== "all") list = list.filter((p) => p.pole === sortPole);
+    if (sortAnnee !== "all") list = list.filter((p) => p.member_type === sortAnnee);
+    return list;
+  }, [participants, sortPole, sortAnnee]);
+
+  const downloadExcel = async () => {
+    const XLSX = await import("xlsx");
+    const rows = filtered.map((p) => ({
+      Name: p.full_name ?? "Unknown",
+      Email: p.email ?? "—",
+      Pôle: p.pole ?? "—",
+      Type: MEMBER_TYPES[p.member_type ?? ""] ?? p.member_type ?? "—",
+      "Joined At": new Date(p.joined_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Participants");
+    XLSX.writeFile(wb, `${event.title}_participants.xlsx`);
+  };
+
+  const downloadPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
+    const autoTable = (await import("jspdf-autotable")).default;
+
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text(`${event.title} — Participants`, 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Date: ${new Date(event.date).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}`, 14, 28);
+    doc.text(`Total: ${filtered.length} participants`, 14, 34);
+
+    autoTable(doc, {
+      startY: 40,
+      head: [["#", "Name", "Email", "Pôle", "Type", "Joined"]],
+      body: filtered.map((p, i) => [
+        i + 1,
+        p.full_name ?? "Unknown",
+        p.email ?? "—",
+        p.pole ?? "—",
+        MEMBER_TYPES[p.member_type ?? ""] ?? p.member_type ?? "—",
+        new Date(p.joined_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      ]),
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [34, 197, 94] },
+    });
+
+    doc.save(`${event.title}_participants.pdf`);
+  };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -79,24 +158,77 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
             )}
 
             {/* Description */}
-            {event.description ? (
-              <div className="pt-2 border-t border-border">
+            <div className="pt-2 border-t border-border">
+              {event.description ? (
                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{event.description}</p>
-              </div>
-            ) : (
-              <div className="pt-2 border-t border-border">
+              ) : (
                 <p className="text-sm text-muted-foreground italic">No description provided.</p>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Participants */}
             <div className="pt-2 border-t border-border">
-              <div className="flex items-center gap-2 mb-3">
-                <Users size={16} className="text-primary" />
-                <h3 className="text-sm font-bold text-foreground">
-                  Participants ({participantsLoading ? "..." : participants.length})
-                </h3>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Users size={16} className="text-primary" />
+                  <h3 className="text-sm font-bold text-foreground">
+                    Participants ({participantsLoading ? "..." : filtered.length})
+                  </h3>
+                </div>
+
+                {participants.length > 0 && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs">
+                        <Download size={13} /> Export
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={downloadExcel}>
+                        📊 Download Excel
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={downloadPDF}>
+                        📄 Download PDF
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
+
+              {/* Sorting filters */}
+              {participants.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <Filter size={13} className="text-muted-foreground" />
+                  <Select value={sortAnnee} onValueChange={setSortAnnee}>
+                    <SelectTrigger className="w-[130px] h-7 text-[11px]">
+                      <SelectValue placeholder="Année" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Années</SelectItem>
+                      <SelectItem value="1ere_annee">1ère Année</SelectItem>
+                      <SelectItem value="2eme_annee">2ème Année</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={sortPole} onValueChange={setSortPole}>
+                    <SelectTrigger className="w-[160px] h-7 text-[11px]">
+                      <SelectValue placeholder="Pôle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Pôles</SelectItem>
+                      {availablePoles.map((p) => (
+                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {(sortPole !== "all" || sortAnnee !== "all") && (
+                    <Button variant="ghost" size="sm" className="h-7 text-[11px]" onClick={() => { setSortPole("all"); setSortAnnee("all"); }}>
+                      Clear
+                    </Button>
+                  )}
+                </div>
+              )}
 
               {participantsLoading ? (
                 <div className="space-y-2">
@@ -107,11 +239,13 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
                     </div>
                   ))}
                 </div>
-              ) : participants.length === 0 ? (
-                <p className="text-sm text-muted-foreground italic">No participants yet.</p>
+              ) : filtered.length === 0 ? (
+                <p className="text-sm text-muted-foreground italic">
+                  {participants.length === 0 ? "No participants yet." : "No participants match the selected filters."}
+                </p>
               ) : (
                 <div className="space-y-2">
-                  {participants.map((p) => (
+                  {filtered.map((p) => (
                     <div key={p.user_id} className="flex items-center gap-3">
                       {p.avatar_url ? (
                         <img src={p.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover" />
@@ -120,11 +254,21 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
                           {p.full_name?.[0] ?? "?"}
                         </div>
                       )}
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground">{p.full_name}</p>
                         <p className="text-[10px] text-muted-foreground">
                           Joined {new Date(p.joined_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        {p.member_type && (
+                          <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                            {MEMBER_TYPES[p.member_type] ?? p.member_type}
+                          </span>
+                        )}
+                        {p.pole && (
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{p.pole}</p>
+                        )}
                       </div>
                     </div>
                   ))}
