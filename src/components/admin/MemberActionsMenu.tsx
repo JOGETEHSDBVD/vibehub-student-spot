@@ -116,7 +116,7 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
     return { traitResults, dnaCode, rarity, conflict, strategies, lang };
   })();
 
-
+  const handleToggleBan = async () => {
     setLoading(true);
     const newBanned = !member.is_banned;
     const { error } = await supabase
