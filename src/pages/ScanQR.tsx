@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { CheckCircle2, XCircle, AlertTriangle, Camera, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
