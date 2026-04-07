@@ -298,6 +298,103 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* MBTI Results Dialog */}
+      <Dialog open={mbtiDialogOpen} onOpenChange={setMbtiDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle>MBTI Results — {displayName}</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[70vh] px-6 pb-6">
+            {mbtiLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+              </div>
+            ) : !mbtiResult || !mbtiResults ? (
+              <div className="text-center py-12">
+                <Brain className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3" />
+                <p className="text-muted-foreground font-medium">No MBTI results found</p>
+                <p className="text-xs text-muted-foreground mt-1">This member hasn't taken the test yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-4 pt-2">
+                {/* DNA + Rarity */}
+                <div className="rounded-xl border border-border p-4 flex items-center justify-between bg-muted/30">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">DNA Code</p>
+                    <p className="font-mono font-bold text-lg text-foreground">{mbtiResults.dnaCode}</p>
+                  </div>
+                  <span className="px-3 py-1.5 rounded-full text-sm font-semibold text-white" style={{ backgroundColor: mbtiResults.rarity.color }}>
+                    {mbtiResults.rarity.title}
+                  </span>
+                </div>
+
+                {/* Radar Chart */}
+                <div className="rounded-xl border border-border p-4">
+                  <svg viewBox="0 0 400 360" className="w-full max-w-sm mx-auto">
+                    {(() => {
+                      const cx = 200, cy = 170, maxR = 120;
+                      const n = mbtiResults.traitResults.length;
+                      const angles = mbtiResults.traitResults.map((_: any, i: number) => (Math.PI * 2 * i) / n - Math.PI / 2);
+                      const getPoint = (angle: number, r: number) => ({ x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) });
+                      const rings = [0.25, 0.5, 0.75, 1];
+                      const gridLines = rings.map((scale) => angles.map((a: number) => getPoint(a, maxR * scale)).map((p: any) => `${p.x},${p.y}`).join(" "));
+                      const dataPoints = mbtiResults.traitResults.map((t: any, i: number) => getPoint(angles[i], (t.score / 100) * maxR));
+                      const dataPolygon = dataPoints.map((p: any) => `${p.x},${p.y}`).join(" ");
+                      const axisEnds = angles.map((a: number) => getPoint(a, maxR));
+                      const labelPoints = angles.map((a: number) => getPoint(a, maxR + 28));
+                      return (
+                        <>
+                          {gridLines.map((pts: string, i: number) => <polygon key={i} points={pts} fill="none" stroke="hsl(var(--border))" strokeWidth="1" opacity={0.6} />)}
+                          {axisEnds.map((p: any, i: number) => <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="hsl(var(--border))" strokeWidth="1" opacity={0.4} />)}
+                          <polygon points={dataPolygon} fill="hsl(var(--primary))" fillOpacity={0.2} stroke="hsl(var(--primary))" strokeWidth="2" />
+                          {dataPoints.map((p: any, i: number) => <circle key={i} cx={p.x} cy={p.y} r={4} fill="hsl(var(--primary))" stroke="white" strokeWidth="2" />)}
+                          {labelPoints.map((p: any, i: number) => <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" className="fill-muted-foreground" fontSize="11">{mbtiResults.traitResults[i].traitLabel}</text>)}
+                        </>
+                      );
+                    })()}
+                  </svg>
+                </div>
+
+                {/* Conflict */}
+                {mbtiResults.conflict && (
+                  <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4">
+                    <p className="font-bold text-destructive mb-1">⚔️ {mbtiResults.conflict.name}</p>
+                    <p className="text-sm text-foreground/80">{mbtiResults.conflict.text[mbtiResults.lang]}</p>
+                  </div>
+                )}
+
+                {/* Strategies */}
+                <h3 className="font-bold text-foreground">AI Personal Strategy</h3>
+                {mbtiResults.strategies.map((s: any, idx: number) => (
+                  <div key={idx} className="rounded-xl border border-border border-l-4 border-l-primary p-4">
+                    <p className="font-bold text-foreground mb-1">📌 {s.title}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{s.text}</p>
+                  </div>
+                ))}
+
+                {/* Trait Breakdown */}
+                {mbtiResults.traitResults.map((t: any) => (
+                  <div key={t.trait} className="rounded-xl border border-border p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-bold text-foreground">{t.traitLabel}</h3>
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">{t.archetype}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground italic mb-3">"{t.definition}"</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Score</span>
+                      <div className="flex-1 bg-muted rounded-full h-2">
+                        <div className="h-2 rounded-full bg-primary transition-all duration-700" style={{ width: `${t.score}%` }} />
+                      </div>
+                      <span className="text-xs font-medium text-foreground">{t.score}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
