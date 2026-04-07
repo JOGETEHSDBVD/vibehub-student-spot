@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ChangePasswordSection from "@/components/ChangePasswordSection";
 
 const MyAccount = () => {
   const { user, profile, loading, refreshProfile } = useAuth();
@@ -161,6 +162,10 @@ const MyAccount = () => {
             <Label className="text-muted-foreground">Filière</Label>
             <Input value={profile?.filiere ?? "—"} disabled className="bg-muted mt-1" />
           </div>
+        </div>
+
+        <div className="mt-8">
+          <ChangePasswordSection />
         </div>
       </main>
     </div>

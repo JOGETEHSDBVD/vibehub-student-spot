@@ -21,6 +21,7 @@ import Onboarding from "./pages/Onboarding.tsx";
 import EmailVerified from "./pages/EmailVerified.tsx";
 import MyAccount from "./pages/MyAccount.tsx";
 import MbtiTest from "./pages/MbtiTest.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
@@ -33,7 +34,7 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
     const hash = window.location.hash;
     const isVerificationCallback = hash.includes("type=signup") || hash.includes("type=email") || hash.includes("type=recovery") || hash.includes("access_token");
 
-    const excludedPaths = ["/onboarding", "/email-verified"];
+    const excludedPaths = ["/onboarding", "/email-verified", "/reset-password"];
     const isExcluded = excludedPaths.includes(location.pathname);
 
     if (loading || profileLoading || !user || !emailVerified || isVerificationCallback || isExcluded) {
@@ -67,6 +68,7 @@ const AppRoutes = () => (
         <Route path="/admin/announcements" element={<AdminAnnouncements />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/account" element={<MyAccount />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/mbti-test" element={<MbtiTest />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
