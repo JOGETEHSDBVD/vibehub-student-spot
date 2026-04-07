@@ -63,6 +63,7 @@ const EventDetail = () => {
   const [participantCount, setParticipantCount] = useState(0);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [userProfile, setUserProfile] = useState<{ pole: string | null; member_type: string | null } | null>(null);
+  const [qrEnabled, setQrEnabled] = useState(false);
 
   // Fetch event
   useEffect(() => {
