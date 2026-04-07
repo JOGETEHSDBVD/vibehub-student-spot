@@ -67,6 +67,21 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const isEditing = !!event;
 
   const [title, setTitle] = useState(event?.title ?? "");
+
+  // Load qr_enabled for editing
+  useEffect(() => {
+    if (isEditing && event?.id) {
+      const loadQr = async () => {
+        const { data } = await supabase
+          .from("events")
+          .select("qr_enabled")
+          .eq("id", event.id)
+          .single();
+        if (data) setQrEnabled((data as any).qr_enabled ?? false);
+      };
+      loadQr();
+    }
+  }, [isEditing, event?.id]);
   const [description, setDescription] = useState(event?.description ?? "");
   const [date, setDate] = useState<Date | undefined>(event?.date ? new Date(event.date) : undefined);
   const [time, setTime] = useState(event?.date ? format(new Date(event.date), "HH:mm") : "12:00");
