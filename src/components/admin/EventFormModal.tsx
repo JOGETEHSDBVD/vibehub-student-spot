@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Clock, Upload, X, Star } from "lucide-react";
+import TimeScrollPicker from "@/components/TimeScrollPicker";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -318,13 +319,16 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={date} onSelect={setDate} initialFocus className="p-3 pointer-events-auto" />
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d) => { setDate(d); }}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
                 </PopoverContent>
               </Popover>
-              <div className="relative">
-                <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-[130px] pl-8" />
-              </div>
+              <TimeScrollPicker value={time} onChange={setTime} />
             </div>
 
             <div className="mt-2 flex items-center gap-2">
@@ -341,10 +345,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
             {hasEndTime && (
               <div className="mt-2 flex items-center gap-2">
                 <Label className="text-sm whitespace-nowrap">End Time</Label>
-                <div className="relative">
-                  <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="w-[130px] pl-8" />
-                </div>
+                <TimeScrollPicker value={endTime} onChange={setEndTime} />
               </div>
             )}
           </div>
