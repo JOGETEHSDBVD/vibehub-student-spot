@@ -68,7 +68,12 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Password</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" required />
-            <div className="mt-1 text-right"><a href="#" className="text-xs font-medium text-primary hover:underline">Forgot password?</a></div>
+            <div className="mt-1 text-right"><button type="button" onClick={async () => {
+              if (!email) { toast({ title: "Please enter your email first", variant: "destructive" }); return; }
+              const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+              if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+              else { toast({ title: "Reset email sent", description: "Check your inbox for a password reset link." }); onClose(); }
+            }} className="text-xs font-medium text-primary hover:underline">Forgot password?</button></div>
           </div>
           <button type="submit" disabled={loading} className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:opacity-50">
             {loading ? "Signing in..." : "Sign In"}
