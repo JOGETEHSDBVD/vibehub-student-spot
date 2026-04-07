@@ -163,6 +163,10 @@ const MyAccount = () => {
             <Input value={profile?.filiere ?? "—"} disabled className="bg-muted mt-1" />
           </div>
         </div>
+
+        <div className="mt-8">
+          <ChangePasswordSection />
+        </div>
       </main>
     </div>
   );

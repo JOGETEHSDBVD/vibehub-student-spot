@@ -214,6 +214,8 @@ const AdminSettings = () => {
             </div>
           </div>
 
+          <ChangePasswordSection />
+
           {/* Save */}
           <div className="flex justify-end pb-8">
             <Button onClick={handleSave} disabled={saving} className="gap-2">
