@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, CalendarDays, CalendarCheck, History, BarChart3, Megaphone, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, CalendarDays, CalendarCheck, History, BarChart3, Megaphone, Settings, LogOut, QrCode } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import logoCmc from "@/assets/logo-cmc.png";
@@ -9,6 +9,7 @@ const navItems = [
   { label: "Your Events", icon: CalendarDays, path: "/admin/events" },
   { label: "Active Events", icon: CalendarCheck, path: "/admin/active-events" },
   { label: "Past Events", icon: History, path: "/admin/past-events" },
+  { label: "QR Scanner", icon: QrCode, path: "/admin/scan-qr" },
   { label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
   { label: "Announcements", icon: Megaphone, path: "/admin/announcements" },
 ];
