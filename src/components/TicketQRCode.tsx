@@ -108,7 +108,7 @@ const TicketQRCode = ({ eventId, userId, eventTitle }: TicketQRCodeProps) => {
         className="w-full gap-2 border-dark-bg-foreground/20 text-dark-bg-foreground hover:bg-dark-bg-foreground/10"
       >
         <Download size={14} /> Save Ticket
-    </div>
+      </Button>
     </div>
   );
 };
