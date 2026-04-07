@@ -354,9 +354,15 @@ const EventDetail = () => {
                 </div>
               )}
 
-              {/* QR Ticket */}
+              {/* QR Ticket button */}
               {hasJoined && qrEnabled && user && id && (
-                <TicketQRCode eventId={id} userId={user.id} eventTitle={event.title} />
+                <Button
+                  variant="outline"
+                  onClick={() => setShowTicket(true)}
+                  className="rounded-full px-6 gap-2 border-primary text-primary hover:bg-primary/10"
+                >
+                  🎫 View My Ticket
+                </Button>
               )}
 
               {isPast && (
