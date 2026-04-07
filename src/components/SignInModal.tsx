@@ -97,6 +97,7 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

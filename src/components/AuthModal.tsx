@@ -142,6 +142,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
