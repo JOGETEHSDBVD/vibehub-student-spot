@@ -97,6 +97,26 @@ const AdminEvents = () => {
           </Button>
         </div>
 
+        {/* Filter tabs */}
+        <div className="mb-5 flex gap-2">
+          {(["all", "published", "draft"] as const).map((f) => {
+            const count = f === "all" ? events.length : events.filter((e) => f === "published" ? e.is_published : !e.is_published).length;
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                  filter === f
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {f === "all" ? "All" : f === "published" ? "Published" : "Draft"} ({count})
+              </button>
+            );
+          })}
+        </div>
+
         {fetching ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
         ) : events.length === 0 ? (
@@ -104,9 +124,16 @@ const AdminEvents = () => {
             <CalendarDays className="h-12 w-12 text-muted-foreground/30" />
             <p className="mt-3 text-sm text-muted-foreground">No events yet. Create your first event!</p>
           </div>
-        ) : (
+        ) : (() => {
+          const filtered = filter === "all" ? events : events.filter((e) => filter === "published" ? e.is_published : !e.is_published);
+          return filtered.length === 0 ? (
+            <div className="flex flex-col items-center py-16">
+              <CalendarDays className="h-12 w-12 text-muted-foreground/30" />
+              <p className="mt-3 text-sm text-muted-foreground">No {filter} events found.</p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((e) => (
+            {filtered.map((e) => (
               <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
                 {/* 3-dot menu */}
                 <div className="absolute top-2 right-2 z-10" onClick={(ev) => ev.stopPropagation()}>
