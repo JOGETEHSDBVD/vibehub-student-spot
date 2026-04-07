@@ -37,6 +37,7 @@ const AdminEvents = () => {
   const navigate = useNavigate();
 
   const [events, setEvents] = useState<EventRow[]>([]);
+  const [filter, setFilter] = useState<"all" | "published" | "draft">("all");
   const [fetching, setFetching] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
