@@ -43,6 +43,7 @@ interface OrganizerProfile {
 }
 
 const EventDetail = () => {
+  const [showTicket, setShowTicket] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const [event, setEvent] = useState<EventFull | null>(null);
