@@ -126,6 +126,41 @@ export type Database = {
           },
         ]
       }
+      event_tickets: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          used: boolean
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          used?: boolean
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          used?: boolean
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           category: string | null
@@ -139,6 +174,7 @@ export type Database = {
           is_published: boolean | null
           location: string | null
           pole: string | null
+          qr_enabled: boolean
           recap: string | null
           tags: string[] | null
           target_annee: string | null
@@ -156,6 +192,7 @@ export type Database = {
           is_published?: boolean | null
           location?: string | null
           pole?: string | null
+          qr_enabled?: boolean
           recap?: string | null
           tags?: string[] | null
           target_annee?: string | null
@@ -173,6 +210,7 @@ export type Database = {
           is_published?: boolean | null
           location?: string | null
           pole?: string | null
+          qr_enabled?: boolean
           recap?: string | null
           tags?: string[] | null
           target_annee?: string | null

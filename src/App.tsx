@@ -22,6 +22,7 @@ import EmailVerified from "./pages/EmailVerified.tsx";
 import MyAccount from "./pages/MyAccount.tsx";
 import MbtiTest from "./pages/MbtiTest.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
+import ScanQR from "./pages/ScanQR.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
@@ -70,6 +71,8 @@ const AppRoutes = () => (
         <Route path="/account" element={<MyAccount />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/mbti-test" element={<MbtiTest />} />
+        <Route path="/admin/scan-qr" element={<ScanQR />} />
+        <Route path="/checkin/:ticketId" element={<ScanQR />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </OnboardingGuard>

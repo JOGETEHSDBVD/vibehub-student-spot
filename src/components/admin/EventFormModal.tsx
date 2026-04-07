@@ -67,6 +67,21 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const isEditing = !!event;
 
   const [title, setTitle] = useState(event?.title ?? "");
+
+  // Load qr_enabled for editing
+  useEffect(() => {
+    if (isEditing && event?.id) {
+      const loadQr = async () => {
+        const { data } = await supabase
+          .from("events")
+          .select("qr_enabled")
+          .eq("id", event.id)
+          .single();
+        if (data) setQrEnabled((data as any).qr_enabled ?? false);
+      };
+      loadQr();
+    }
+  }, [isEditing, event?.id]);
   const [description, setDescription] = useState(event?.description ?? "");
   const [date, setDate] = useState<Date | undefined>(event?.date ? new Date(event.date) : undefined);
   const [time, setTime] = useState(event?.date ? format(new Date(event.date), "HH:mm") : "12:00");
@@ -78,6 +93,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [targetAnnee, setTargetAnnee] = useState(event?.target_annee ?? "Not specified");
   const [tags, setTags] = useState<string[]>(event?.tags ?? []);
   const [tagInput, setTagInput] = useState("");
+  const [qrEnabled, setQrEnabled] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Multi-image state
@@ -220,6 +236,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         target_annee: targetAnnee === "Not specified" ? null : targetAnnee,
         image_url: mainImageUrl,
         tags,
+        qr_enabled: qrEnabled,
       };
 
       let eventId = event?.id;
@@ -365,6 +382,19 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
                 {annees.map((a) => <SelectItem key={a} value={a}>{anneeLabels[a]}</SelectItem>)}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* QR Ticket Toggle */}
+          <div className="flex items-center gap-3 rounded-lg border border-input px-4 py-3">
+            <Checkbox
+              id="qrEnabled"
+              checked={qrEnabled}
+              onCheckedChange={(checked) => setQrEnabled(!!checked)}
+            />
+            <div>
+              <label htmlFor="qrEnabled" className="text-sm font-medium cursor-pointer">Enable QR Tickets</label>
+              <p className="text-xs text-muted-foreground">Generate QR code tickets for participants to check in at the event</p>
+            </div>
           </div>
 
           <div>

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import TicketQRCode from "@/components/TicketQRCode";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +54,7 @@ const EventDetail = () => {
   const [participantCount, setParticipantCount] = useState(0);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [userProfile, setUserProfile] = useState<{ pole: string | null; member_type: string | null } | null>(null);
+  const [qrEnabled, setQrEnabled] = useState(false);
 
   // Fetch event
   useEffect(() => {
@@ -65,6 +67,15 @@ const EventDetail = () => {
         .eq("id", id)
         .single();
       setEvent(data as EventFull | null);
+
+      // Fetch qr_enabled separately since it's not in the type
+      const { data: qrData } = await supabase
+        .from("events")
+        .select("qr_enabled")
+        .eq("id", id)
+        .single();
+      setQrEnabled((qrData as any)?.qr_enabled ?? false);
+
       setLoading(false);
     };
     fetchEvent();
@@ -340,6 +351,11 @@ const EventDetail = () => {
                     {hasJoined ? "Leave Event" : "Participate"}
                   </Button>
                 </div>
+              )}
+
+              {/* QR Ticket */}
+              {hasJoined && qrEnabled && user && id && (
+                <TicketQRCode eventId={id} userId={user.id} eventTitle={event.title} />
               )}
 
               {isPast && (
