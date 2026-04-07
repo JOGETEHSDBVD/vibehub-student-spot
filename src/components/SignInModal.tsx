@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ResetEmailSentModal from "@/components/ResetEmailSentModal";
 
 interface Props {
   open: boolean;
@@ -15,6 +16,7 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -48,6 +50,8 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
   };
 
   return (
+    <>
+    <ResetEmailSentModal open={resetSent} email={email} onClose={() => setResetSent(false)} />
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4" onClick={onClose}>
       <div className="relative w-full max-w-md rounded-2xl border border-primary/30 bg-background p-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"><X size={20} /></button>
@@ -72,7 +76,7 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
               if (!email) { toast({ title: "Please enter your email first", variant: "destructive" }); return; }
               const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
               if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-              else { toast({ title: "Reset email sent", description: "Check your inbox for a password reset link." }); onClose(); }
+              else { onClose(); setResetSent(true); }
             }} className="text-xs font-medium text-primary hover:underline">Forgot password?</button></div>
           </div>
           <button type="submit" disabled={loading} className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:opacity-50">
@@ -93,6 +97,7 @@ const SignInModal = ({ open, onClose, onSwitchToJoin }: Props) => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

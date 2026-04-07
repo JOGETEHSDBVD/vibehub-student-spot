@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import ResetEmailSentModal from "@/components/ResetEmailSentModal";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -50,6 +52,8 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   };
 
   return (
+    <>
+    <ResetEmailSentModal open={resetSent} email={email} onClose={() => setResetSent(false)} />
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[440px] bg-card border-primary/20 p-0 overflow-hidden">
         <div className="h-2 bg-primary w-full" />
@@ -96,7 +100,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
                 if (!email) { toast({ title: "Please enter your email first", variant: "destructive" }); return; }
                 const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
                 if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-                else { toast({ title: "Reset email sent", description: "Check your inbox for a password reset link." }); onClose(); }
+                else { onClose(); setResetSent(true); }
               }} className="text-xs text-primary font-semibold self-end hover:underline">
                 Forgot password?
               </button>
@@ -138,6 +142,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
