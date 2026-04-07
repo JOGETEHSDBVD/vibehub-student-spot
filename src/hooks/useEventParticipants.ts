@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-interface Participant {
+export interface Participant {
   user_id: string;
   full_name: string | null;
   avatar_url: string | null;
   joined_at: string;
+  pole: string | null;
+  member_type: string | null;
+  email: string | null;
 }
 
 export const useEventParticipantCounts = (eventIds: string[]) => {
@@ -38,7 +41,7 @@ export const useEventParticipants = (eventId: string | null) => {
 
   useEffect(() => {
     if (!eventId) { setParticipants([]); return; }
-    const fetch = async () => {
+    const fetchData = async () => {
       setLoading(true);
       const { data } = await supabase
         .from("event_participants")
@@ -50,7 +53,7 @@ export const useEventParticipants = (eventId: string | null) => {
         const userIds = data.map((d: any) => d.user_id);
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id, full_name, avatar_url")
+          .select("id, full_name, avatar_url, pole, member_type, email")
           .in("id", userIds);
 
         const profileMap = Object.fromEntries(
@@ -63,6 +66,9 @@ export const useEventParticipants = (eventId: string | null) => {
             full_name: profileMap[d.user_id]?.full_name ?? "Unknown",
             avatar_url: profileMap[d.user_id]?.avatar_url ?? null,
             joined_at: d.joined_at,
+            pole: profileMap[d.user_id]?.pole ?? null,
+            member_type: profileMap[d.user_id]?.member_type ?? null,
+            email: profileMap[d.user_id]?.email ?? null,
           }))
         );
       } else {
@@ -70,7 +76,7 @@ export const useEventParticipants = (eventId: string | null) => {
       }
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, [eventId]);
 
   return { participants, loading };
