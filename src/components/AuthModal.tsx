@@ -52,6 +52,8 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   };
 
   return (
+    <>
+    <ResetEmailSentModal open={resetSent} email={email} onClose={() => setResetSent(false)} />
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[440px] bg-card border-primary/20 p-0 overflow-hidden">
         <div className="h-2 bg-primary w-full" />
