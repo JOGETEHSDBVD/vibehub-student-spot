@@ -383,6 +383,19 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
             </Select>
           </div>
 
+          {/* QR Ticket Toggle */}
+          <div className="flex items-center gap-3 rounded-lg border border-input px-4 py-3">
+            <Checkbox
+              id="qrEnabled"
+              checked={qrEnabled}
+              onCheckedChange={(checked) => setQrEnabled(!!checked)}
+            />
+            <div>
+              <label htmlFor="qrEnabled" className="text-sm font-medium cursor-pointer">Enable QR Tickets</label>
+              <p className="text-xs text-muted-foreground">Generate QR code tickets for participants to check in at the event</p>
+            </div>
+          </div>
+
           <div>
             <Label>Hashtags</Label>
             <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded-md border border-input px-3 py-2 focus-within:ring-2 focus-within:ring-ring">
