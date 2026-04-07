@@ -102,10 +102,9 @@ const TicketQRCode = ({ eventId, userId, eventTitle }: TicketQRCodeProps) => {
       </p>
 
       <Button
-        variant="outline"
         size="sm"
         onClick={handleDownload}
-        className="w-full gap-2 border-dark-bg-foreground/20 text-dark-bg-foreground hover:bg-dark-bg-foreground/10"
+        className="w-full gap-2"
       >
         <Download size={14} /> Save Ticket
       </Button>
