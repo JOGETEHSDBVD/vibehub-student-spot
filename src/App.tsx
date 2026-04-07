@@ -71,6 +71,8 @@ const AppRoutes = () => (
         <Route path="/account" element={<MyAccount />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/mbti-test" element={<MbtiTest />} />
+        <Route path="/admin/scan-qr" element={<ScanQR />} />
+        <Route path="/checkin/:ticketId" element={<ScanQR />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </OnboardingGuard>

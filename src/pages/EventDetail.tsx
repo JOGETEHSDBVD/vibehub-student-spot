@@ -362,6 +362,11 @@ const EventDetail = () => {
                 </div>
               )}
 
+              {/* QR Ticket */}
+              {hasJoined && qrEnabled && user && id && (
+                <TicketQRCode eventId={id} userId={user.id} eventTitle={event.title} />
+              )}
+
               {isPast && (
                 <p className="text-sm font-medium text-dark-bg-foreground/50 italic">This event has ended.</p>
               )}
