@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { CalendarDays, MapPin, ArrowLeft, User } from "lucide-react";
+import { CalendarDays, MapPin, ArrowLeft, User, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
