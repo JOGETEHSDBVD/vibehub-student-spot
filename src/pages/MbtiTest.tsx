@@ -21,7 +21,8 @@ import {
 } from "@/data/mbtiData";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ChevronRight, Brain, RotateCcw, Loader2 } from "lucide-react";
+import { ChevronRight, Brain, RotateCcw, Loader2, Lock } from "lucide-react";
+import AuthModal from "@/components/AuthModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
