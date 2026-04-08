@@ -469,6 +469,21 @@ const EventDetail = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* QR Ticket Popup */}
+        {showTicket && qrEnabled && user && id && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowTicket(false)}>
+            <div className="relative w-full max-w-sm mx-4 animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => setShowTicket(false)}
+                className="absolute -top-3 -right-3 z-10 rounded-full bg-dark-bg border border-dark-bg-foreground/20 p-1.5 text-dark-bg-foreground/70 hover:text-dark-bg-foreground transition-colors"
+              >
+                <X size={16} />
+              </button>
+              <TicketQRCode eventId={id} userId={user.id} eventTitle={event.title} />
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </div>
