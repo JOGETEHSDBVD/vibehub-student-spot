@@ -50,7 +50,7 @@ const Navbar = () => {
       <header className={`sticky top-0 z-50 w-full border-b px-8 lg:px-24 py-5 ${isDarkPage ? "border-dark-bg-foreground/10 bg-dark-bg/90 backdrop-blur-md" : "border-primary/20 bg-background/80 backdrop-blur-md"}`}>
         <div className="mx-auto max-w-7xl flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <img src={logoCmc} alt="CMC Logo" className="h-12 w-auto object-contain" />
+            <img src={isDarkPage ? logoWhite : logoBlue} alt="VibeHub Logo" className="h-12 w-auto object-contain" />
             <h2 className={`font-display text-3xl font-black tracking-tight ${isDarkPage ? "text-dark-bg-foreground" : "text-foreground"}`}>VibeHub</h2>
           </Link>
           <nav className="hidden md:flex items-center gap-12">
