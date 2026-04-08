@@ -202,6 +202,41 @@ const MbtiTest = () => {
     setAnswers({});
   };
 
+  // Auth gate
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-primary/5">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
+          <div className="rounded-2xl border border-border bg-background p-10 shadow-lg max-w-md w-full">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <Lock size={32} className="text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-3">Sign in to take the MBTI Test</h2>
+            <p className="text-muted-foreground mb-8">
+              Discover your psychological DNA and unlock personalized insights. Create an account or sign in to get started.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button onClick={() => setAuthMode("signin")} className="w-full rounded-full">
+                Sign In
+              </Button>
+              <Button onClick={() => setAuthMode("signup")} variant="outline" className="w-full rounded-full">
+                Join Club
+              </Button>
+            </div>
+          </div>
+        </div>
+        <Footer />
+        <AuthModal
+          isOpen={authMode !== null}
+          mode={authMode ?? "signin"}
+          onClose={() => setAuthMode(null)}
+          onSwitchMode={(mode) => setAuthMode(mode)}
+        />
+      </div>
+    );
+  }
+
   // Loading
   if (step === "loading") {
     return (
