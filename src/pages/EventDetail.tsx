@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { CalendarDays, MapPin, ArrowLeft, User } from "lucide-react";
+import { CalendarDays, MapPin, ArrowLeft, User, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +43,7 @@ interface OrganizerProfile {
 }
 
 const EventDetail = () => {
+  const [showTicket, setShowTicket] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const [event, setEvent] = useState<EventFull | null>(null);
@@ -353,9 +354,15 @@ const EventDetail = () => {
                 </div>
               )}
 
-              {/* QR Ticket */}
+              {/* QR Ticket button */}
               {hasJoined && qrEnabled && user && id && (
-                <TicketQRCode eventId={id} userId={user.id} eventTitle={event.title} />
+                <Button
+                  variant="outline"
+                  onClick={() => setShowTicket(true)}
+                  className="rounded-full px-6 gap-2 border-primary text-primary hover:bg-primary/10"
+                >
+                  🎫 View My Ticket
+                </Button>
               )}
 
               {isPast && (
@@ -462,6 +469,21 @@ const EventDetail = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* QR Ticket Popup */}
+        {showTicket && qrEnabled && user && id && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowTicket(false)}>
+            <div className="relative w-full max-w-sm mx-4 animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => setShowTicket(false)}
+                className="absolute -top-3 -right-3 z-10 rounded-full bg-dark-bg border border-dark-bg-foreground/20 p-1.5 text-dark-bg-foreground/70 hover:text-dark-bg-foreground transition-colors"
+              >
+                <X size={16} />
+              </button>
+              <TicketQRCode eventId={id} userId={user.id} eventTitle={event.title} />
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </div>
