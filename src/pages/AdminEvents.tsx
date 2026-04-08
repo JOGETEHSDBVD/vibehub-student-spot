@@ -132,9 +132,9 @@ const AdminEvents = () => {
               <p className="mt-3 text-sm text-muted-foreground">No {filter} events found.</p>
             </div>
           ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 -mx-2 px-2 scrollbar-thin sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-x-visible sm:snap-none sm:pb-0 sm:mx-0 sm:px-0">
             {filtered.map((e) => (
-              <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
+              <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer min-w-[280px] shrink-0 sm:min-w-0 sm:shrink snap-start" onClick={() => setViewingEvent(e)}>
                 {/* 3-dot menu */}
                 <div className="absolute top-2 right-2 z-10" onClick={(ev) => ev.stopPropagation()}>
                   <DropdownMenu>
