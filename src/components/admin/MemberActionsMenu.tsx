@@ -73,7 +73,7 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
     setMbtiLoading(true);
     setMbtiDialogOpen(true);
     const { data, error } = await supabase
-      .from("mbti_results" as any)
+      .from("mbti_results")
       .select("*")
       .eq("user_id", member.id)
       .maybeSingle();
