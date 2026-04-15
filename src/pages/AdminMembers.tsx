@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Shield, Filter } from "lucide-react";
+import { Search, Shield, Filter, Download } from "lucide-react";
 import MemberActionsMenu from "@/components/admin/MemberActionsMenu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -129,6 +129,47 @@ const AdminMembers = () => {
 
   const refreshMembers = () => setRefreshKey((k) => k + 1);
 
+  const handleExportExcel = async () => {
+    const { data: allRoles } = await supabase
+      .from("user_roles")
+      .select("user_id, role")
+      .in("role", ["admin", "scanner"] as any[]);
+    const roleMap = new Map<string, string[]>();
+    (allRoles ?? []).forEach((r) => {
+      const existing = roleMap.get(r.user_id) || [];
+      existing.push(r.role);
+      roleMap.set(r.user_id, existing);
+    });
+
+    const { data: allMembers } = await supabase
+      .from("profiles")
+      .select("id, full_name, email, member_type, pole, filiere, is_banned, created_at")
+      .order("created_at", { ascending: false });
+
+    if (!allMembers?.length) return;
+
+    const XLSX = await import("xlsx");
+    const rows = allMembers.map((m) => {
+      const roles = roleMap.get(m.id) || [];
+      const role = roles.includes("admin") ? "Admin" : roles.includes("scanner") ? "QR Scanner" : "Member";
+      return {
+        "Full Name": m.full_name || "—",
+        "Email": m.email || "—",
+        "Role": role,
+        "Type": MEMBER_TYPES.find(t => t.value === m.member_type)?.label || m.member_type || "—",
+        "Pôle": m.pole || "—",
+        "Filière": m.filiere || "—",
+        "Status": m.is_banned ? "Banned" : "Active",
+        "Joined": new Date(m.created_at).toLocaleDateString(),
+      };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Members");
+    XLSX.writeFile(wb, `VibeHub_Members_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
@@ -155,14 +196,19 @@ const AdminMembers = () => {
           <div className="flex flex-col gap-3 p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="text-lg font-bold text-foreground">All Members ({total})</h3>
-              <div className="relative w-full sm:w-56">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search members..."
-                  value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                  className="pl-9"
-                />
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={handleExportExcel}>
+                  <Download size={14} /> Export Excel
+                </Button>
+                <div className="relative w-full sm:w-56">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search members..."
+                    value={search}
+                    onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                    className="pl-9"
+                  />
+                </div>
               </div>
             </div>
 
