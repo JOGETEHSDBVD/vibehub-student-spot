@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import ResetEmailSentModal from "@/components/ResetEmailSentModal";
+import { Eye, EyeOff, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,18 +15,36 @@ interface AuthModalProps {
   onSwitchMode: (mode: "signin" | "signup") => void;
 }
 
+const passwordRules = [
+  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+  { label: "At least 1 uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "At least 1 lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+  { label: "At least 1 number", test: (p: string) => /\d/.test(p) },
+  { label: "At least 1 special character (!@#$%^&*)", test: (p: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) },
+];
+
 const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const allPasswordValid = useMemo(() => passwordRules.every((r) => r.test(password)), [password]);
+  const signupFormValid = firstName.trim() && lastName.trim() && emailValid && allPasswordValid;
+
+  const inputClass = "h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (mode === "signup" && !signupFormValid) return;
     setLoading(true);
     if (mode === "signin") {
       const { error } = await signIn(email, password);
@@ -37,14 +57,15 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
         onClose();
       }
     } else {
-      const { error } = await signUp(email, password, name);
+      const fullName = `${firstName.trim()} ${lastName.trim()}`;
+      const { error } = await signUp(email, password, fullName);
       setLoading(false);
       if (error) {
         toast({ title: "Sign up failed", description: error, variant: "destructive" });
       } else {
         toast({ title: "Compte créé !", description: "Vérifiez votre email pour continuer." });
         localStorage.setItem("onboarding_email", email);
-        setEmail(""); setPassword(""); setName("");
+        setEmail(""); setPassword(""); setFirstName(""); setLastName("");
         onClose();
         navigate("/email-verified");
       }
@@ -55,7 +76,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
     <>
     <ResetEmailSentModal open={resetSent} email={email} onClose={() => setResetSent(false)} />
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[440px] bg-card border-primary/20 p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[440px] bg-card border-primary/20 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         <div className="h-2 bg-primary w-full" />
         <div className="p-8">
           <DialogHeader className="mb-6">
@@ -75,24 +96,66 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {mode === "signup" && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold" htmlFor="auth-name">Full Name</label>
-                <input id="auth-name" type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  className="h-11 rounded-lg border border-border bg-background px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                  placeholder="Enter your full name" required />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold" htmlFor="auth-first">First Name</label>
+                  <input id="auth-first" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)}
+                    className={inputClass} placeholder="First name" required />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold" htmlFor="auth-last">Last Name</label>
+                  <input id="auth-last" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}
+                    className={inputClass} placeholder="Last name" required />
+                </div>
               </div>
             )}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold" htmlFor="auth-email">Email</label>
-              <input id="auth-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                className="h-11 rounded-lg border border-border bg-background px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+              <input id="auth-email" type="email" value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setEmailTouched(true)}
+                className={inputClass}
                 placeholder="you@university.edu" required />
+              {emailTouched && email && !emailValid && (
+                <p className="text-xs text-destructive">Please enter a valid email address</p>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold" htmlFor="auth-password">Password</label>
-              <input id="auth-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                className="h-11 rounded-lg border border-border bg-background px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                placeholder={mode === "signin" ? "Enter your password" : "Create a password"} required />
+              <div className="relative">
+                <input id="auth-password" type={showPassword ? "text" : "password"} value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`${inputClass} w-full pr-10`}
+                  placeholder={mode === "signin" ? "Enter your password" : "Create a password"} required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              {/* Password checklist for signup */}
+              {mode === "signup" && (
+                <AnimatePresence>
+                  {password.length > 0 && (
+                    <motion.ul
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-1 space-y-1 overflow-hidden"
+                    >
+                      {passwordRules.map((rule, i) => {
+                        const passed = rule.test(password);
+                        return (
+                          <li key={i} className={`flex items-center gap-1.5 text-xs transition-colors duration-200 ${passed ? "text-primary" : "text-muted-foreground"}`}>
+                            {passed ? <Check size={12} className="shrink-0" /> : <span className="w-3 h-3 rounded-full border border-current shrink-0" />}
+                            {rule.label}
+                          </li>
+                        );
+                      })}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
+              )}
             </div>
 
             {mode === "signin" && (
@@ -106,10 +169,19 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
               </button>
             )}
 
-            <button type="submit" disabled={loading}
-              className="h-12 rounded-lg bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-95 transition-all mt-2 disabled:opacity-50">
+            <motion.button
+              type="submit"
+              disabled={loading || (mode === "signup" && !signupFormValid)}
+              animate={mode === "signup" && signupFormValid ? { scale: [1, 1.02, 1] } : {}}
+              transition={{ duration: 0.3 }}
+              className={`h-12 rounded-lg font-bold text-sm shadow-lg mt-2 transition-all duration-300 ${
+                mode === "signin" || signupFormValid
+                  ? "bg-primary text-primary-foreground shadow-primary/20 hover:brightness-95"
+                  : "bg-primary/40 text-primary-foreground/60 cursor-not-allowed"
+              } disabled:opacity-50`}
+            >
               {loading ? "Please wait..." : mode === "signin" ? "Sign In" : "Create Account"}
-            </button>
+            </motion.button>
 
             <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
