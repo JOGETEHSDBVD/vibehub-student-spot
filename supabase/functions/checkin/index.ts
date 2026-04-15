@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       // Get user info for display
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name, avatar_url")
+        .select("full_name, avatar_url, pole")
         .eq("id", ticket.user_id)
         .single();
 
@@ -54,6 +54,7 @@ Deno.serve(async (req) => {
           alreadyUsed: true,
           usedAt: ticket.used_at,
           userName: profile?.full_name ?? "Unknown",
+          userPole: profile?.pole ?? null,
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -75,7 +76,7 @@ Deno.serve(async (req) => {
     // Get user info
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, avatar_url")
+      .select("full_name, avatar_url, pole")
       .eq("id", ticket.user_id)
       .single();
 
@@ -84,6 +85,7 @@ Deno.serve(async (req) => {
         valid: true,
         alreadyUsed: false,
         userName: profile?.full_name ?? "Unknown",
+        userPole: profile?.pole ?? null,
         avatarUrl: profile?.avatar_url,
         eventId: ticket.event_id,
       }),
