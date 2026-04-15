@@ -1,21 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, User, LogOut, ExternalLink, QrCode } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import AuthModal from "@/components/AuthModal";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useScannerCheck } from "@/hooks/useScannerCheck";
 import logoBlue from "@/assets/logo-blue.png";
 import logoWhite from "@/assets/logo-white.png";
 
-const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "#about", label: "About" },
-  { to: "/events", label: "Events" },
-  { to: "/mbti-test", label: "MBTI Test" },
-];
-
 const Navbar = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
@@ -25,6 +21,13 @@ const Navbar = () => {
   const { isAdmin } = useAdminCheck();
   const { isScanner } = useScannerCheck();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const navLinks = [
+    { to: "/", label: t("nav.home") },
+    { to: "#about", label: t("nav.about") },
+    { to: "/events", label: t("nav.events") },
+    { to: "/mbti-test", label: t("nav.mbtiTest") },
+  ];
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -58,7 +61,7 @@ const Navbar = () => {
           <nav className="hidden md:flex items-center gap-12">
             {navLinks.map((link) => (
               <Link
-                key={link.label}
+                key={link.to}
                 to={link.to}
                 className={`relative text-base font-semibold transition-colors after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 hover:after:scale-x-100 ${
                   location.pathname === link.to
@@ -71,6 +74,7 @@ const Navbar = () => {
             ))}
           </nav>
           <div className="hidden md:flex items-center gap-4">
+            <LanguageSwitcher isDark={isDarkPage} />
             {user ? (
               <div className="flex items-center gap-4">
                 {isAdmin && (
@@ -78,7 +82,7 @@ const Navbar = () => {
                     to="/admin"
                     className={`flex items-center gap-1 text-sm font-bold uppercase tracking-wide transition-colors ${isDarkPage ? "text-dark-bg-foreground hover:text-primary" : "text-foreground hover:text-primary"}`}
                   >
-                    I'm an Organizer
+                    {t("nav.organizer")}
                     <ExternalLink size={14} />
                   </Link>
                 )}
@@ -103,7 +107,7 @@ const Navbar = () => {
                         className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
                       >
                         <User size={18} />
-                        My account
+                        {t("nav.myAccount")}
                       </button>
                       {(isAdmin || isScanner) && (
                         <button
@@ -111,7 +115,7 @@ const Navbar = () => {
                           className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
                         >
                           <QrCode size={18} />
-                          QR Scanner
+                          {t("nav.qrScanner")}
                         </button>
                       )}
                       <button
@@ -119,7 +123,7 @@ const Navbar = () => {
                         className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
                       >
                         <LogOut size={18} />
-                        Log out
+                        {t("nav.logOut")}
                       </button>
                     </div>
                   )}
@@ -129,24 +133,27 @@ const Navbar = () => {
               <>
                 <button onClick={() => setAuthMode("signin")}
                   className="border border-primary text-primary px-6 py-2.5 rounded-full font-bold text-base hover:bg-primary/10 transition-all">
-                  Sign In
+                  {t("nav.signIn")}
                 </button>
                 <button onClick={() => setAuthMode("signup")}
                   className="bg-primary hover:bg-primary/80 text-primary-foreground px-8 py-2.5 rounded-full font-bold text-base transition-all">
-                  Join Club
+                  {t("nav.joinClub")}
                 </button>
               </>
             )}
           </div>
-          <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="md:hidden flex items-center gap-3">
+            <LanguageSwitcher isDark={isDarkPage} />
+            <button className={isDarkPage ? "text-dark-bg-foreground" : "text-foreground"} onClick={() => setMobileOpen(!mobileOpen)}>
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {mobileOpen && (
           <div className="md:hidden border-t border-border bg-background px-6 pb-4 mt-4">
             {navLinks.map((link) => (
-              <Link key={link.label} to={link.to} onClick={() => setMobileOpen(false)}
+              <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)}
                 className={`block py-2 text-sm font-medium ${location.pathname === link.to ? "text-primary" : "text-muted-foreground"}`}>
                 {link.label}
               </Link>
@@ -161,28 +168,28 @@ const Navbar = () => {
                   {isAdmin && (
                     <Link to="/admin" onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-1 py-2 text-sm font-bold uppercase text-foreground">
-                      I'm an Organizer <ExternalLink size={14} />
+                      {t("nav.organizer")} <ExternalLink size={14} />
                     </Link>
                   )}
                   <button onClick={() => { setMobileOpen(false); handleAccountClick(); }}
                     className="flex items-center gap-2 py-2 text-sm font-medium text-foreground">
-                    <User size={16} /> My account
+                    <User size={16} /> {t("nav.myAccount")}
                   </button>
                   {(isAdmin || isScanner) && (
                     <button onClick={() => { setMobileOpen(false); navigate("/my-account/scanner"); }}
                       className="flex items-center gap-2 py-2 text-sm font-medium text-foreground">
-                      <QrCode size={16} /> QR Scanner
+                      <QrCode size={16} /> {t("nav.qrScanner")}
                     </button>
                   )}
                   <button onClick={() => { setMobileOpen(false); signOut(); }}
-                    className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted-foreground">Log out</button>
+                    className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted-foreground">{t("nav.logOut")}</button>
                 </>
               ) : (
                 <>
                   <button onClick={() => { setMobileOpen(false); setAuthMode("signin"); }}
-                    className="rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary">Sign In</button>
+                    className="rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary">{t("nav.signIn")}</button>
                   <button onClick={() => { setMobileOpen(false); setAuthMode("signup"); }}
-                    className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground">Join Club</button>
+                    className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground">{t("nav.joinClub")}</button>
                 </>
               )}
             </div>

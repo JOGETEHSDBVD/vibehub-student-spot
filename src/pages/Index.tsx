@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AuthModal from "@/components/AuthModal";
@@ -24,7 +25,6 @@ interface EventItem {
   tags: string[] | null;
 }
 
-
 const stagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.15 } },
@@ -35,8 +35,8 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
 };
 
-
 const Index = () => {
+  const { t } = useTranslation();
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -46,10 +46,8 @@ const Index = () => {
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
   const ctaRef = useRef<HTMLElement>(null);
 
-  // Stats in-view
   const statsRef = useRef<HTMLElement>(null);
   const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
-
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -77,7 +75,6 @@ const Index = () => {
     return start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
   };
 
-
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden scroll-smooth">
       <Navbar />
@@ -102,27 +99,27 @@ const Index = () => {
             >
               <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider mb-6">
                 <span className="w-2 h-2 rounded-full bg-primary-foreground animate-pulse" />
-                Live Now • 249 Students Online
+                {t("hero.badge", { count: 249 })}
               </motion.div>
               <motion.h1 variants={fadeUp} className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.05] text-primary-foreground max-w-2xl">
-                Ignite Your{" "}
-                <span className="italic text-primary">Campus Life!</span>
+                {t("hero.title")}{" "}
+                <span className="italic text-primary">{t("hero.titleAccent")}</span>
               </motion.h1>
               <motion.p variants={fadeUp} className="mt-6 text-lg text-primary-foreground/80 max-w-md leading-relaxed">
-                Experience the pulse of campus. From midnight hackathons to sunrise hikes, find your tribe and make every moment count.
+                {t("hero.subtitle")}
               </motion.p>
               <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-4">
                 <Link
                   to="/events"
                   className="bg-foreground text-primary-foreground px-8 py-4 rounded-xl font-bold text-base hover:bg-foreground/90 transition-all"
                 >
-                  Explore Schedule
+                  {t("hero.exploreSchedule")}
                 </Link>
                 <button
                   onClick={() => setAuthMode("signup")}
                   className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-xl font-bold text-base hover:bg-primary-foreground/20 transition-all"
                 >
-                  Host an Event
+                  {t("hero.hostEvent")}
                 </button>
               </motion.div>
             </motion.div>
@@ -138,10 +135,10 @@ const Index = () => {
         <section ref={statsRef} className="px-6 lg:px-20 py-12 bg-dark-bg">
           <div className="mx-auto max-w-[1200px] grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
             {[
-              { end: 500, suffix: "+", label: "Active Members" },
-              { end: 25, suffix: "+", label: "Annual Events" },
-              { end: 15, suffix: "+", label: "Skill Workshops" },
-              { end: 2000, suffix: "+", label: "Participants", display: "2k+" },
+              { end: 500, suffix: "+", label: t("stats.activeMembers") },
+              { end: 25, suffix: "+", label: t("stats.annualEvents") },
+              { end: 15, suffix: "+", label: t("stats.skillWorkshops") },
+              { end: 2000, suffix: "+", label: t("stats.participants"), display: "2k+" },
             ].map((stat) => (
               <motion.div
                 key={stat.label}
@@ -175,11 +172,11 @@ const Index = () => {
           <div className="mx-auto max-w-[1200px]">
             <div className="flex justify-between items-end mb-12">
               <div>
-                <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">Upcoming Events</h2>
-                <p className="text-muted-foreground">Ignite the night at CMC.</p>
+                <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">{t("upcomingEvents.title")}</h2>
+                <p className="text-muted-foreground">{t("upcomingEvents.subtitle")}</p>
               </div>
               <Link to="/events" className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors">
-                View All Events <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                {t("upcomingEvents.viewAll")} <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </Link>
             </div>
 
@@ -199,7 +196,7 @@ const Index = () => {
             ) : events.length === 0 ? (
               <div className="text-center py-16">
                 <CalendarDays className="mx-auto h-12 w-12 text-muted-foreground/30" />
-                <p className="mt-4 text-muted-foreground">No upcoming events yet.</p>
+                <p className="mt-4 text-muted-foreground">{t("upcomingEvents.noEvents")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -242,7 +239,7 @@ const Index = () => {
               </div>
             )}
             <Link to="/events" className="md:hidden flex items-center justify-center gap-2 mt-8 text-sm font-bold text-primary">
-              View All Events <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              {t("upcomingEvents.viewAll")} <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </Link>
           </div>
         </section>
@@ -252,22 +249,22 @@ const Index = () => {
           <div className="absolute inset-0 bg-primary animate-cta-breathe" />
           <div className="relative mx-auto max-w-xl z-10">
             <Rocket className="mx-auto h-10 w-10 text-primary-foreground/80 mb-4" />
-            <h2 className="font-display text-4xl md:text-5xl text-primary-foreground mb-4">Ready to lead?</h2>
+            <h2 className="font-display text-4xl md:text-5xl text-primary-foreground mb-4">{t("cta.title")}</h2>
             <p className="text-primary-foreground/80 text-lg leading-relaxed mb-8">
-              Don't just attend events—create them. Join the 500+ student leaders shaping the CMC experience.
+              {t("cta.subtitle")}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <MagneticButton
                 onClick={() => setAuthMode("signup")}
                 className="bg-amber-400 text-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-amber-300 transition-all"
               >
-                Become a Host
+                {t("cta.becomeHost")}
               </MagneticButton>
               <Link
                 to="/events"
                 className="bg-primary-foreground/15 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-primary-foreground/25 transition-all"
               >
-                Browse Handbook
+                {t("cta.browseHandbook")}
               </Link>
             </div>
           </div>

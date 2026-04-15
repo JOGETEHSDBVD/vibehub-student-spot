@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarDays, MapPin, ChevronRight, User, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +45,7 @@ const reveal = {
 };
 
 const Events = () => {
+  const { t } = useTranslation();
   const [upcomingEvents, setUpcomingEvents] = useState<PublicEvent[]>([]);
   const [pastEvents, setPastEvents] = useState<PublicEvent[]>([]);
   const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
@@ -196,7 +198,7 @@ const Events = () => {
               </div>
             )}
             <span className="text-xs text-dark-bg-foreground/50 group-hover:text-primary/80 transition-colors duration-300">
-              by <span className="font-semibold">{creator.full_name ?? "Unknown"}</span>
+              {t("events.by")} <span className="font-semibold">{creator.full_name ?? t("events.unknown")}</span>
             </span>
           </Link>
         )}
@@ -261,12 +263,12 @@ const Events = () => {
           animate="show"
         >
           <motion.p variants={reveal} className="text-sm text-dark-bg-foreground/50 mb-2">
-            <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+            <Link to="/" className="hover:text-primary transition-colors">{t("events.breadcrumbHome")}</Link>
             <span className="mx-2">›</span>
-            <span>Events</span>
+            <span>{t("events.title")}</span>
           </motion.p>
           <motion.h1 variants={reveal} className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
-            Events
+            {t("events.title")}
           </motion.h1>
         </motion.div>
 
@@ -304,12 +306,12 @@ const Events = () => {
                 initial="hidden"
                 animate="show"
               >
-                Upcoming Events
+                {t("events.upcoming")}
               </motion.h2>
               {filteredUpcoming.length === 0 ? (
                 <div className="text-center py-12">
                   <CalendarDays className="mx-auto h-10 w-10 text-dark-bg-foreground/30" />
-                  <p className="mt-3 text-dark-bg-foreground/50">No upcoming events in this category.</p>
+                  <p className="mt-3 text-dark-bg-foreground/50">{t("upcomingEvents.noCategory")}</p>
                 </div>
               ) : (
                 <>
@@ -339,7 +341,7 @@ const Events = () => {
                     initial="hidden"
                     animate="show"
                   >
-                    Past Events
+                    {t("events.past")}
                   </motion.h2>
                   <motion.div
                     className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"

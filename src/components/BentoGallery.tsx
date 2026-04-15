@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { loadGalleryConfig, type GalleryTile } from "@/stores/galleryStore";
 
 const BentoGallery = () => {
+  const { t } = useTranslation();
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [selectedImage, setSelectedImage] = useState<GalleryTile | null>(null);
   const [activeCount, setActiveCount] = useState(249);
@@ -31,10 +33,10 @@ const BentoGallery = () => {
       <div className="mx-auto max-w-[1200px]">
         <div className="mb-10">
           <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">
-            CMC Moments
+            {t("gallery.title")}
           </h2>
           <p className="text-muted-foreground">
-            Glimpses into the digital heart of CMC
+            {t("gallery.subtitle")}
           </p>
         </div>
 
@@ -74,13 +76,13 @@ const BentoGallery = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-4 w-4 bg-primary" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1">Live</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1">{t("gallery.live")}</span>
             <span className="text-lg font-black text-dark-bg-foreground">
               <motion.span key={activeCount} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 {activeCount}+
               </motion.span>
             </span>
-            <span className="text-[11px] text-muted-foreground mt-0.5">VibeHubbers Active</span>
+            <span className="text-[11px] text-muted-foreground mt-0.5">{t("gallery.liveActive")}</span>
           </motion.div>
         </div>
       </div>

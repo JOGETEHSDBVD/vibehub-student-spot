@@ -1,0 +1,147 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "events": "Événements",
+    "mbtiTest": "Test MBTI",
+    "signIn": "Se connecter",
+    "joinClub": "Rejoindre le club",
+    "myAccount": "Mon compte",
+    "logOut": "Se déconnecter",
+    "qrScanner": "Scanner QR",
+    "organizer": "Je suis Organisateur"
+  },
+  "hero": {
+    "badge": "En direct • {{count}} Étudiants en ligne",
+    "title": "Dynamisez votre",
+    "titleAccent": "vie de campus !",
+    "subtitle": "Ressentez le pouls du campus. Des hackathons nocturnes aux randonnées au lever du soleil, trouvez votre tribu et profitez de chaque instant.",
+    "exploreSchedule": "Explorer le programme",
+    "hostEvent": "Organiser un événement"
+  },
+  "stats": {
+    "activeMembers": "Membres actifs",
+    "annualEvents": "Événements annuels",
+    "skillWorkshops": "Ateliers de compétences",
+    "participants": "Participants"
+  },
+  "gallery": {
+    "title": "Moments CMC",
+    "subtitle": "Aperçus du cœur numérique de CMC",
+    "liveActive": "VibeHubbers actifs",
+    "live": "En direct"
+  },
+  "upcomingEvents": {
+    "title": "Événements à venir",
+    "subtitle": "Allumez la nuit au CMC.",
+    "viewAll": "Voir tous les événements",
+    "noEvents": "Aucun événement à venir.",
+    "noCategory": "Aucun événement à venir dans cette catégorie."
+  },
+  "cta": {
+    "title": "Prêt à mener ?",
+    "subtitle": "Ne vous contentez pas d'assister aux événements, créez-les. Rejoignez les 500+ leaders étudiants qui façonnent l'expérience CMC.",
+    "becomeHost": "Devenir organisateur",
+    "browseHandbook": "Consulter le guide"
+  },
+  "footer": {
+    "tagline": "L'organisation étudiante de premier plan pour des expériences universitaires complètes.",
+    "quickLinks": "Liens rapides",
+    "aboutUs": "À propos de nous",
+    "support": "Assistance",
+    "faq": "FAQ",
+    "contactSupport": "Contacter le support",
+    "privacyPolicy": "Politique de confidentialité",
+    "connect": "Suivez-nous",
+    "copyright": "© 2024 VibeHub Club. Au service des étudiants universitaires."
+  },
+  "events": {
+    "title": "Événements",
+    "upcoming": "Événements à venir",
+    "past": "Événements passés",
+    "all": "Tous",
+    "by": "par",
+    "unknown": "Inconnu",
+    "breadcrumbHome": "Accueil"
+  },
+  "eventDetail": {
+    "backToEvents": "Retour aux événements",
+    "participate": "Participer",
+    "pendingApproval": "En attente d'approbation",
+    "leave": "Quitter l'événement",
+    "eventFull": "Événement complet",
+    "confirmLeaveTitle": "Quitter cet événement ?",
+    "confirmLeaveDesc": "Vous perdrez votre place et devrez peut-être vous réinscrire.",
+    "cancel": "Annuler",
+    "confirmLeave": "Oui, quitter",
+    "participants": "Participants",
+    "viewTicket": "Voir le billet",
+    "organizer": "Organisateur",
+    "viewProfile": "Voir le profil",
+    "requiresApproval": "Approbation requise",
+    "seatsLeft": "{{count}} places restantes",
+    "approved": "Approuvé",
+    "pending": "En attente",
+    "rejected": "Rejeté"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Déjà membre ?",
+    "createAccount": "Créer un compte",
+    "resetPassword": "Réinitialiser le mot de passe"
+  },
+  "account": {
+    "title": "Mon compte",
+    "personalInfo": "Informations personnelles",
+    "fullName": "Nom complet",
+    "email": "E-mail",
+    "memberType": "Type de membre",
+    "pole": "Pôle",
+    "filiere": "Filière",
+    "myEvents": "Mes événements",
+    "noEvents": "Vous n'avez rejoint aucun événement.",
+    "changePassword": "Changer le mot de passe"
+  },
+  "admin": {
+    "panel": "PANNEAU ADMIN",
+    "dashboard": "Tableau de bord",
+    "members": "Membres",
+    "yourEvents": "Vos événements",
+    "activeEvents": "Événements actifs",
+    "pastEvents": "Événements passés",
+    "qrScanner": "Scanner QR",
+    "analytics": "Analytique",
+    "announcements": "Annonces",
+    "galleryManager": "Gestionnaire de galerie",
+    "settings": "Paramètres",
+    "superAdmin": "Super Admin",
+    "backToSite": "Retour au site",
+    "createEvent": "Créer un événement",
+    "editEvent": "Modifier l'événement",
+    "requiresApproval": "Approbation requise",
+    "seatLimit": "Limite de places",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "search": "Rechercher",
+    "noResults": "Aucun résultat trouvé"
+  }
+}
