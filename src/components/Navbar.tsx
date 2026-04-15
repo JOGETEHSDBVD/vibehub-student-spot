@@ -58,9 +58,9 @@ const Navbar = () => {
               <Link
                 key={link.label}
                 to={link.to}
-                className={`text-base font-semibold transition-colors ${
+                className={`relative text-base font-semibold transition-colors after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 hover:after:scale-x-100 ${
                   location.pathname === link.to
-                    ? "text-primary"
+                    ? "text-primary after:scale-x-100"
                     : isDarkPage ? "text-dark-bg-foreground hover:text-primary" : "text-foreground hover:text-primary"
                 }`}
               >
