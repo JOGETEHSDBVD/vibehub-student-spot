@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Instagram } from "lucide-react";
 import logoBlue from "@/assets/logo-blue.png";
 import logoWhite from "@/assets/logo-white.png";
 
@@ -40,8 +41,8 @@ const Footer = () => {
             <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
               <span className="material-symbols-outlined text-sm">public</span>
             </a>
-            <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
-              <span className="material-symbols-outlined text-sm">send</span>
+            <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="https://www.instagram.com/vh__club/" target="_blank" rel="noopener noreferrer">
+              <Instagram size={18} className="text-primary" />
             </a>
             <a className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
               <span className="material-symbols-outlined text-sm">share</span>
