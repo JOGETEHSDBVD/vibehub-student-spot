@@ -69,6 +69,7 @@ const AppRoutes = () => (
         <Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/admin/active-events" element={<AdminActiveEvents />} />
         <Route path="/admin/past-events" element={<AdminPastEvents />} />
+        <Route path="/admin/past-events/:id" element={<AdminPastEventEditor />} />
         <Route path="/admin/members" element={<AdminMembers />} />
         <Route path="/admin/analytics" element={<AdminAnalytics />} />
         <Route path="/admin/announcements" element={<AdminAnnouncements />} />
