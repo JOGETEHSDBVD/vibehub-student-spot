@@ -2,9 +2,11 @@ import { useMemo, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MapPin, Users, Download, Filter } from "lucide-react";
+import { CalendarDays, MapPin, Users, Download, Filter, Check, X } from "lucide-react";
 import { useEventParticipants, type Participant } from "@/hooks/useEventParticipants";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -40,13 +42,16 @@ interface EventDetailModalProps {
     is_published?: boolean | null;
     creator_name?: string | null;
     participant_count?: number;
+    requires_approval?: boolean;
+    seat_limit?: number | null;
   };
 }
 
 const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
-  const { participants, loading: participantsLoading } = useEventParticipants(open ? event.id ?? null : null);
+  const { participants, loading: participantsLoading, refetch } = useEventParticipants(open ? event.id ?? null : null);
   const [sortPole, setSortPole] = useState("all");
   const [sortAnnee, setSortAnnee] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const availablePoles = useMemo(() => {
     const poles = [...new Set(participants.map((p) => p.pole).filter(Boolean))] as string[];
@@ -57,8 +62,27 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
     let list = [...participants];
     if (sortPole !== "all") list = list.filter((p) => p.pole === sortPole);
     if (sortAnnee !== "all") list = list.filter((p) => p.member_type === sortAnnee);
+    if (statusFilter !== "all") list = list.filter((p) => p.status === statusFilter);
     return list;
-  }, [participants, sortPole, sortAnnee]);
+  }, [participants, sortPole, sortAnnee, statusFilter]);
+
+  const approvedCount = participants.filter(p => p.status === "approved").length;
+  const pendingCount = participants.filter(p => p.status === "pending").length;
+
+  const handleUpdateStatus = async (userId: string, newStatus: string) => {
+    if (!event.id) return;
+    const { error } = await supabase
+      .from("event_participants")
+      .update({ status: newStatus } as any)
+      .eq("event_id", event.id)
+      .eq("user_id", userId);
+    if (error) {
+      toast.error("Failed to update status");
+    } else {
+      toast.success(`Participant ${newStatus}`);
+      refetch();
+    }
+  };
 
   const downloadExcel = async () => {
     const XLSX = await import("xlsx");
@@ -67,6 +91,7 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
       Email: p.email ?? "—",
       Pôle: p.pole ?? "—",
       Type: MEMBER_TYPES[p.member_type ?? ""] ?? p.member_type ?? "—",
+      Status: p.status,
       "Joined At": new Date(p.joined_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
@@ -88,13 +113,14 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
 
     autoTable(doc, {
       startY: 40,
-      head: [["#", "Name", "Email", "Pôle", "Type", "Joined"]],
+      head: [["#", "Name", "Email", "Pôle", "Type", "Status", "Joined"]],
       body: filtered.map((p, i) => [
         i + 1,
         p.full_name ?? "Unknown",
         p.email ?? "—",
         p.pole ?? "—",
         MEMBER_TYPES[p.member_type ?? ""] ?? p.member_type ?? "—",
+        p.status,
         new Date(p.joined_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       ]),
       styles: { fontSize: 9 },
@@ -126,6 +152,16 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
               {event.is_published !== undefined && (
                 <Badge variant={event.is_published ? "default" : "secondary"} className="text-xs">
                   {event.is_published ? "Published" : "Draft"}
+                </Badge>
+              )}
+              {event.requires_approval && (
+                <Badge variant="outline" className="text-xs border-amber-500 text-amber-600">
+                  Approval Required
+                </Badge>
+              )}
+              {event.seat_limit && (
+                <Badge variant="outline" className="text-xs">
+                  {approvedCount}/{event.seat_limit} seats
                 </Badge>
               )}
             </div>
@@ -172,7 +208,12 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
                 <div className="flex items-center gap-2">
                   <Users size={16} className="text-primary" />
                   <h3 className="text-sm font-bold text-foreground">
-                    Participants ({participantsLoading ? "..." : filtered.length})
+                    Participants ({participantsLoading ? "..." : approvedCount})
+                    {pendingCount > 0 && (
+                      <span className="text-amber-500 font-normal ml-1">
+                        · {pendingCount} pending
+                      </span>
+                    )}
                   </h3>
                 </div>
 
@@ -222,8 +263,22 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
                     </SelectContent>
                   </Select>
 
-                  {(sortPole !== "all" || sortAnnee !== "all") && (
-                    <Button variant="ghost" size="sm" className="h-7 text-[11px]" onClick={() => { setSortPole("all"); setSortAnnee("all"); }}>
+                  {event.requires_approval && (
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[120px] h-7 text-[11px]">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {(sortPole !== "all" || sortAnnee !== "all" || statusFilter !== "all") && (
+                    <Button variant="ghost" size="sm" className="h-7 text-[11px]" onClick={() => { setSortPole("all"); setSortAnnee("all"); setStatusFilter("all"); }}>
                       Clear
                     </Button>
                   )}
@@ -260,14 +315,50 @@ const EventDetailModal = ({ open, onClose, event }: EventDetailModalProps) => {
                           Joined {new Date(p.joined_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </p>
                       </div>
-                      <div className="text-right shrink-0">
-                        {p.member_type && (
-                          <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
-                            {MEMBER_TYPES[p.member_type] ?? p.member_type}
-                          </span>
-                        )}
-                        {p.pole && (
-                          <p className="text-[10px] text-muted-foreground mt-0.5">{p.pole}</p>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="text-right">
+                          {p.member_type && (
+                            <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                              {MEMBER_TYPES[p.member_type] ?? p.member_type}
+                            </span>
+                          )}
+                          {p.pole && (
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{p.pole}</p>
+                          )}
+                        </div>
+                        {/* Status badge & actions */}
+                        {event.requires_approval && (
+                          <div className="flex items-center gap-1">
+                            {p.status === "pending" ? (
+                              <>
+                                <Badge variant="outline" className="text-[9px] border-amber-500 text-amber-600 px-1.5">
+                                  Pending
+                                </Badge>
+                                <button
+                                  onClick={() => handleUpdateStatus(p.user_id, "approved")}
+                                  className="h-6 w-6 rounded-full flex items-center justify-center bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                                  title="Approve"
+                                >
+                                  <Check size={12} />
+                                </button>
+                                <button
+                                  onClick={() => handleUpdateStatus(p.user_id, "rejected")}
+                                  className="h-6 w-6 rounded-full flex items-center justify-center bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                                  title="Reject"
+                                >
+                                  <X size={12} />
+                                </button>
+                              </>
+                            ) : p.status === "approved" ? (
+                              <Badge variant="outline" className="text-[9px] border-green-500 text-green-600 px-1.5">
+                                Approved
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[9px] border-red-500 text-red-500 px-1.5">
+                                Rejected
+                              </Badge>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

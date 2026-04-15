@@ -32,6 +32,8 @@ interface EventFull {
   is_published: boolean | null;
   pole: string | null;
   target_annee: string | null;
+  requires_approval?: boolean;
+  seat_limit?: number | null;
 }
 
 interface OrganizerProfile {
@@ -56,6 +58,7 @@ const EventDetail = () => {
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [userProfile, setUserProfile] = useState<{ pole: string | null; member_type: string | null } | null>(null);
   const [qrEnabled, setQrEnabled] = useState(false);
+  const [participantStatus, setParticipantStatus] = useState<string | null>(null);
 
   // Fetch event
   useEffect(() => {
@@ -64,19 +67,15 @@ const EventDetail = () => {
       setLoading(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee")
+        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee, qr_enabled, requires_approval, seat_limit")
         .eq("id", id)
         .single();
-      setEvent(data as EventFull | null);
-
-      // Fetch qr_enabled separately since it's not in the type
-      const { data: qrData } = await supabase
-        .from("events")
-        .select("qr_enabled")
-        .eq("id", id)
-        .single();
-      setQrEnabled((qrData as any)?.qr_enabled ?? false);
-
+      if (data) {
+        setEvent(data as any as EventFull);
+        setQrEnabled((data as any).qr_enabled ?? false);
+      } else {
+        setEvent(null);
+      }
       setLoading(false);
     };
     fetchEvent();
@@ -119,24 +118,27 @@ const EventDetail = () => {
     fetchProfile();
   }, [user]);
 
-  // Check participation + count
+  // Check participation + count + status
   useEffect(() => {
     if (!id) return;
     const fetchParticipation = async () => {
-      const { count } = await supabase
+      // Count only approved participants
+      const { data: allParts } = await supabase
         .from("event_participants")
-        .select("id", { count: "exact", head: true })
+        .select("user_id, status")
         .eq("event_id", id);
-      setParticipantCount(count ?? 0);
+      const approvedCount = (allParts ?? []).filter((p: any) => p.status === "approved").length;
+      setParticipantCount(approvedCount);
 
       if (user) {
         const { data } = await supabase
           .from("event_participants")
-          .select("id")
+          .select("id, status")
           .eq("event_id", id)
           .eq("user_id", user.id)
           .maybeSingle();
         setHasJoined(!!data);
+        setParticipantStatus((data as any)?.status ?? null);
       }
     };
     fetchParticipation();
@@ -167,6 +169,8 @@ const EventDetail = () => {
 
   const restrictionMessage = event ? getRestrictionMessage() : null;
 
+  const isEventFull = event?.seat_limit ? participantCount >= event.seat_limit : false;
+
   const handleParticipate = async () => {
     if (!user) { toast.error("Please sign in to participate"); return; }
     if (!id) return;
@@ -178,12 +182,22 @@ const EventDetail = () => {
       toast.error(restrictionMessage);
       return;
     }
+    if (isEventFull) {
+      toast.error("This event is full");
+      return;
+    }
     setJoining(true);
-    const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id });
+    const status = event?.requires_approval ? "pending" : "approved";
+    const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id, status } as any);
     if (!error) {
       setHasJoined(true);
-      setParticipantCount((c) => c + 1);
-      toast.success("You joined the event!");
+      setParticipantStatus(status);
+      if (status === "pending") {
+        toast.info("Your application has been sent! An admin will review it shortly.");
+      } else {
+        setParticipantCount((c) => c + 1);
+        toast.success("You joined the event!");
+      }
     } else {
       toast.error("Failed to join");
     }
@@ -341,22 +355,43 @@ const EventDetail = () => {
                 <span className="font-bold text-dark-bg-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
               </p>
 
+              {/* Seat limit info */}
+              {event.seat_limit && (
+                <p className="text-sm text-dark-bg-foreground/50">
+                  <span className="font-bold text-dark-bg-foreground">{participantCount}</span>/{event.seat_limit} seats filled
+                </p>
+              )}
+
               {/* Action buttons */}
               {!isPast && (
                 <div className="flex gap-3 pt-2">
-                  <Button
-                    onClick={handleParticipate}
-                    disabled={joining}
-                    variant={hasJoined ? "outline" : "default"}
-                    className={`rounded-full px-6 ${hasJoined ? "border-red-400 text-red-400 hover:bg-red-400/10 hover:text-red-300" : ""}`}
-                  >
-                    {hasJoined ? "Leave Event" : "Participate"}
-                  </Button>
+                  {isEventFull && !hasJoined ? (
+                    <Button disabled className="rounded-full px-6 opacity-60">
+                      Event Full
+                    </Button>
+                  ) : hasJoined && participantStatus === "pending" ? (
+                    <Button disabled className="rounded-full px-6 bg-amber-500/20 text-amber-400 border border-amber-500/30 cursor-not-allowed">
+                      ⏳ Pending Approval
+                    </Button>
+                  ) : hasJoined && participantStatus === "rejected" ? (
+                    <Button disabled className="rounded-full px-6 bg-destructive/20 text-red-400 border border-red-500/30 cursor-not-allowed">
+                      Registration Rejected
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleParticipate}
+                      disabled={joining}
+                      variant={hasJoined ? "outline" : "default"}
+                      className={`rounded-full px-6 ${hasJoined ? "border-red-400 text-red-400 hover:bg-red-400/10 hover:text-red-300" : ""}`}
+                    >
+                      {hasJoined ? "Leave Event" : "Participate"}
+                    </Button>
+                  )}
                 </div>
               )}
 
-              {/* QR Ticket button */}
-              {hasJoined && qrEnabled && user && id && (
+              {/* QR Ticket button - only show if approved */}
+              {hasJoined && participantStatus === "approved" && qrEnabled && user && id && (
                 <Button
                   variant="outline"
                   onClick={() => setShowTicket(true)}

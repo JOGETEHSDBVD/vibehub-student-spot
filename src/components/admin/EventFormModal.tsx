@@ -69,18 +69,22 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
 
   const [title, setTitle] = useState(event?.title ?? "");
 
-  // Load qr_enabled for editing
+  // Load qr_enabled, requires_approval, seat_limit for editing
   useEffect(() => {
     if (isEditing && event?.id) {
-      const loadQr = async () => {
+      const loadExtra = async () => {
         const { data } = await supabase
           .from("events")
-          .select("qr_enabled")
+          .select("qr_enabled, requires_approval, seat_limit")
           .eq("id", event.id)
           .single();
-        if (data) setQrEnabled((data as any).qr_enabled ?? false);
+        if (data) {
+          setQrEnabled((data as any).qr_enabled ?? false);
+          setRequiresApproval((data as any).requires_approval ?? false);
+          setSeatLimit((data as any).seat_limit ?? null);
+        }
       };
-      loadQr();
+      loadExtra();
     }
   }, [isEditing, event?.id]);
   const [description, setDescription] = useState(event?.description ?? "");
@@ -99,6 +103,8 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [tags, setTags] = useState<string[]>(event?.tags ?? []);
   const [tagInput, setTagInput] = useState("");
   const [qrEnabled, setQrEnabled] = useState(false);
+  const [requiresApproval, setRequiresApproval] = useState(false);
+  const [seatLimit, setSeatLimit] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
 
   // Fetch custom categories from DB
@@ -280,6 +286,8 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         image_url: mainImageUrl,
         tags,
         qr_enabled: qrEnabled,
+        requires_approval: requiresApproval,
+        seat_limit: seatLimit,
       };
 
       let eventId = event?.id;
@@ -448,6 +456,32 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
               <label htmlFor="qrEnabled" className="text-sm font-medium cursor-pointer">Enable QR Tickets</label>
               <p className="text-xs text-muted-foreground">Generate QR code tickets for participants to check in at the event</p>
             </div>
+          </div>
+
+          {/* Requires Approval Toggle */}
+          <div className="flex items-center gap-3 rounded-lg border border-input px-4 py-3">
+            <Checkbox
+              id="requiresApproval"
+              checked={requiresApproval}
+              onCheckedChange={(checked) => setRequiresApproval(!!checked)}
+            />
+            <div>
+              <label htmlFor="requiresApproval" className="text-sm font-medium cursor-pointer">Requires Approval</label>
+              <p className="text-xs text-muted-foreground">Participants must be approved by an admin before they can attend</p>
+            </div>
+          </div>
+
+          {/* Seat Limit */}
+          <div>
+            <Label>Seat Limit (optional)</Label>
+            <Input
+              type="number"
+              min={1}
+              value={seatLimit ?? ""}
+              onChange={(e) => setSeatLimit(e.target.value ? parseInt(e.target.value) : null)}
+              placeholder="No limit"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Leave empty for unlimited seats</p>
           </div>
 
           <div>

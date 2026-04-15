@@ -120,18 +120,21 @@ export type Database = {
           event_id: string
           id: string
           joined_at: string
+          status: string
           user_id: string
         }
         Insert: {
           event_id: string
           id?: string
           joined_at?: string
+          status?: string
           user_id: string
         }
         Update: {
           event_id?: string
           id?: string
           joined_at?: string
+          status?: string
           user_id?: string
         }
         Relationships: [
@@ -194,6 +197,8 @@ export type Database = {
           pole: string | null
           qr_enabled: boolean
           recap: string | null
+          requires_approval: boolean
+          seat_limit: number | null
           tags: string[] | null
           target_annee: string | null
           title: string
@@ -212,6 +217,8 @@ export type Database = {
           pole?: string | null
           qr_enabled?: boolean
           recap?: string | null
+          requires_approval?: boolean
+          seat_limit?: number | null
           tags?: string[] | null
           target_annee?: string | null
           title: string
@@ -230,6 +237,8 @@ export type Database = {
           pole?: string | null
           qr_enabled?: boolean
           recap?: string | null
+          requires_approval?: boolean
+          seat_limit?: number | null
           tags?: string[] | null
           target_annee?: string | null
           title?: string

@@ -1,13 +1,24 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { Camera, User, ArrowLeft } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Camera, User, ArrowLeft, CalendarDays } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import ChangePasswordSection from "@/components/ChangePasswordSection";
+
+interface MyEvent {
+  event_id: string;
+  status: string;
+  joined_at: string;
+  event_title: string;
+  event_date: string;
+  event_image_url: string | null;
+  event_category: string | null;
+}
 
 const MyAccount = () => {
   const { user, profile, loading, refreshProfile } = useAuth();
@@ -15,6 +26,8 @@ const MyAccount = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [myEvents, setMyEvents] = useState<MyEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/");
@@ -25,6 +38,47 @@ const MyAccount = () => {
       setAvatarUrl(profile.avatar_url ?? null);
     }
   }, [profile]);
+
+  // Fetch user's event participations
+  useEffect(() => {
+    if (!user) return;
+    const fetchMyEvents = async () => {
+      setEventsLoading(true);
+      const { data: participations } = await supabase
+        .from("event_participants")
+        .select("event_id, status, joined_at")
+        .eq("user_id", user.id)
+        .order("joined_at", { ascending: false });
+
+      if (participations && participations.length > 0) {
+        const eventIds = participations.map((p: any) => p.event_id);
+        const { data: events } = await supabase
+          .from("events")
+          .select("id, title, date, image_url, category")
+          .in("id", eventIds);
+
+        const eventMap = Object.fromEntries(
+          (events ?? []).map((e: any) => [e.id, e])
+        );
+
+        setMyEvents(
+          participations.map((p: any) => ({
+            event_id: p.event_id,
+            status: p.status ?? "approved",
+            joined_at: p.joined_at,
+            event_title: eventMap[p.event_id]?.title ?? "Unknown Event",
+            event_date: eventMap[p.event_id]?.date ?? p.joined_at,
+            event_image_url: eventMap[p.event_id]?.image_url ?? null,
+            event_category: eventMap[p.event_id]?.category ?? null,
+          }))
+        );
+      } else {
+        setMyEvents([]);
+      }
+      setEventsLoading(false);
+    };
+    fetchMyEvents();
+  }, [user]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,6 +122,19 @@ const MyAccount = () => {
       toast({ title: "Profile picture updated" });
     }
     setUploading(false);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Badge className="bg-amber-500/20 text-amber-600 border-amber-500/30 hover:bg-amber-500/30">Pending</Badge>;
+      case "approved":
+        return <Badge className="bg-green-500/20 text-green-600 border-green-500/30 hover:bg-green-500/30">Confirmed</Badge>;
+      case "rejected":
+        return <Badge className="bg-red-500/20 text-red-500 border-red-500/30 hover:bg-red-500/30">Rejected</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
   };
 
   if (loading) {
@@ -162,6 +229,51 @@ const MyAccount = () => {
             <Label className="text-muted-foreground">Filière</Label>
             <Input value={profile?.filiere ?? "—"} disabled className="bg-muted mt-1" />
           </div>
+        </div>
+
+        {/* My Events */}
+        <div className="rounded-xl border border-border bg-card p-6 space-y-4 mt-8">
+          <h2 className="text-lg font-bold text-foreground">My Events</h2>
+          {eventsLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="flex gap-3 animate-pulse">
+                  <div className="h-12 w-12 rounded-lg bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-32 bg-muted rounded" />
+                    <div className="h-2 w-20 bg-muted rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : myEvents.length === 0 ? (
+            <p className="text-sm text-muted-foreground italic">You haven't joined any events yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {myEvents.map((ev) => (
+                <Link
+                  key={ev.event_id}
+                  to={`/events/${ev.event_id}`}
+                  className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50 transition-colors"
+                >
+                  {ev.event_image_url ? (
+                    <img src={ev.event_image_url} alt="" className="h-12 w-12 rounded-lg object-cover" />
+                  ) : (
+                    <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center">
+                      <CalendarDays size={16} className="text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{ev.event_title}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {new Date(ev.event_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </p>
+                  </div>
+                  {getStatusBadge(ev.status)}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="mt-8">
