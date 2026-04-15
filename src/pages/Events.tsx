@@ -261,7 +261,7 @@ const Events = () => {
       <main className="flex-1 px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         {/* Breadcrumb & Header */}
         <motion.div
-          className="mb-10"
+          className="mb-6"
           variants={stagger}
           initial="hidden"
           animate="show"
@@ -271,44 +271,46 @@ const Events = () => {
             <span className="mx-2">›</span>
             <span>{t("events.title")}</span>
           </motion.p>
-          <motion.h1 variants={reveal} className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
-            {t("events.title")}
-          </motion.h1>
-        </motion.div>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <motion.h1 variants={reveal} className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
+              {t("events.title")}
+            </motion.h1>
 
-        {/* Toggle Switcher */}
-        <motion.div
-          className="flex items-center gap-0 mb-8"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.4 }}
-        >
-          <div className="relative inline-flex rounded-full bg-dark-bg-foreground/10 p-1">
-            <div
-              className="absolute top-1 bottom-1 rounded-full bg-primary transition-all duration-300 ease-in-out"
-              style={{
-                width: "calc(50% - 4px)",
-                left: activeTab === "upcoming" ? "4px" : "calc(50%)",
-              }}
-            />
-            <button
-              onClick={() => { setActiveTab("upcoming"); setUpcomingPage(1); }}
-              className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
-                activeTab === "upcoming" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
-              }`}
+            {/* Toggle Switcher — centered-right of heading */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.4 }}
             >
-              {t("events.upcoming")}
-            </button>
-            <button
-              onClick={() => { setActiveTab("past"); setPastPage(1); }}
-              className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
-                activeTab === "past" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
-              }`}
-            >
-              {t("events.past")}
-            </button>
+              <div className="relative inline-flex rounded-full bg-dark-bg-foreground/10 p-1">
+                <div
+                  className="absolute top-1 bottom-1 rounded-full bg-primary transition-all duration-300 ease-in-out"
+                  style={{
+                    width: "calc(50% - 4px)",
+                    left: activeTab === "upcoming" ? "4px" : "calc(50%)",
+                  }}
+                />
+                <button
+                  onClick={() => { setActiveTab("upcoming"); setUpcomingPage(1); }}
+                  className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                    activeTab === "upcoming" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
+                  }`}
+                >
+                  {t("events.upcoming")}
+                </button>
+                <button
+                  onClick={() => { setActiveTab("past"); setPastPage(1); }}
+                  className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                    activeTab === "past" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
+                  }`}
+                >
+                  {t("events.past")}
+                </button>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
+
 
         {/* Category Pills */}
         <motion.div
