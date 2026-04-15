@@ -355,22 +355,43 @@ const EventDetail = () => {
                 <span className="font-bold text-dark-bg-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
               </p>
 
+              {/* Seat limit info */}
+              {event.seat_limit && (
+                <p className="text-sm text-dark-bg-foreground/50">
+                  <span className="font-bold text-dark-bg-foreground">{participantCount}</span>/{event.seat_limit} seats filled
+                </p>
+              )}
+
               {/* Action buttons */}
               {!isPast && (
                 <div className="flex gap-3 pt-2">
-                  <Button
-                    onClick={handleParticipate}
-                    disabled={joining}
-                    variant={hasJoined ? "outline" : "default"}
-                    className={`rounded-full px-6 ${hasJoined ? "border-red-400 text-red-400 hover:bg-red-400/10 hover:text-red-300" : ""}`}
-                  >
-                    {hasJoined ? "Leave Event" : "Participate"}
-                  </Button>
+                  {isEventFull && !hasJoined ? (
+                    <Button disabled className="rounded-full px-6 opacity-60">
+                      Event Full
+                    </Button>
+                  ) : hasJoined && participantStatus === "pending" ? (
+                    <Button disabled className="rounded-full px-6 bg-amber-500/20 text-amber-400 border border-amber-500/30 cursor-not-allowed">
+                      ⏳ Pending Approval
+                    </Button>
+                  ) : hasJoined && participantStatus === "rejected" ? (
+                    <Button disabled className="rounded-full px-6 bg-destructive/20 text-red-400 border border-red-500/30 cursor-not-allowed">
+                      Registration Rejected
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleParticipate}
+                      disabled={joining}
+                      variant={hasJoined ? "outline" : "default"}
+                      className={`rounded-full px-6 ${hasJoined ? "border-red-400 text-red-400 hover:bg-red-400/10 hover:text-red-300" : ""}`}
+                    >
+                      {hasJoined ? "Leave Event" : "Participate"}
+                    </Button>
+                  )}
                 </div>
               )}
 
-              {/* QR Ticket button */}
-              {hasJoined && qrEnabled && user && id && (
+              {/* QR Ticket button - only show if approved */}
+              {hasJoined && participantStatus === "approved" && qrEnabled && user && id && (
                 <Button
                   variant="outline"
                   onClick={() => setShowTicket(true)}
