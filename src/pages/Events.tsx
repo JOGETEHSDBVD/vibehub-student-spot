@@ -276,6 +276,40 @@ const Events = () => {
           </motion.h1>
         </motion.div>
 
+        {/* Toggle Switcher */}
+        <motion.div
+          className="flex items-center gap-0 mb-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.4 }}
+        >
+          <div className="relative inline-flex rounded-full bg-dark-bg-foreground/10 p-1">
+            <div
+              className="absolute top-1 bottom-1 rounded-full bg-primary transition-all duration-300 ease-in-out"
+              style={{
+                width: "calc(50% - 4px)",
+                left: activeTab === "upcoming" ? "4px" : "calc(50%)",
+              }}
+            />
+            <button
+              onClick={() => { setActiveTab("upcoming"); setUpcomingPage(1); }}
+              className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                activeTab === "upcoming" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
+              }`}
+            >
+              {t("events.upcoming")}
+            </button>
+            <button
+              onClick={() => { setActiveTab("past"); setPastPage(1); }}
+              className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                activeTab === "past" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
+              }`}
+            >
+              {t("events.past")}
+            </button>
+          </div>
+        </motion.div>
+
         {/* Category Pills */}
         <motion.div
           className="flex flex-wrap gap-2 mb-10"
@@ -302,64 +336,55 @@ const Events = () => {
           renderShimmer()
         ) : (
           <>
-            {/* Upcoming Events */}
-            <section className="mb-16">
-              <motion.h2
-                className="text-2xl font-bold text-dark-bg-foreground uppercase tracking-wide mb-8"
-                variants={reveal}
-                initial="hidden"
-                animate="show"
-              >
-                {t("events.upcoming")}
-              </motion.h2>
-              {filteredUpcoming.length === 0 ? (
-                <div className="text-center py-12">
-                  <CalendarDays className="mx-auto h-10 w-10 text-dark-bg-foreground/30" />
-                  <p className="mt-3 text-dark-bg-foreground/50">{t("upcomingEvents.noCategory")}</p>
-                </div>
-              ) : (
-                <>
-                  <motion.div
-                    className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
-                    variants={stagger}
-                    initial="hidden"
-                    animate="show"
-                    key={`upcoming-${selectedCategory}`}
-                  >
-                    <AnimatePresence mode="popLayout">
-                      {paginatedUpcoming.map((e) => renderEventCard(e))}
-                    </AnimatePresence>
-                  </motion.div>
-                  {renderPagination(upcomingTotalPages, upcomingPage, setUpcomingPage)}
-                </>
-              )}
-            </section>
+            {activeTab === "upcoming" && (
+              <section className="mb-16">
+                {filteredUpcoming.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CalendarDays className="mx-auto h-10 w-10 text-dark-bg-foreground/30" />
+                    <p className="mt-3 text-dark-bg-foreground/50">{t("upcomingEvents.noCategory")}</p>
+                  </div>
+                ) : (
+                  <>
+                    <motion.div
+                      className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+                      variants={stagger}
+                      initial="hidden"
+                      animate="show"
+                      key={`upcoming-${selectedCategory}`}
+                    >
+                      <AnimatePresence mode="popLayout">
+                        {paginatedUpcoming.map((e) => renderEventCard(e))}
+                      </AnimatePresence>
+                    </motion.div>
+                    {renderPagination(upcomingTotalPages, upcomingPage, setUpcomingPage)}
+                  </>
+                )}
+              </section>
+            )}
 
-            {/* Past Events */}
-            {filteredPast.length > 0 && (
+            {activeTab === "past" && (
               <section>
-                <div className="border-t border-dark-bg-foreground/10 pt-10">
-                  <motion.h2
-                    className="text-2xl font-bold text-dark-bg-foreground uppercase tracking-wide mb-8"
-                    variants={reveal}
-                    initial="hidden"
-                    animate="show"
-                  >
-                    {t("events.past")}
-                  </motion.h2>
-                  <motion.div
-                    className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
-                    variants={stagger}
-                    initial="hidden"
-                    animate="show"
-                    key={`past-${selectedCategory}`}
-                  >
-                    <AnimatePresence mode="popLayout">
-                      {paginatedPast.map((e) => renderEventCard(e))}
-                    </AnimatePresence>
-                  </motion.div>
-                  {renderPagination(pastTotalPages, pastPage, setPastPage)}
-                </div>
+                {filteredPast.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CalendarDays className="mx-auto h-10 w-10 text-dark-bg-foreground/30" />
+                    <p className="mt-3 text-dark-bg-foreground/50">{t("events.noPastEvents")}</p>
+                  </div>
+                ) : (
+                  <>
+                    <motion.div
+                      className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+                      variants={stagger}
+                      initial="hidden"
+                      animate="show"
+                      key={`past-${selectedCategory}`}
+                    >
+                      <AnimatePresence mode="popLayout">
+                        {paginatedPast.map((e) => renderEventCard(e))}
+                      </AnimatePresence>
+                    </motion.div>
+                    {renderPagination(pastTotalPages, pastPage, setPastPage)}
+                  </>
+                )}
               </section>
             )}
           </>
