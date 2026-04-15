@@ -155,21 +155,24 @@ const StaffScanner = () => {
 
       {/* Camera view */}
       <div className="flex-1 relative">
-        <div id="staff-qr-reader" className="absolute inset-0 [&_video]:!object-cover [&_video]:!w-full [&_video]:!h-full" />
+        <div id="staff-qr-reader" className="absolute inset-0 [&_video]:!object-cover [&_video]:!w-full [&_video]:!h-full [&>div]:!hidden [&_img]:!hidden" />
 
         {/* Scanning frame overlay */}
         {!result && !processing && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="relative w-64 h-64">
-              {/* Corner brackets */}
-              <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-lg" />
-              <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-lg" />
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-lg" />
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-lg" />
-              {/* Scanning line animation */}
-              <div className="absolute left-2 right-2 h-0.5 bg-primary/80 animate-pulse" style={{ top: '50%' }} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <div className="relative w-[min(65vw,260px)] aspect-square">
+              {/* Unified teal corner brackets */}
+              <div className="absolute -top-1 -left-1 w-10 h-10 border-t-[4px] border-l-[4px] border-primary rounded-tl-xl" />
+              <div className="absolute -top-1 -right-1 w-10 h-10 border-t-[4px] border-r-[4px] border-primary rounded-tr-xl" />
+              <div className="absolute -bottom-1 -left-1 w-10 h-10 border-b-[4px] border-l-[4px] border-primary rounded-bl-xl" />
+              <div className="absolute -bottom-1 -right-1 w-10 h-10 border-b-[4px] border-r-[4px] border-primary rounded-br-xl" />
+              {/* Laser scanning line */}
+              <div
+                className="absolute left-3 right-3 h-[2px] bg-primary animate-scanner-line"
+                style={{ boxShadow: '0 0 8px 2px hsl(var(--primary) / 0.6), 0 0 20px 4px hsl(var(--primary) / 0.3)' }}
+              />
             </div>
-            <p className="absolute bottom-8 text-white/70 text-sm font-medium">Align QR code within the frame</p>
+            <p className="mt-6 text-white/70 text-sm font-medium">Align QR code within the frame</p>
           </div>
         )}
 
