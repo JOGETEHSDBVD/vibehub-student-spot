@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { X } from "lucide-react";
+import { useState, useMemo } from "react";
+import { X, Eye, EyeOff, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   open: boolean;
@@ -10,37 +11,61 @@ interface Props {
   onSwitchToSignIn: () => void;
 }
 
+const passwordRules = [
+  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+  { label: "At least 1 uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "At least 1 lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+  { label: "At least 1 number", test: (p: string) => /\d/.test(p) },
+  { label: "At least 1 special character (!@#$%^&*)", test: (p: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) },
+];
+
 const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
   const { signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const allPasswordValid = useMemo(() => passwordRules.every((r) => r.test(password)), [password]);
+  const formValid = firstName.trim() && lastName.trim() && emailValid && allPasswordValid;
 
   if (!open) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formValid) return;
     setLoading(true);
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
     const { error } = await signUp(email, password, fullName);
     setLoading(false);
     if (error) {
       toast({ title: "Sign up failed", description: error, variant: "destructive" });
     } else {
       toast({ title: "Compte créé !", description: "Complétez votre profil pour continuer." });
-      setFullName("");
-      setEmail("");
-      setPassword("");
+      setFirstName(""); setLastName(""); setEmail(""); setPassword("");
       onClose();
       navigate("/onboarding");
     }
   };
 
+  const inputBase = "w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/40";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4" onClick={onClose}>
-      <div className="relative w-full max-w-md rounded-2xl border border-primary/30 bg-background p-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="relative w-full max-w-md rounded-2xl border border-primary/30 bg-background p-8 shadow-xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button onClick={onClose} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"><X size={20} /></button>
 
         <div className="flex items-center gap-2 mb-6">
@@ -49,24 +74,92 @@ const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
         </div>
 
         <h2 className="text-2xl font-bold text-foreground">Join the Club</h2>
-        <p className="mt-1 text-sm text-body-text">Create your account and start vibing</p>
+        <p className="mt-1 text-sm text-muted-foreground">Create your account and start vibing</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">Full Name</label>
-            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Enter your full name" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" required />
+          {/* Name fields - 2 col grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">First Name</label>
+              <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" className={inputBase} required />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">Last Name</label>
+              <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" className={inputBase} required />
+            </div>
           </div>
+
+          {/* Email */}
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@university.edu" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" required />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setEmailTouched(true)}
+              placeholder="you@university.edu"
+              className={inputBase}
+              required
+            />
+            {emailTouched && email && !emailValid && (
+              <p className="mt-1 text-xs text-destructive">Please enter a valid email address</p>
+            )}
           </div>
+
+          {/* Password */}
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a password" className="w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary" required />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Create a password"
+                className={`${inputBase} pr-10`}
+                required
+              />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+
+            {/* Password checklist */}
+            <AnimatePresence>
+              {password.length > 0 && (
+                <motion.ul
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-2 space-y-1 overflow-hidden"
+                >
+                  {passwordRules.map((rule, i) => {
+                    const passed = rule.test(password);
+                    return (
+                      <li key={i} className={`flex items-center gap-1.5 text-xs transition-colors duration-200 ${passed ? "text-primary" : "text-muted-foreground"}`}>
+                        {passed ? <Check size={12} className="shrink-0" /> : <span className="w-3 h-3 rounded-full border border-current shrink-0" />}
+                        {rule.label}
+                      </li>
+                    );
+                  })}
+                </motion.ul>
+              )}
+            </AnimatePresence>
           </div>
-          <button type="submit" disabled={loading} className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:opacity-50">
+
+          {/* Submit */}
+          <motion.button
+            type="submit"
+            disabled={loading || !formValid}
+            animate={formValid ? { scale: [1, 1.02, 1] } : {}}
+            transition={{ duration: 0.3 }}
+            className={`w-full rounded-lg py-2.5 text-sm font-semibold transition-all duration-300 ${
+              formValid
+                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90"
+                : "bg-primary/40 text-primary-foreground/60 cursor-not-allowed"
+            }`}
+          >
             {loading ? "Creating account..." : "Create Account"}
-          </button>
+          </motion.button>
         </form>
 
         <div className="my-5 flex items-center gap-3"><div className="h-px flex-1 bg-border" /><span className="text-xs text-muted-foreground">or continue with</span><div className="h-px flex-1 bg-border" /></div>
@@ -76,11 +169,11 @@ const JoinModal = ({ open, onClose, onSwitchToSignIn }: Props) => {
           Google
         </button>
 
-        <p className="mt-5 text-center text-sm text-body-text">
+        <p className="mt-5 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <button onClick={onSwitchToSignIn} className="font-medium text-primary hover:underline">Sign in</button>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 };
