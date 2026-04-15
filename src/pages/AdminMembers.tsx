@@ -106,6 +106,10 @@ const AdminMembers = () => {
 
       if (filterRole === "admin" && adminIdArray.length > 0) {
         query = query.in("id", adminIdArray);
+      } else if (filterRole === "scanner") {
+        const scannerIdArray = Array.from(scannerIds);
+        if (scannerIdArray.length > 0) query = query.in("id", scannerIdArray);
+        else query = query.eq("id", "00000000-0000-0000-0000-000000000000");
       } else if (filterRole === "member" && adminIdArray.length > 0) {
         query = query.not("id", "in", `(${adminIdArray.join(",")})`);
       }
@@ -172,6 +176,7 @@ const AdminMembers = () => {
                 <SelectContent>
                   <SelectItem value="all">All Roles</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="scanner">QR Scanner</SelectItem>
                   <SelectItem value="member">Member</SelectItem>
                 </SelectContent>
               </Select>
