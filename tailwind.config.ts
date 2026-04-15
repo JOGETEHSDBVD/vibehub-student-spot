@@ -98,6 +98,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         shimmer: "shimmer 2s infinite linear",
         "cta-breathe": "cta-breathe 4s ease-in-out infinite",
+        "ken-burns": "ken-burns 20s ease-in-out infinite",
       },
     },
   },
