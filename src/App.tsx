@@ -11,6 +11,7 @@ import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminActiveEvents from "./pages/AdminActiveEvents.tsx";
 import AdminMembers from "./pages/AdminMembers.tsx";
 import AdminPastEvents from "./pages/AdminPastEvents.tsx";
+import AdminPastEventEditor from "./pages/AdminPastEventEditor.tsx";
 import AdminAnalytics from "./pages/AdminAnalytics.tsx";
 import AdminAnnouncements from "./pages/AdminAnnouncements.tsx";
 import AdminSettings from "./pages/AdminSettings.tsx";
