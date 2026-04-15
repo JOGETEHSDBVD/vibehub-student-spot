@@ -121,16 +121,23 @@ const PastEventDetail = () => {
 
   const d = new Date(event.date);
 
-  // Separate media: YouTube-embeddable videos vs images/uploaded videos
+  // Separate media types
   const youtubeMedia: { id: string; videoId: string }[] = [];
   const galleryMedia: MediaItem[] = [];
 
   media.forEach((m) => {
-    const ytId = extractYouTubeId(m.url);
-    if (ytId) {
-      youtubeMedia.push({ id: m.id, videoId: ytId });
+    if (m.media_type === "youtube") {
+      // Already an embed URL like https://www.youtube.com/embed/VIDEO_ID
+      const match = m.url.match(/embed\/([a-zA-Z0-9_-]{11})/);
+      if (match) youtubeMedia.push({ id: m.id, videoId: match[1] });
+      else galleryMedia.push(m);
     } else {
-      galleryMedia.push(m);
+      const ytId = extractYouTubeId(m.url);
+      if (ytId) {
+        youtubeMedia.push({ id: m.id, videoId: ytId });
+      } else {
+        galleryMedia.push(m);
+      }
     }
   });
 
