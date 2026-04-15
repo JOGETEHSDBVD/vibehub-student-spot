@@ -311,39 +311,6 @@ const Events = () => {
           </div>
         </motion.div>
 
-        {/* Toggle Switcher */}
-        <motion.div
-          className="flex items-center gap-0 mb-8"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.4 }}
-        >
-          <div className="relative inline-flex rounded-full bg-dark-bg-foreground/10 p-1">
-            <div
-              className="absolute top-1 bottom-1 rounded-full bg-primary transition-all duration-300 ease-in-out"
-              style={{
-                width: "calc(50% - 4px)",
-                left: activeTab === "upcoming" ? "4px" : "calc(50%)",
-              }}
-            />
-            <button
-              onClick={() => { setActiveTab("upcoming"); setUpcomingPage(1); }}
-              className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
-                activeTab === "upcoming" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
-              }`}
-            >
-              {t("events.upcoming")}
-            </button>
-            <button
-              onClick={() => { setActiveTab("past"); setPastPage(1); }}
-              className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
-                activeTab === "past" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
-              }`}
-            >
-              {t("events.past")}
-            </button>
-          </div>
-        </motion.div>
 
         {/* Category Pills */}
         <motion.div
