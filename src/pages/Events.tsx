@@ -271,44 +271,43 @@ const Events = () => {
             <span className="mx-2">›</span>
             <span>{t("events.title")}</span>
           </motion.p>
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <motion.h1 variants={reveal} className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
-              {t("events.title")}
-            </motion.h1>
+          <motion.h1 variants={reveal} className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
+            {t("events.title")}
+          </motion.h1>
 
-            {/* Toggle Switcher — centered-right of heading */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.4 }}
-            >
-              <div className="relative inline-flex rounded-full bg-dark-bg-foreground/10 p-1">
-                <div
-                  className="absolute top-1 bottom-1 rounded-full bg-primary transition-all duration-300 ease-in-out"
-                  style={{
-                    width: "calc(50% - 4px)",
-                    left: activeTab === "upcoming" ? "4px" : "calc(50%)",
-                  }}
-                />
-                <button
-                  onClick={() => { setActiveTab("upcoming"); setUpcomingPage(1); }}
-                  className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
-                    activeTab === "upcoming" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
-                  }`}
-                >
-                  {t("events.upcoming")}
-                </button>
-                <button
-                  onClick={() => { setActiveTab("past"); setPastPage(1); }}
-                  className={`relative z-10 px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
-                    activeTab === "past" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
-                  }`}
-                >
-                  {t("events.past")}
-                </button>
-              </div>
-            </motion.div>
-          </div>
+          {/* Toggle Switcher — top center, glassmorphism */}
+          <motion.div
+            className="flex justify-center mt-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
+          >
+            <div className="relative inline-flex rounded-full p-1 border border-white/15 bg-white/5 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.25)]">
+              <div
+                className="absolute top-1 bottom-1 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.45)] transition-all duration-300 ease-in-out"
+                style={{
+                  width: "calc(50% - 4px)",
+                  left: activeTab === "upcoming" ? "4px" : "calc(50%)",
+                }}
+              />
+              <button
+                onClick={() => { setActiveTab("upcoming"); setUpcomingPage(1); }}
+                className={`relative z-10 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                  activeTab === "upcoming" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
+                }`}
+              >
+                {t("events.upcoming")}
+              </button>
+              <button
+                onClick={() => { setActiveTab("past"); setPastPage(1); }}
+                className={`relative z-10 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                  activeTab === "past" ? "text-primary-foreground" : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
+                }`}
+              >
+                {t("events.past")}
+              </button>
+            </div>
+          </motion.div>
         </motion.div>
 
 
