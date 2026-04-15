@@ -16,6 +16,7 @@ import AdminAnnouncements from "./pages/AdminAnnouncements.tsx";
 import AdminSettings from "./pages/AdminSettings.tsx";
 import Events from "./pages/Events.tsx";
 import EventDetail from "./pages/EventDetail.tsx";
+import PastEventDetail from "./pages/PastEventDetail.tsx";
 import OrganizerProfile from "./pages/OrganizerProfile.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import EmailVerified from "./pages/EmailVerified.tsx";
@@ -61,6 +62,7 @@ const AppRoutes = () => (
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/events/past/:id" element={<PastEventDetail />} />
         <Route path="/organizer/:id" element={<OrganizerProfile />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/events" element={<AdminEvents />} />

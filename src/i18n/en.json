@@ -62,7 +62,8 @@
     "all": "All",
     "by": "by",
     "unknown": "Unknown",
-    "breadcrumbHome": "Home"
+    "breadcrumbHome": "Home",
+    "noPastEvents": "No past events in this category."
   },
   "eventDetail": {
     "backToEvents": "Back to Events",
