@@ -1,0 +1,147 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "events": "Events",
+    "mbtiTest": "MBTI Test",
+    "signIn": "Sign In",
+    "joinClub": "Join Club",
+    "myAccount": "My account",
+    "logOut": "Log out",
+    "qrScanner": "QR Scanner",
+    "organizer": "I'm an Organizer"
+  },
+  "hero": {
+    "badge": "Live Now • {{count}} Students Online",
+    "title": "Ignite Your",
+    "titleAccent": "Campus Life!",
+    "subtitle": "Experience the pulse of campus. From midnight hackathons to sunrise hikes, find your tribe and make every moment count.",
+    "exploreSchedule": "Explore Schedule",
+    "hostEvent": "Host an Event"
+  },
+  "stats": {
+    "activeMembers": "Active Members",
+    "annualEvents": "Annual Events",
+    "skillWorkshops": "Skill Workshops",
+    "participants": "Participants"
+  },
+  "gallery": {
+    "title": "CMC Moments",
+    "subtitle": "Glimpses into the digital heart of CMC",
+    "liveActive": "VibeHubbers Active",
+    "live": "Live"
+  },
+  "upcomingEvents": {
+    "title": "Upcoming Events",
+    "subtitle": "Ignite the night at CMC.",
+    "viewAll": "View All Events",
+    "noEvents": "No upcoming events yet.",
+    "noCategory": "No upcoming events in this category."
+  },
+  "cta": {
+    "title": "Ready to lead?",
+    "subtitle": "Don't just attend events—create them. Join the 500+ student leaders shaping the CMC experience.",
+    "becomeHost": "Become a Host",
+    "browseHandbook": "Browse Handbook"
+  },
+  "footer": {
+    "tagline": "The premier student-led organization for well-rounded university experiences.",
+    "quickLinks": "Quick Links",
+    "aboutUs": "About Us",
+    "support": "Support",
+    "faq": "FAQ",
+    "contactSupport": "Contact Support",
+    "privacyPolicy": "Privacy Policy",
+    "connect": "Connect",
+    "copyright": "© 2024 VibeHub Club. Empowering university students."
+  },
+  "events": {
+    "title": "Events",
+    "upcoming": "Upcoming Events",
+    "past": "Past Events",
+    "all": "All",
+    "by": "by",
+    "unknown": "Unknown",
+    "breadcrumbHome": "Home"
+  },
+  "eventDetail": {
+    "backToEvents": "Back to Events",
+    "participate": "Participate",
+    "pendingApproval": "Pending Approval",
+    "leave": "Leave Event",
+    "eventFull": "Event Full",
+    "confirmLeaveTitle": "Leave this event?",
+    "confirmLeaveDesc": "You will lose your spot and may need to re-register.",
+    "cancel": "Cancel",
+    "confirmLeave": "Yes, leave",
+    "participants": "Participants",
+    "viewTicket": "View Ticket",
+    "organizer": "Organizer",
+    "viewProfile": "View Profile",
+    "requiresApproval": "Requires Approval",
+    "seatsLeft": "{{count}} seats left",
+    "approved": "Approved",
+    "pending": "Pending",
+    "rejected": "Rejected"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have a member?",
+    "createAccount": "Create Account",
+    "resetPassword": "Reset Password"
+  },
+  "account": {
+    "title": "My Account",
+    "personalInfo": "Personal Information",
+    "fullName": "Full Name",
+    "email": "Email",
+    "memberType": "Member Type",
+    "pole": "Pôle",
+    "filiere": "Filière",
+    "myEvents": "My Events",
+    "noEvents": "You haven't joined any events yet.",
+    "changePassword": "Change Password"
+  },
+  "admin": {
+    "panel": "ADMIN PANEL",
+    "dashboard": "Dashboard",
+    "members": "Members",
+    "yourEvents": "Your Events",
+    "activeEvents": "Active Events",
+    "pastEvents": "Past Events",
+    "qrScanner": "QR Scanner",
+    "analytics": "Analytics",
+    "announcements": "Announcements",
+    "galleryManager": "Gallery Manager",
+    "settings": "Settings",
+    "superAdmin": "Super Admin",
+    "backToSite": "Back to site",
+    "createEvent": "Create Event",
+    "editEvent": "Edit Event",
+    "requiresApproval": "Requires Approval",
+    "seatLimit": "Seat Limit",
+    "approve": "Approve",
+    "reject": "Reject",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "search": "Search",
+    "noResults": "No results found"
+  }
+}
