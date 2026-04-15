@@ -36,7 +36,7 @@ const fadeUp = {
 };
 
 const Index = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -172,8 +172,16 @@ const Index = () => {
           <div className="mx-auto max-w-[1200px]">
             <div className="flex justify-between items-end mb-12">
               <div>
-                <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">{t("upcomingEvents.title")}</h2>
-                <p className="text-muted-foreground">{t("upcomingEvents.subtitle")}</p>
+                <h2 className={`font-display mb-2 text-foreground ${i18n.language?.startsWith("fr") ? "text-[34px] md:text-[46px] tracking-tight" : "text-4xl md:text-5xl"}`}>{t("upcomingEvents.title")}</h2>
+                <motion.p
+                  className="text-slate-400 font-light leading-relaxed"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                >
+                  {t("upcomingEvents.subtitle")}
+                </motion.p>
               </div>
               <Link to="/events" className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors">
                 {t("upcomingEvents.viewAll")} <span className="material-symbols-outlined text-sm">arrow_forward</span>
