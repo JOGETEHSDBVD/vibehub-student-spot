@@ -45,6 +45,7 @@ const reveal = {
 };
 
 const Events = () => {
+  const { t } = useTranslation();
   const [upcomingEvents, setUpcomingEvents] = useState<PublicEvent[]>([]);
   const [pastEvents, setPastEvents] = useState<PublicEvent[]>([]);
   const [creators, setCreators] = useState<Record<string, CreatorProfile>>({});
@@ -262,12 +263,12 @@ const Events = () => {
           animate="show"
         >
           <motion.p variants={reveal} className="text-sm text-dark-bg-foreground/50 mb-2">
-            <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+            <Link to="/" className="hover:text-primary transition-colors">{t("events.breadcrumbHome")}</Link>
             <span className="mx-2">›</span>
-            <span>Events</span>
+            <span>{t("events.title")}</span>
           </motion.p>
           <motion.h1 variants={reveal} className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
-            Events
+            {t("events.title")}
           </motion.h1>
         </motion.div>
 
