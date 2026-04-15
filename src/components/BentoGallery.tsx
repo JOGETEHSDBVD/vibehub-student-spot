@@ -34,17 +34,10 @@ const BentoGallery = () => {
         <div className="mb-10">
           <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">
             {t("gallery.title")}
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-primary ml-2 align-middle" />
           </h2>
-          <motion.p
-            className="text-slate-400 font-light leading-relaxed text-left"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <p className="text-muted-foreground">
             {t("gallery.subtitle")}
-          </motion.p>
+          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[160px] md:auto-rows-[180px] gap-3 md:gap-4">
