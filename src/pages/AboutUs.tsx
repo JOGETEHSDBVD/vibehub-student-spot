@@ -10,13 +10,13 @@ const panels = [
   {
     image: aboutCultural,
     title: "Our Story",
-    text: "We noticed a gap between passion and opportunity on campus. VibeHub was born from a simple idea: give students a space to grow, compete, and create — without the noise. We built this platform so you can focus on the work, not the noise.",
+    text: "We noticed a gap. People have the drive to build, connect, and grow, but the tools we use to organize ourselves are often chaotic. VibeHub was created as a clean, centralized space to bring ideas and people together without the friction. It is a reliable system that makes collaboration smooth and effortless.",
     accent: "primary",
   },
   {
     image: aboutSports,
     title: "The Big Five: Clarity & Alignment",
-    text: "A platform is only as good as the clarity it provides. Through our five pillars — Sports, Culture, Entrepreneurship, Digital, and Community — we align every member with a purpose. Find your pillar, find where you do your best work.",
+    text: "We integrated the Big Five personality model because we believe in the power of self-awareness. It maps how you naturally approach challenges. We use this data to help you navigate, pointing you toward the projects, roles, and teams that naturally fit how you operate.",
     accent: "orange",
   },
   {
