@@ -1,71 +1,30 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import bentoHackathon from "@/assets/bento-hackathon.jpg";
-import bentoCollab from "@/assets/bento-collab.jpg";
-import bentoSocial from "@/assets/bento-social.jpg";
-import bentoFestival from "@/assets/bento-festival.jpg";
-import bentoPresentation from "@/assets/bento-presentation.jpg";
-
-interface Tile {
-  id: number;
-  src: string;
-  alt: string;
-  label: string;
-  className: string;
-}
-
-const tiles: Tile[] = [
-  {
-    id: 1,
-    src: bentoHackathon,
-    alt: "Hackathon in progress",
-    label: "Hackathon Night",
-    className: "col-span-2 row-span-2",
-  },
-  {
-    id: 2,
-    src: bentoCollab,
-    alt: "Students collaborating",
-    label: "Lab Sessions",
-    className: "col-span-1 row-span-2",
-  },
-  {
-    id: 3,
-    src: bentoSocial,
-    alt: "Social meetup",
-    label: "Coffee & Chill",
-    className: "col-span-1 row-span-1",
-  },
-  {
-    id: 4,
-    src: bentoPresentation,
-    alt: "Campus presentation",
-    label: "Keynote Talks",
-    className: "col-span-1 row-span-1",
-  },
-  {
-    id: 5,
-    src: bentoFestival,
-    alt: "Campus festival",
-    label: "Festival Vibes",
-    className: "col-span-2 row-span-1",
-  },
-];
+import { loadGalleryConfig, type GalleryTile } from "@/stores/galleryStore";
 
 const BentoGallery = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const [selectedImage, setSelectedImage] = useState<Tile | null>(null);
+  const [selectedImage, setSelectedImage] = useState<GalleryTile | null>(null);
   const [activeCount, setActiveCount] = useState(249);
+  const [tiles, setTiles] = useState<GalleryTile[]>([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveCount((prev) => {
-        const delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
-        return Math.max(245, Math.min(255, prev + delta));
-      });
-    }, 3000);
-    return () => clearInterval(interval);
+    const config = loadGalleryConfig();
+    setTiles(config.tiles);
+    setActiveCount(config.liveBaseNumber);
+
+    if (config.autoFluctuate) {
+      const interval = setInterval(() => {
+        setActiveCount((prev) => {
+          const delta = Math.floor(Math.random() * 7) - 3;
+          return Math.max(config.liveBaseNumber - 4, Math.min(config.liveBaseNumber + 6, prev + delta));
+        });
+      }, 3000);
+      return () => clearInterval(interval);
+    }
   }, []);
+
+  if (!tiles.length) return null;
 
   return (
     <section className="px-6 lg:px-20 pt-16 pb-8 bg-secondary/50">
@@ -79,15 +38,12 @@ const BentoGallery = () => {
           </p>
         </div>
 
-        {/* Bento Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[160px] md:auto-rows-[180px] gap-3 md:gap-4">
           {tiles.map((tile) => (
             <motion.div
               key={tile.id}
               className={`relative overflow-hidden rounded-3xl cursor-pointer group ${tile.className} ${
-                tile.id === 1
-                  ? "ring-2 ring-offset-2 ring-offset-secondary/50 ring-primary/40"
-                  : ""
+                tile.id === 1 ? "ring-2 ring-offset-2 ring-offset-secondary/50 ring-primary/40" : ""
               }`}
               onMouseEnter={() => setHoveredId(tile.id)}
               onMouseLeave={() => setHoveredId(null)}
@@ -99,56 +55,36 @@ const BentoGallery = () => {
               transition={{ duration: 0.3 }}
               whileTap={{ scale: 0.98 }}
             >
-              <img
-                src={tile.src}
-                alt={tile.alt}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+              <img src={tile.src} alt={tile.alt} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
               <div className="absolute bottom-3 left-4 right-4">
-                <span className="text-sm font-bold text-primary-foreground drop-shadow-md">
-                  {tile.label}
-                </span>
+                <span className="text-sm font-bold text-primary-foreground drop-shadow-md">{tile.label}</span>
               </div>
             </motion.div>
           ))}
 
-          {/* Live indicator tile */}
           <motion.div
             className="relative overflow-hidden rounded-3xl bg-dark-bg flex flex-col items-center justify-center col-span-1 row-span-1"
             onMouseEnter={() => setHoveredId(99)}
             onMouseLeave={() => setHoveredId(null)}
-            animate={{
-              opacity: hoveredId !== null && hoveredId !== 99 ? 0.6 : 1,
-            }}
+            animate={{ opacity: hoveredId !== null && hoveredId !== 99 ? 0.6 : 1 }}
             transition={{ duration: 0.3 }}
           >
             <span className="relative flex h-4 w-4 mb-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-4 w-4 bg-primary" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
-              Live
-            </span>
+            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1">Live</span>
             <span className="text-lg font-black text-dark-bg-foreground">
-              <motion.span
-                key={activeCount}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
+              <motion.span key={activeCount} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 {activeCount}+
               </motion.span>
             </span>
-            <span className="text-[11px] text-muted-foreground mt-0.5">
-              VibeHubbers Active
-            </span>
+            <span className="text-[11px] text-muted-foreground mt-0.5">VibeHubbers Active</span>
           </motion.div>
         </div>
       </div>
 
-      {/* Lightbox */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div
