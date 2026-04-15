@@ -169,6 +169,8 @@ const EventDetail = () => {
 
   const restrictionMessage = event ? getRestrictionMessage() : null;
 
+  const isEventFull = event?.seat_limit ? participantCount >= event.seat_limit : false;
+
   const handleParticipate = async () => {
     if (!user) { toast.error("Please sign in to participate"); return; }
     if (!id) return;
@@ -180,12 +182,22 @@ const EventDetail = () => {
       toast.error(restrictionMessage);
       return;
     }
+    if (isEventFull) {
+      toast.error("This event is full");
+      return;
+    }
     setJoining(true);
-    const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id });
+    const status = event?.requires_approval ? "pending" : "approved";
+    const { error } = await supabase.from("event_participants").insert({ event_id: id, user_id: user.id, status } as any);
     if (!error) {
       setHasJoined(true);
-      setParticipantCount((c) => c + 1);
-      toast.success("You joined the event!");
+      setParticipantStatus(status);
+      if (status === "pending") {
+        toast.info("Your application has been sent! An admin will review it shortly.");
+      } else {
+        setParticipantCount((c) => c + 1);
+        toast.success("You joined the event!");
+      }
     } else {
       toast.error("Failed to join");
     }
