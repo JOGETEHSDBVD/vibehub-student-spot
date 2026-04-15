@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, MapPin, ChevronRight, User } from "lucide-react";
+import { CalendarDays, MapPin, ChevronRight, User, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +26,23 @@ interface CreatorProfile {
 
 const EVENTS_PER_PAGE = 9;
 
+const CATEGORIES = ["All", "Hackathon", "Workshop", "Social", "Conference", "Sport"];
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+};
+
+const reveal = {
+  hidden: { opacity: 0, x: -20 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+};
+
 const Events = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<PublicEvent[]>([]);
   const [pastEvents, setPastEvents] = useState<PublicEvent[]>([]);
@@ -32,6 +50,7 @@ const Events = () => {
   const [loading, setLoading] = useState(true);
   const [upcomingPage, setUpcomingPage] = useState(1);
   const [pastPage, setPastPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -56,7 +75,6 @@ const Events = () => {
       setUpcomingEvents((upcoming as PublicEvent[]) ?? []);
       setPastEvents((past as PublicEvent[]) ?? []);
 
-      // Fetch creator profiles
       const creatorIds = [...new Set(allEvents.map((e) => e.created_by).filter(Boolean))] as string[];
       if (creatorIds.length > 0) {
         const { data: profiles } = await supabase
@@ -84,26 +102,57 @@ const Events = () => {
     };
   };
 
-  const upcomingTotalPages = Math.ceil(upcomingEvents.length / EVENTS_PER_PAGE);
-  const pastTotalPages = Math.ceil(pastEvents.length / EVENTS_PER_PAGE);
-  const paginatedUpcoming = upcomingEvents.slice((upcomingPage - 1) * EVENTS_PER_PAGE, upcomingPage * EVENTS_PER_PAGE);
-  const paginatedPast = pastEvents.slice((pastPage - 1) * EVENTS_PER_PAGE, pastPage * EVENTS_PER_PAGE);
+  const filterEvents = (events: PublicEvent[]) => {
+    if (selectedCategory === "All") return events;
+    return events.filter(
+      (e) => e.category?.toLowerCase() === selectedCategory.toLowerCase()
+    );
+  };
 
-  const renderEventCard = (e: PublicEvent, showCreator: boolean) => {
+  const filteredUpcoming = filterEvents(upcomingEvents);
+  const filteredPast = filterEvents(pastEvents);
+
+  const upcomingTotalPages = Math.ceil(filteredUpcoming.length / EVENTS_PER_PAGE);
+  const pastTotalPages = Math.ceil(filteredPast.length / EVENTS_PER_PAGE);
+  const paginatedUpcoming = filteredUpcoming.slice((upcomingPage - 1) * EVENTS_PER_PAGE, upcomingPage * EVENTS_PER_PAGE);
+  const paginatedPast = filteredPast.slice((pastPage - 1) * EVENTS_PER_PAGE, pastPage * EVENTS_PER_PAGE);
+
+  useEffect(() => {
+    setUpcomingPage(1);
+    setPastPage(1);
+  }, [selectedCategory]);
+
+  const renderEventCard = (e: PublicEvent) => {
     const dt = formatDateShort(e.date);
     const creator = e.created_by ? creators[e.created_by] : null;
 
     return (
-      <div key={e.id} className="group block">
-        <Link to={`/events/${e.id}`}>
-          <div className="aspect-[4/3] overflow-hidden">
+      <motion.div
+        key={e.id}
+        layout
+        variants={fadeUp}
+        className="group block relative"
+      >
+        <Link to={`/events/${e.id}`} className="block">
+          <div className="overflow-hidden rounded-none aspect-[4/3] relative">
             {e.image_url ? (
-              <img src={e.image_url} alt={e.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              <img
+                src={e.image_url}
+                alt={e.title}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
             ) : (
               <div className="h-full w-full bg-dark-bg-foreground/10 flex items-center justify-center">
                 <CalendarDays className="h-10 w-10 text-dark-bg-foreground/20" />
               </div>
             )}
+
+            {/* Hover overlay with View Details */}
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors duration-300 flex items-end justify-center pb-6 pointer-events-none">
+              <span className="opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 pointer-events-auto">
+                View Details <ArrowRight size={14} />
+              </span>
+            </div>
           </div>
 
           <div className="mt-3 space-y-1">
@@ -135,25 +184,29 @@ const Events = () => {
           </div>
         </Link>
 
-        {showCreator && creator && (
+        {creator && (
           <Link
             to={`/organizer/${creator.id}`}
             className="mt-3 flex items-center gap-2 group/creator"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(ev) => ev.stopPropagation()}
           >
             {creator.avatar_url ? (
-              <img src={creator.avatar_url} alt="" className="h-7 w-7 rounded-full object-cover border border-dark-bg-foreground/20 group-hover/creator:border-primary transition-colors" />
+              <img
+                src={creator.avatar_url}
+                alt=""
+                className="h-7 w-7 rounded-full object-cover border border-dark-bg-foreground/20 group-hover:border-primary group-hover:shadow-[0_0_8px_hsl(var(--primary)/0.4)] transition-all duration-300"
+              />
             ) : (
-              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center border border-dark-bg-foreground/20 group-hover/creator:border-primary transition-colors">
+              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center border border-dark-bg-foreground/20 group-hover:border-primary group-hover:shadow-[0_0_8px_hsl(var(--primary)/0.4)] transition-all duration-300">
                 <User size={14} className="text-primary" />
               </div>
             )}
-            <span className="text-xs text-dark-bg-foreground/50 group-hover/creator:text-primary transition-colors">
+            <span className="text-xs text-dark-bg-foreground/50 group-hover:text-primary/80 transition-colors duration-300">
               by <span className="font-semibold">{creator.full_name ?? "Unknown"}</span>
             </span>
           </Link>
         )}
-      </div>
+      </motion.div>
     );
   };
 
@@ -187,66 +240,124 @@ const Events = () => {
     );
   };
 
+  const renderShimmer = () => (
+    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i}>
+          <div className="aspect-[4/3] bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded-sm" />
+          <div className="mt-3 space-y-2">
+            <div className="h-4 w-3/4 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
+            <div className="h-3 w-1/2 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
+            <div className="h-3 w-1/3 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg">
       <Navbar />
       <main className="flex-1 px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        {/* Breadcrumb */}
-        <div className="mb-10">
-          <p className="text-sm text-dark-bg-foreground/50 mb-2">
+        {/* Breadcrumb & Header */}
+        <motion.div
+          className="mb-10"
+          variants={stagger}
+          initial="hidden"
+          animate="show"
+        >
+          <motion.p variants={reveal} className="text-sm text-dark-bg-foreground/50 mb-2">
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
             <span className="mx-2">›</span>
             <span>Events</span>
-          </p>
-          <h1 className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
+          </motion.p>
+          <motion.h1 variants={reveal} className="text-4xl font-bold text-dark-bg-foreground uppercase tracking-wide">
             Events
-          </h1>
-        </div>
+          </motion.h1>
+        </motion.div>
+
+        {/* Category Pills */}
+        <motion.div
+          className="flex flex-wrap gap-2 mb-10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+        >
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${
+                selectedCategory === cat
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-transparent text-dark-bg-foreground/60 border-dark-bg-foreground/20 hover:border-primary hover:text-primary"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </motion.div>
 
         {loading ? (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-[4/3] bg-dark-bg-foreground/10" />
-                <div className="mt-3 space-y-2">
-                  <div className="h-4 w-3/4 bg-dark-bg-foreground/10 rounded" />
-                  <div className="h-3 w-1/2 bg-dark-bg-foreground/10 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
+          renderShimmer()
         ) : (
           <>
             {/* Upcoming Events */}
             <section className="mb-16">
-              <h2 className="text-2xl font-bold text-dark-bg-foreground uppercase tracking-wide mb-8">
+              <motion.h2
+                className="text-2xl font-bold text-dark-bg-foreground uppercase tracking-wide mb-8"
+                variants={reveal}
+                initial="hidden"
+                animate="show"
+              >
                 Upcoming Events
-              </h2>
-              {upcomingEvents.length === 0 ? (
+              </motion.h2>
+              {filteredUpcoming.length === 0 ? (
                 <div className="text-center py-12">
                   <CalendarDays className="mx-auto h-10 w-10 text-dark-bg-foreground/30" />
-                  <p className="mt-3 text-dark-bg-foreground/50">No upcoming events yet.</p>
+                  <p className="mt-3 text-dark-bg-foreground/50">No upcoming events in this category.</p>
                 </div>
               ) : (
                 <>
-                  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    {paginatedUpcoming.map((e) => renderEventCard(e, true))}
-                  </div>
+                  <motion.div
+                    className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+                    variants={stagger}
+                    initial="hidden"
+                    animate="show"
+                    key={`upcoming-${selectedCategory}`}
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {paginatedUpcoming.map((e) => renderEventCard(e))}
+                    </AnimatePresence>
+                  </motion.div>
                   {renderPagination(upcomingTotalPages, upcomingPage, setUpcomingPage)}
                 </>
               )}
             </section>
 
             {/* Past Events */}
-            {pastEvents.length > 0 && (
+            {filteredPast.length > 0 && (
               <section>
                 <div className="border-t border-dark-bg-foreground/10 pt-10">
-                  <h2 className="text-2xl font-bold text-dark-bg-foreground uppercase tracking-wide mb-8">
+                  <motion.h2
+                    className="text-2xl font-bold text-dark-bg-foreground uppercase tracking-wide mb-8"
+                    variants={reveal}
+                    initial="hidden"
+                    animate="show"
+                  >
                     Past Events
-                  </h2>
-                  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    {paginatedPast.map((e) => renderEventCard(e, true))}
-                  </div>
+                  </motion.h2>
+                  <motion.div
+                    className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+                    variants={stagger}
+                    initial="hidden"
+                    animate="show"
+                    key={`past-${selectedCategory}`}
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {paginatedPast.map((e) => renderEventCard(e))}
+                    </AnimatePresence>
+                  </motion.div>
                   {renderPagination(pastTotalPages, pastPage, setPastPage)}
                 </div>
               </section>
