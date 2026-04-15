@@ -8,11 +8,7 @@ import CountUp from "@/components/animations/CountUp";
 import TiltCard from "@/components/animations/TiltCard";
 import MagneticButton from "@/components/animations/MagneticButton";
 import heroBuilding from "@/assets/hero-building.png";
-import story1 from "@/assets/story-1.jpg";
-import story2 from "@/assets/story-2.jpg";
-import story3 from "@/assets/story-3.jpg";
-import story4 from "@/assets/story-4.jpg";
-import story5 from "@/assets/story-5.jpg";
+import BentoGallery from "@/components/BentoGallery";
 import { supabase } from "@/integrations/supabase/client";
 import { CalendarDays, MapPin, Rocket } from "lucide-react";
 
@@ -28,13 +24,6 @@ interface EventItem {
   tags: string[] | null;
 }
 
-interface StoryEvent {
-  id: string;
-  title: string;
-  image_url: string | null;
-  category: string | null;
-  date: string;
-}
 
 const stagger = {
   hidden: {},
@@ -46,33 +35,21 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
 };
 
-const springRight = {
-  hidden: { opacity: 0, x: 60 },
-  show: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 100, damping: 14 } },
-};
 
 const Index = () => {
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
-  const [stories, setStories] = useState<StoryEvent[]>([]);
-  const storiesRef = useRef<HTMLDivElement>(null);
 
-  // Parallax for hero
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const ctaRef = useRef<HTMLElement>(null);
 
   // Stats in-view
   const statsRef = useRef<HTMLElement>(null);
   const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
 
-  // Stories in-view
-  const storiesSectionRef = useRef<HTMLElement>(null);
-  const storiesInView = useInView(storiesSectionRef, { once: true, margin: "-80px" });
-
-  // CTA ref for breathing gradient
-  const ctaRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -85,20 +62,6 @@ const Index = () => {
       setEvents((data as EventItem[]) ?? []);
       setEventsLoading(false);
     };
-
-    const fetchStories = async () => {
-      const { data } = await supabase
-        .from("events")
-        .select("id, title, image_url, category, date")
-        .eq("is_published", true)
-        .lt("date", new Date().toISOString())
-        .order("date", { ascending: false })
-        .limit(10);
-      setStories((data as StoryEvent[]) ?? []);
-    };
-
-    fetchEvents();
-    fetchStories();
   }, []);
 
   const formatDateRange = (date: string, endTime: string | null) => {
@@ -113,21 +76,6 @@ const Index = () => {
     return start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
   };
 
-  const storyItems = stories.length > 0
-    ? stories.map((story) => ({
-        id: story.id,
-        title: story.title,
-        image: story.image_url,
-        category: story.category,
-        link: `/events/${story.id}`,
-      }))
-    : [
-        { id: "p1", title: "Athas Hackathon: Final 3 Hours!", image: story1, category: "TRENDING", link: "#" },
-        { id: "p2", title: "Pizza & Politics in the Courtyard", image: story2, category: "CLUB MEET", link: "#" },
-        { id: "p3", title: "Jazz Night at the Hub", image: story3, category: "LIVE", link: "#" },
-        { id: "p4", title: "Tech Internship Workshop", image: story4, category: "CAREER", link: "#" },
-        { id: "p5", title: "Campus Music Festival", image: story5, category: "FESTIVAL", link: "#" },
-      ];
 
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden scroll-smooth">
@@ -218,60 +166,8 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Today's Stories */}
-        <section ref={storiesSectionRef} className="px-6 lg:px-20 pt-16 pb-8 bg-secondary/50">
-          <div className="mx-auto max-w-[1200px]">
-            <div className="flex justify-between items-end mb-8">
-              <div>
-                <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">Today's Stories</h2>
-                <p className="text-muted-foreground">Catch the buzz before it's gone.</p>
-              </div>
-              <Link to="/events" className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors">
-                View All Stories <span className="material-symbols-outlined text-sm">arrow_forward</span>
-              </Link>
-            </div>
-            <div className="relative">
-              <motion.div
-                ref={storiesRef}
-                className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide"
-                style={{ scrollBehavior: "smooth" }}
-                variants={stagger}
-                initial="hidden"
-                animate={storiesInView ? "show" : "hidden"}
-              >
-                {storyItems.map((item, i) => (
-                  <motion.div key={item.id} variants={springRight} custom={i} className="flex-shrink-0 w-[200px] md:w-[220px]">
-                    <Link to={item.link} className="group block">
-                      <div className="relative h-[270px] md:h-[300px] rounded-2xl overflow-hidden border-[3px] border-primary/30 hover:border-primary transition-colors shadow-md">
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            loading="lazy"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-dark-bg flex items-center justify-center">
-                            <CalendarDays className="h-8 w-8 text-primary/40" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
-                        {item.category && (
-                          <span className="absolute bottom-14 left-3 text-[9px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2.5 py-1 rounded group-hover:animate-pulse">
-                            {item.category}
-                          </span>
-                        )}
-                        <div className="absolute bottom-3 left-3 right-3">
-                          <p className="text-sm font-bold text-primary-foreground leading-snug line-clamp-2">{item.title}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </div>
-          </div>
-        </section>
+        {/* CMC Moments Bento Gallery */}
+        <BentoGallery />
 
         {/* Upcoming Events */}
         <section className="px-6 lg:px-20 pt-16 pb-20 bg-secondary/50">
