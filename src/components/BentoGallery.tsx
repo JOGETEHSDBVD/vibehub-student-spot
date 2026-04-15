@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import bentoHackathon from "@/assets/bento-hackathon.jpg";
 import bentoCollab from "@/assets/bento-collab.jpg";
@@ -55,6 +55,17 @@ const tiles: Tile[] = [
 const BentoGallery = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [selectedImage, setSelectedImage] = useState<Tile | null>(null);
+  const [activeCount, setActiveCount] = useState(249);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveCount((prev) => {
+        const delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
+        return Math.max(245, Math.min(255, prev + delta));
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="px-6 lg:px-20 pt-16 pb-8 bg-secondary/50">
@@ -121,7 +132,14 @@ const BentoGallery = () => {
               Live
             </span>
             <span className="text-lg font-black text-dark-bg-foreground">
-              249+
+              <motion.span
+                key={activeCount}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                {activeCount}+
+              </motion.span>
             </span>
             <span className="text-[11px] text-muted-foreground mt-0.5">
               VibeHubbers Active
