@@ -1,12 +1,14 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, User, Users } from "lucide-react";
+import { CalendarDays, User, Users, History, CalendarCheck, Pencil } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import EventDetailModal from "@/components/admin/EventDetailModal";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useEventParticipantCounts } from "@/hooks/useEventParticipants";
 
 interface EventRow {
@@ -21,15 +23,24 @@ interface EventRow {
   creator_name: string | null;
   requires_approval?: boolean;
   seat_limit?: number | null;
+  recap: string | null;
 }
 
 const AdminActiveEvents = () => {
+  const { t } = useTranslation();
   const { isAdmin, loading } = useAdminCheck();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [fetching, setFetching] = useState(true);
   const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
+  const [activeTab, setActiveTab] = useState<"active" | "archive">("active");
+
+  const now = new Date().toISOString();
+
+  const activeEvents = useMemo(() => events.filter((e) => e.date >= now), [events, now]);
+  const archivedEvents = useMemo(() => events.filter((e) => e.date < now), [events, now]);
+  const displayedEvents = activeTab === "active" ? activeEvents : archivedEvents;
 
   const eventIds = useMemo(() => events.map((e) => e.id), [events]);
   const participantCounts = useEventParticipantCounts(eventIds);
@@ -46,9 +57,9 @@ const AdminActiveEvents = () => {
       setFetching(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, created_by, requires_approval, seat_limit")
+        .select("id, title, description, date, location, image_url, category, created_by, requires_approval, seat_limit, recap")
         .eq("is_published", true)
-        .order("date", { ascending: true });
+        .order("date", { ascending: false });
 
       const rows = data ?? [];
 
@@ -83,28 +94,90 @@ const AdminActiveEvents = () => {
       <AdminSidebar />
       <main className="flex-1 overflow-y-auto p-6 lg:p-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Active Events</h1>
-          <p className="text-sm text-muted-foreground">All currently published events across the platform.</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.activeEvents")}</h1>
+          <p className="text-sm text-muted-foreground">All published events across the platform.</p>
+        </div>
+
+        {/* Sub-tab toggle */}
+        <div className="mb-6">
+          <div className="relative inline-flex rounded-lg bg-muted p-1">
+            <div
+              className="absolute top-1 bottom-1 rounded-md bg-primary transition-all duration-300 ease-in-out"
+              style={{
+                width: "calc(50% - 4px)",
+                left: activeTab === "active" ? "4px" : "calc(50%)",
+              }}
+            />
+            <button
+              onClick={() => setActiveTab("active")}
+              className={`relative z-10 flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
+                activeTab === "active" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <CalendarCheck size={15} />
+              Active Events
+              <Badge variant="secondary" className={`ml-1 text-[10px] ${activeTab === "active" ? "bg-primary-foreground/20 text-primary-foreground" : ""}`}>
+                {activeEvents.length}
+              </Badge>
+            </button>
+            <button
+              onClick={() => setActiveTab("archive")}
+              className={`relative z-10 flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
+                activeTab === "archive" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <History size={15} />
+              Event Archive
+              <Badge variant="secondary" className={`ml-1 text-[10px] ${activeTab === "archive" ? "bg-primary-foreground/20 text-primary-foreground" : ""}`}>
+                {archivedEvents.length}
+              </Badge>
+            </button>
+          </div>
         </div>
 
         {fetching ? (
           <p className="text-sm text-muted-foreground">Loading events...</p>
-        ) : events.length === 0 ? (
+        ) : displayedEvents.length === 0 ? (
           <div className="flex flex-col items-center py-16">
             <CalendarDays className="h-12 w-12 text-muted-foreground/30" />
-            <p className="mt-3 text-sm text-muted-foreground">No active events yet.</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              {activeTab === "active" ? "No active events." : "No archived events yet."}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((e) => (
-              <div key={e.id} className="rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer" onClick={() => setViewingEvent(e)}>
-                {e.image_url ? (
-                  <img src={e.image_url} alt={e.title} className="h-40 w-full object-cover" />
-                ) : (
-                  <div className="h-40 w-full bg-muted flex items-center justify-center">
-                    <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
-                  </div>
-                )}
+            {displayedEvents.map((e) => (
+              <div
+                key={e.id}
+                className="group rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer"
+                onClick={() => {
+                  if (activeTab === "archive") {
+                    navigate(`/admin/past-events/${e.id}`);
+                  } else {
+                    setViewingEvent(e);
+                  }
+                }}
+              >
+                <div className="relative">
+                  {e.image_url ? (
+                    <img
+                      src={e.image_url}
+                      alt={e.title}
+                      className={`h-40 w-full object-cover ${activeTab === "archive" ? "grayscale opacity-70" : ""}`}
+                    />
+                  ) : (
+                    <div className="h-40 w-full bg-muted flex items-center justify-center">
+                      <CalendarDays className="h-10 w-10 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  {activeTab === "archive" && (
+                    <div className="absolute top-2 right-2">
+                      <Badge variant="secondary" className="text-[10px] gap-1">
+                        <Pencil size={10} /> Edit Recap
+                      </Badge>
+                    </div>
+                  )}
+                </div>
                 <div className="p-4">
                   <p className="text-xs font-medium text-primary">
                     {new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
@@ -114,8 +187,14 @@ const AdminActiveEvents = () => {
                     <Badge variant="outline" className="text-[10px] uppercase">
                       {e.category ?? "Event"}
                     </Badge>
-                    {e.location && (
-                      <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{e.location}</span>
+                    {activeTab === "archive" && e.recap ? (
+                      <Badge variant="default" className="text-[10px]">Has Recap</Badge>
+                    ) : activeTab === "archive" ? (
+                      <span className="text-[10px] text-muted-foreground">No recap</span>
+                    ) : (
+                      e.location && (
+                        <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{e.location}</span>
+                      )
                     )}
                   </div>
                   <div className="mt-2 flex items-center justify-between">
