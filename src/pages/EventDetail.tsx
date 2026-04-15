@@ -151,9 +151,10 @@ const EventDetail = () => {
 
     const anneeLabel = event.target_annee === "1ere_annee" ? "1ère Année" : event.target_annee === "2eme_annee" ? "2ème Année" : null;
 
-    // Check if user matches
+    // Check if user matches (normalize pole by stripping emoji prefixes)
     if (userProfile) {
-      const poleMatch = !hasPoleRestriction || userProfile.pole === event.pole;
+      const normalizePole = (p: string | null) => p?.replace(/^[^\w\s]*\s*/, "").trim().toLowerCase() ?? "";
+      const poleMatch = !hasPoleRestriction || normalizePole(userProfile.pole) === normalizePole(event.pole);
       const anneeMatch = !hasAnneeRestriction || userProfile.member_type === event.target_annee;
       if (poleMatch && anneeMatch) return null;
     }
