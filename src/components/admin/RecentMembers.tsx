@@ -12,6 +12,7 @@ interface Member {
   avatar_url: string | null;
   created_at: string;
   isAdmin: boolean;
+  isScanner: boolean;
   is_banned: boolean;
 }
 
@@ -28,11 +29,12 @@ const RecentMembers = () => {
     const fetchMembers = async () => {
       setLoading(true);
 
-      const { data: adminRoles } = await supabase
+      const { data: roles } = await supabase
         .from("user_roles")
-        .select("user_id")
-        .eq("role", "admin");
-      const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
+        .select("user_id, role")
+        .in("role", ["admin", "scanner"] as any[]);
+      const adminIds = new Set((roles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id));
+      const scannerIds = new Set((roles ?? []).filter((r) => r.role === "scanner").map((r) => r.user_id));
 
       let query = supabase
         .from("profiles")
@@ -50,6 +52,7 @@ const RecentMembers = () => {
         (data ?? []).map((p: any) => ({
           ...p,
           isAdmin: adminIds.has(p.id),
+          isScanner: scannerIds.has(p.id),
           is_banned: p.is_banned ?? false,
         }))
       );
