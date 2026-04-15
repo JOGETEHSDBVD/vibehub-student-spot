@@ -55,6 +55,17 @@ const tiles: Tile[] = [
 const BentoGallery = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [selectedImage, setSelectedImage] = useState<Tile | null>(null);
+  const [activeCount, setActiveCount] = useState(249);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveCount((prev) => {
+        const delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
+        return Math.max(245, Math.min(255, prev + delta));
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="px-6 lg:px-20 pt-16 pb-8 bg-secondary/50">
