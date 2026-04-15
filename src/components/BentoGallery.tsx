@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import bentoHackathon from "@/assets/bento-hackathon.jpg";
 import bentoCollab from "@/assets/bento-collab.jpg";
@@ -15,117 +15,104 @@ interface Tile {
 }
 
 const tiles: Tile[] = [
-  {
-    id: 1,
-    src: bentoHackathon,
-    alt: "Hackathon in progress",
-    label: "Hackathon Night",
-    className: "col-span-2 row-span-2",
-  },
-  {
-    id: 2,
-    src: bentoCollab,
-    alt: "Students collaborating",
-    label: "Lab Sessions",
-    className: "col-span-1 row-span-2",
-  },
-  {
-    id: 3,
-    src: bentoSocial,
-    alt: "Social meetup",
-    label: "Coffee & Chill",
-    className: "col-span-1 row-span-1",
-  },
-  {
-    id: 4,
-    src: bentoPresentation,
-    alt: "Campus presentation",
-    label: "Keynote Talks",
-    className: "col-span-1 row-span-1",
-  },
-  {
-    id: 5,
-    src: bentoFestival,
-    alt: "Campus festival",
-    label: "Festival Vibes",
-    className: "col-span-2 row-span-1",
-  },
+  { id: 1, src: bentoHackathon, alt: "Hackathon in progress", label: "Hackathon Night", className: "col-span-2 row-span-2" },
+  { id: 2, src: bentoCollab, alt: "Students collaborating", label: "Lab Sessions", className: "col-span-1 row-span-2" },
+  { id: 3, src: bentoSocial, alt: "Social meetup", label: "Coffee & Chill", className: "col-span-1 row-span-1" },
+  { id: 4, src: bentoPresentation, alt: "Campus presentation", label: "Keynote Talks", className: "col-span-1 row-span-1" },
+  { id: 5, src: bentoFestival, alt: "Campus festival", label: "Festival Vibes", className: "col-span-2 row-span-1" },
 ];
+
+const useLiveCount = (base: number) => {
+  const [count, setCount] = useState(base);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(base + Math.floor(Math.random() * 7) - 3); // fluctuate ±3
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [base]);
+  return count;
+};
 
 const BentoGallery = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [selectedImage, setSelectedImage] = useState<Tile | null>(null);
+  const liveCount = useLiveCount(249);
 
   return (
     <section className="px-6 lg:px-20 pt-16 pb-8 bg-secondary/50">
       <div className="mx-auto max-w-[1200px]">
         <div className="mb-10">
-          <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">
-            CMC Moments
-          </h2>
-          <p className="text-muted-foreground">
-            Glimpses into the digital heart of CMC
-          </p>
+          <h2 className="font-display text-4xl md:text-5xl mb-2 text-foreground">CMC Moments</h2>
+          <p className="text-muted-foreground">Glimpses into the digital heart of CMC</p>
         </div>
 
-        {/* Bento Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[160px] md:auto-rows-[180px] gap-3 md:gap-4">
-          {tiles.map((tile) => (
-            <motion.div
-              key={tile.id}
-              className={`relative overflow-hidden rounded-3xl cursor-pointer group ${tile.className} ${
-                tile.id === 1
-                  ? "ring-2 ring-offset-2 ring-offset-secondary/50 ring-primary/40"
-                  : ""
-              }`}
-              onMouseEnter={() => setHoveredId(tile.id)}
-              onMouseLeave={() => setHoveredId(null)}
-              onClick={() => setSelectedImage(tile)}
-              animate={{
-                scale: hoveredId === tile.id ? 1.03 : 1,
-                opacity: hoveredId !== null && hoveredId !== tile.id ? 0.6 : 1,
-              }}
-              transition={{ duration: 0.3 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <img
-                src={tile.src}
-                alt={tile.alt}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
-              <div className="absolute bottom-3 left-4 right-4">
-                <span className="text-sm font-bold text-primary-foreground drop-shadow-md">
-                  {tile.label}
-                </span>
-              </div>
-            </motion.div>
-          ))}
+          {tiles.map((tile) => {
+            const isHovered = hoveredId === tile.id;
+            return (
+              <motion.div
+                key={tile.id}
+                className={`relative overflow-hidden rounded-3xl cursor-pointer ${tile.className} ${
+                  tile.id === 1 ? "ring-2 ring-offset-2 ring-offset-secondary/50 ring-primary/40" : ""
+                }`}
+                onMouseEnter={() => setHoveredId(tile.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                onClick={() => setSelectedImage(tile)}
+                animate={{
+                  scale: isHovered ? 1.03 : 1,
+                  opacity: hoveredId !== null && !isHovered ? 0.6 : 1,
+                }}
+                transition={{ duration: 0.3 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {/* Image with zoom on hover */}
+                <motion.img
+                  src={tile.src}
+                  alt={tile.alt}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  animate={{ scale: isHovered ? 1.08 : 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
+
+                {/* Glassmorphism caption that slides up on hover */}
+                <motion.div
+                  className="absolute bottom-3 left-3 right-3"
+                  animate={{ y: isHovered ? -4 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="inline-block text-sm font-bold text-primary-foreground px-3 py-1.5 rounded-full bg-foreground/20 backdrop-blur-md border border-primary-foreground/15 shadow-sm">
+                    {tile.label}
+                  </span>
+                </motion.div>
+              </motion.div>
+            );
+          })}
 
           {/* Live indicator tile */}
           <motion.div
             className="relative overflow-hidden rounded-3xl bg-dark-bg flex flex-col items-center justify-center col-span-1 row-span-1"
             onMouseEnter={() => setHoveredId(99)}
             onMouseLeave={() => setHoveredId(null)}
-            animate={{
-              opacity: hoveredId !== null && hoveredId !== 99 ? 0.6 : 1,
-            }}
+            animate={{ opacity: hoveredId !== null && hoveredId !== 99 ? 0.6 : 1 }}
             transition={{ duration: 0.3 }}
           >
             <span className="relative flex h-4 w-4 mb-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-4 w-4 bg-primary" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
-              Live
-            </span>
-            <span className="text-lg font-black text-dark-bg-foreground">
-              249+
-            </span>
-            <span className="text-[11px] text-muted-foreground mt-0.5">
-              VibeHubbers Active
-            </span>
+            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1">Live</span>
+            <motion.span
+              key={liveCount}
+              className="text-lg font-black text-dark-bg-foreground"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {liveCount}+
+            </motion.span>
+            <span className="text-[11px] text-muted-foreground mt-0.5">VibeHubbers Active</span>
           </motion.div>
         </div>
       </div>
