@@ -19,6 +19,8 @@ interface EventRow {
   category: string | null;
   created_by: string | null;
   creator_name: string | null;
+  requires_approval?: boolean;
+  seat_limit?: number | null;
 }
 
 const AdminActiveEvents = () => {
@@ -44,7 +46,7 @@ const AdminActiveEvents = () => {
       setFetching(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, created_by")
+        .select("id, title, description, date, location, image_url, category, created_by, requires_approval, seat_limit")
         .eq("is_published", true)
         .order("date", { ascending: true });
 
