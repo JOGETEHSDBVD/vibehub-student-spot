@@ -248,6 +248,10 @@ const AdminMembers = () => {
                           <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">
                             <Shield size={10} /> Admin
                           </span>
+                        ) : m.isScanner ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700">
+                            QR Scanner
+                          </span>
                         ) : (
                           <span className="text-muted-foreground">Member</span>
                         )}
