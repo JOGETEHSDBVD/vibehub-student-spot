@@ -89,7 +89,9 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [hasEndTime, setHasEndTime] = useState(!!event?.end_time);
   const [endTime, setEndTime] = useState(event?.end_time ? format(new Date(event.end_time), "HH:mm") : "14:00");
   const [location, setLocation] = useState(event?.location ?? "");
-  const [category, setCategory] = useState(event?.category ?? "Sports");
+  const isCustomInitial = event?.category ? !categories.includes(event.category) : false;
+  const [category, setCategory] = useState(isCustomInitial ? "__custom__" : (event?.category ?? "Sports"));
+  const [customCategory, setCustomCategory] = useState(isCustomInitial ? (event?.category ?? "") : "");
   const [pole, setPole] = useState(event?.pole ?? "Not specified");
   const [targetAnnee, setTargetAnnee] = useState(event?.target_annee ?? "Not specified");
   const [tags, setTags] = useState<string[]>(event?.tags ?? []);
@@ -232,7 +234,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         date: dateObj.toISOString(),
         end_time: endTimeIso,
         location: location.trim() || null,
-        category,
+        category: category === "__custom__" ? customCategory.trim() : category,
         pole: pole === "Not specified" ? null : pole,
         target_annee: targetAnnee === "Not specified" ? null : targetAnnee,
         image_url: mainImageUrl,
@@ -357,12 +359,16 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
 
           <div>
             <Label>Category</Label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select value={category} onValueChange={(v) => { setCategory(v); if (v !== "__custom__") setCustomCategory(""); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                <SelectItem value="__custom__">+ Custom</SelectItem>
               </SelectContent>
             </Select>
+            {category === "__custom__" && (
+              <Input className="mt-2" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} placeholder="Enter category name" />
+            )}
           </div>
 
           <div>
