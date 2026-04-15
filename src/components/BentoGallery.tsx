@@ -132,7 +132,14 @@ const BentoGallery = () => {
               Live
             </span>
             <span className="text-lg font-black text-dark-bg-foreground">
-              249+
+              <motion.span
+                key={activeCount}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                {activeCount}+
+              </motion.span>
             </span>
             <span className="text-[11px] text-muted-foreground mt-0.5">
               VibeHubbers Active
