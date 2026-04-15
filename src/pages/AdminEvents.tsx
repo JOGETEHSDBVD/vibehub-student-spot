@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff, Users } from "lucide-react";
+import { PlusCircle, CalendarDays, MoreVertical, Pencil, Trash2, Eye, EyeOff, Users, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -43,6 +43,8 @@ const AdminEvents = () => {
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
+  const [sortBy, setSortBy] = useState<"event_date" | "created_at">("event_date");
+  const [sortDir, setSortDir] = useState<"latest" | "oldest">("latest");
 
   const eventIds = useMemo(() => events.map((e) => e.id), [events]);
   const participantCounts = useEventParticipantCounts(eventIds);
@@ -97,24 +99,50 @@ const AdminEvents = () => {
           </Button>
         </div>
 
-        {/* Filter tabs */}
-        <div className="mb-5 flex gap-2">
-          {(["all", "published", "draft"] as const).map((f) => {
-            const count = f === "all" ? events.length : events.filter((e) => f === "published" ? e.is_published : !e.is_published).length;
-            return (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                  filter === f
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {f === "all" ? "All" : f === "published" ? "Published" : "Draft"} ({count})
-              </button>
-            );
-          })}
+        {/* Filter tabs + Sort */}
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-2">
+            {(["all", "published", "draft"] as const).map((f) => {
+              const count = f === "all" ? events.length : events.filter((e) => f === "published" ? e.is_published : !e.is_published).length;
+              return (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                    filter === f
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {f === "all" ? "All" : f === "published" ? "Published" : "Draft"} ({count})
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                  <ArrowUpDown size={14} />
+                  {sortBy === "event_date" ? "Event Date" : "Created"} · {sortDir === "latest" ? "Latest" : "Oldest"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => { setSortBy("event_date"); setSortDir("latest"); }}>
+                  Event Date · Latest first
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setSortBy("event_date"); setSortDir("oldest"); }}>
+                  Event Date · Oldest first
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setSortBy("created_at"); setSortDir("latest"); }}>
+                  Created · Latest first
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setSortBy("created_at"); setSortDir("oldest"); }}>
+                  Created · Oldest first
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {fetching ? (
@@ -126,14 +154,19 @@ const AdminEvents = () => {
           </div>
         ) : (() => {
           const filtered = filter === "all" ? events : events.filter((e) => filter === "published" ? e.is_published : !e.is_published);
-          return filtered.length === 0 ? (
+          const sorted = [...filtered].sort((a, b) => {
+            const key = sortBy === "event_date" ? "date" : "created_at";
+            const diff = new Date(a[key]).getTime() - new Date(b[key]).getTime();
+            return sortDir === "latest" ? -diff : diff;
+          });
+          return sorted.length === 0 ? (
             <div className="flex flex-col items-center py-16">
               <CalendarDays className="h-12 w-12 text-muted-foreground/30" />
               <p className="mt-3 text-sm text-muted-foreground">No {filter} events found.</p>
             </div>
           ) : (
           <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 -mx-2 px-2 scrollbar-thin sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-x-visible sm:snap-none sm:pb-0 sm:mx-0 sm:px-0">
-            {filtered.map((e) => (
+            {sorted.map((e) => (
               <div key={e.id} className="group relative rounded-xl border border-border overflow-hidden bg-card transition-transform duration-200 hover:scale-[1.02] cursor-pointer min-w-[280px] shrink-0 sm:min-w-0 sm:shrink snap-start" onClick={() => setViewingEvent(e)}>
                 {/* 3-dot menu */}
                 <div className="absolute top-2 right-2 z-10" onClick={(ev) => ev.stopPropagation()}>
