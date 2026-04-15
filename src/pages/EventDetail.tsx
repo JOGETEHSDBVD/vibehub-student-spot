@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { CalendarDays, MapPin, ArrowLeft, User, X } from "lucide-react";
-import { motion, useInView } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import TicketQRCode from "@/components/TicketQRCode";
-import CountUp from "@/components/animations/CountUp";
-import MagneticButton from "@/components/animations/MagneticButton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,26 +42,6 @@ interface OrganizerProfile {
   member_type: string | null;
 }
 
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
-};
-
-const slideLeft = {
-  hidden: { opacity: 0, x: -40 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
-
-const slideRight = {
-  hidden: { opacity: 0, x: 40 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
-
 const EventDetail = () => {
   const [showTicket, setShowTicket] = useState(false);
   const { id } = useParams<{ id: string }>();
@@ -80,13 +57,6 @@ const EventDetail = () => {
   const [userProfile, setUserProfile] = useState<{ pole: string | null; member_type: string | null } | null>(null);
   const [qrEnabled, setQrEnabled] = useState(false);
 
-  const descRef = useRef<HTMLDivElement>(null);
-  const descInView = useInView(descRef, { once: true, margin: "-60px" });
-  const orgRef = useRef<HTMLDivElement>(null);
-  const orgInView = useInView(orgRef, { once: true, margin: "-60px" });
-  const statsRef = useRef<HTMLParagraphElement>(null);
-  const statsInView = useInView(statsRef, { once: true, margin: "-30px" });
-
   // Fetch event
   useEffect(() => {
     if (!id) return;
@@ -99,6 +69,7 @@ const EventDetail = () => {
         .single();
       setEvent(data as EventFull | null);
 
+      // Fetch qr_enabled separately since it's not in the type
       const { data: qrData } = await supabase
         .from("events")
         .select("qr_enabled")
@@ -180,6 +151,7 @@ const EventDetail = () => {
 
     const anneeLabel = event.target_annee === "1ere_annee" ? "1ère Année" : event.target_annee === "2eme_annee" ? "2ème Année" : null;
 
+    // Check if user matches
     if (userProfile) {
       const poleMatch = !hasPoleRestriction || userProfile.pole === event.pole;
       const anneeMatch = !hasAnneeRestriction || userProfile.member_type === event.target_annee;
@@ -229,28 +201,25 @@ const EventDetail = () => {
   };
 
   const now = new Date();
+
   const upcomingOrgEvents = organizerEvents.filter((e) => new Date(e.date) >= now);
   const pastOrgEvents = organizerEvents.filter((e) => new Date(e.date) < now);
 
-  // Marquee: duplicate items for seamless loop
-  const marqueeEvents = [...upcomingOrgEvents, ...pastOrgEvents];
-  const marqueeItems = marqueeEvents.length > 0 ? [...marqueeEvents, ...marqueeEvents] : [];
-
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
         <Navbar />
         <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-12">
-          <div className="space-y-6">
-            <div className="h-6 w-32 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
-            <div className="h-10 w-3/4 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
+          <div className="animate-pulse space-y-6">
+            <div className="h-6 w-32 bg-muted rounded" />
+            <div className="h-10 w-3/4 bg-muted rounded" />
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <div className="h-4 w-1/2 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
-                <div className="h-4 w-1/3 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
-                <div className="h-10 w-40 bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded" />
+                <div className="h-4 w-1/2 bg-muted rounded" />
+                <div className="h-4 w-1/3 bg-muted rounded" />
+                <div className="h-10 w-40 bg-muted rounded" />
               </div>
-              <div className="aspect-[4/3] bg-dark-bg-foreground/10 animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-dark-bg-foreground/5 via-dark-bg-foreground/10 to-dark-bg-foreground/5 rounded-xl" />
+              <div className="aspect-[4/3] bg-muted rounded-xl" />
             </div>
           </div>
         </main>
@@ -261,7 +230,7 @@ const EventDetail = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
+    <div className="min-h-screen flex flex-col bg-dark-bg text-dark-bg-foreground">
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -283,7 +252,7 @@ const EventDetail = () => {
 
       {/* Blurred background from event image */}
       {event.image_url && (
-        <div className="absolute top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden h-[500px]">
+      <div className="absolute top-0 left-0 right-0 z-0 pointer-events-none overflow-hidden h-[500px]">
           <img
             src={event.image_url}
             alt=""
@@ -295,12 +264,7 @@ const EventDetail = () => {
 
       <main className="flex-1 relative z-10">
         {/* Breadcrumb */}
-        <motion.div
-          className="max-w-5xl mx-auto px-4 pt-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-        >
+        <div className="max-w-5xl mx-auto px-4 pt-8">
           <div className="flex items-center gap-2 text-sm text-dark-bg-foreground/50">
             <Link to="/" className="hover:text-dark-bg-foreground transition-colors">Home</Link>
             <span>›</span>
@@ -308,19 +272,13 @@ const EventDetail = () => {
             <span>›</span>
             <span className="text-dark-bg-foreground truncate max-w-[200px]">{event.title}</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Hero section */}
         <div className="max-w-5xl mx-auto px-4 pt-6 pb-10">
           <div className="grid md:grid-cols-[1fr_1.2fr] gap-8 items-start">
-            {/* Left: Text with staggered reveal */}
-            <motion.div
-              className="space-y-5"
-              variants={stagger}
-              initial="hidden"
-              animate="show"
-            >
-              <motion.div variants={fadeUp}>
+            <div className="space-y-5">
+              <div>
                 <h1 className="text-3xl md:text-4xl font-black text-dark-bg-foreground">{event.title}</h1>
                 {organizer && (
                   <p className="mt-1 text-sm text-dark-bg-foreground/50">
@@ -330,133 +288,104 @@ const EventDetail = () => {
                     </Link>
                   </p>
                 )}
-              </motion.div>
-
+              </div>
               {/* Date */}
-              <motion.div variants={fadeUp} className="flex items-start gap-3">
+              <div className="flex items-start gap-3">
                 <CalendarDays size={20} className="text-primary mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-semibold text-primary">
                     {d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
                   </p>
-                  <p className="text-sm text-dark-bg-foreground/50">
+                   <p className="text-sm text-dark-bg-foreground/50">
                     {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                   </p>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Location */}
               {event.location && (
-                <motion.div variants={fadeUp} className="flex items-start gap-3">
+                <div className="flex items-start gap-3">
                   <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
                   <p className="text-sm text-dark-bg-foreground">{event.location}</p>
-                </motion.div>
+                </div>
               )}
 
               {/* Category */}
               {event.category && (
-                <motion.span variants={fadeUp} className="inline-block rounded-full border border-dark-bg-foreground/20 px-3 py-1 text-xs font-semibold uppercase text-dark-bg-foreground/60">
+                <span className="inline-block rounded-full border border-dark-bg-foreground/20 px-3 py-1 text-xs font-semibold uppercase text-dark-bg-foreground/60">
                   {event.category}
-                </motion.span>
+                </span>
               )}
 
               {/* Tags */}
               {event.tags && event.tags.length > 0 && (
-                <motion.div variants={fadeUp} className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {event.tags.map((tag) => (
                     <span key={tag} className="rounded-full border border-dark-bg-foreground/20 px-2.5 py-0.5 text-[11px] font-medium uppercase text-dark-bg-foreground/60">
                       {tag}
                     </span>
                   ))}
-                </motion.div>
+                </div>
               )}
 
               {/* Restriction notice */}
               {restrictionMessage && !hasJoined && (
-                <motion.div variants={fadeUp} className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3">
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3">
                   <p className="text-sm font-medium text-destructive">{restrictionMessage}</p>
-                </motion.div>
+                </div>
               )}
 
-              {/* Participants count with animated counter */}
-              <motion.p variants={fadeUp} ref={statsRef} className="text-sm text-dark-bg-foreground/50">
-                <span className="font-bold text-dark-bg-foreground">
-                  {statsInView ? <CountUp end={participantCount} duration={1500} /> : "0"}
-                </span>{" "}
-                participant{participantCount !== 1 ? "s" : ""}
-              </motion.p>
+              {/* Participants count */}
+              <p className="text-sm text-dark-bg-foreground/50">
+                <span className="font-bold text-dark-bg-foreground">{participantCount}</span> participant{participantCount !== 1 ? "s" : ""}
+              </p>
 
-              {/* Action buttons with pulsing glow */}
+              {/* Action buttons */}
               {!isPast && (
-                <motion.div variants={fadeUp} className="flex gap-3 pt-2">
-                  {hasJoined ? (
-                    <Button
-                      onClick={handleParticipate}
-                      disabled={joining}
-                      variant="outline"
-                      className="rounded-full px-6 border-red-400 text-red-400 hover:bg-red-400/10 hover:text-red-300"
-                    >
-                      Leave Event
-                    </Button>
-                  ) : (
-                    <MagneticButton
-                      onClick={joining ? undefined : handleParticipate}
-                      className="rounded-full px-8 py-3 bg-primary text-primary-foreground font-bold shadow-[0_0_15px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.6)] animate-cta-breathe transition-shadow duration-300"
-                    >
-                      {joining ? "Joining..." : "Participate"}
-                    </MagneticButton>
-                  )}
-                </motion.div>
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    onClick={handleParticipate}
+                    disabled={joining}
+                    variant={hasJoined ? "outline" : "default"}
+                    className={`rounded-full px-6 ${hasJoined ? "border-red-400 text-red-400 hover:bg-red-400/10 hover:text-red-300" : ""}`}
+                  >
+                    {hasJoined ? "Leave Event" : "Participate"}
+                  </Button>
+                </div>
               )}
 
               {/* QR Ticket button */}
               {hasJoined && qrEnabled && user && id && (
-                <motion.div variants={fadeUp}>
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowTicket(true)}
-                    className="rounded-full px-6 gap-2 border-primary text-primary hover:bg-primary/10"
-                  >
-                    🎫 View My Ticket
-                  </Button>
-                </motion.div>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowTicket(true)}
+                  className="rounded-full px-6 gap-2 border-primary text-primary hover:bg-primary/10"
+                >
+                  🎫 View My Ticket
+                </Button>
               )}
 
               {isPast && (
-                <motion.p variants={fadeUp} className="text-sm font-medium text-dark-bg-foreground/50 italic">This event has ended.</motion.p>
+                <p className="text-sm font-medium text-dark-bg-foreground/50 italic">This event has ended.</p>
               )}
-            </motion.div>
+            </div>
 
-            {/* Right image with Ken Burns effect */}
-            <motion.div
-              className="aspect-[4/3] overflow-hidden rounded-sm"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
+            {/* Right image */}
+            <div className="aspect-[4/3] overflow-hidden">
               {event.image_url ? (
-                <img
-                  src={event.image_url}
-                  alt={event.title}
-                  className="h-full w-full object-cover animate-ken-burns"
-                />
+                <img src={event.image_url} alt={event.title} className="h-full w-full object-cover" />
               ) : (
                 <div className="h-full w-full bg-muted flex items-center justify-center">
                   <CalendarDays className="h-14 w-14 text-muted-foreground/30" />
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
 
-        {/* Description — slides in from left */}
-        <div ref={descRef} className="max-w-5xl mx-auto px-4 pb-10">
-          <motion.div
-            className="border-t border-dark-bg-foreground/10 pt-8"
-            variants={slideLeft}
-            initial="hidden"
-            animate={descInView ? "show" : "hidden"}
-          >
+        {/* Description */}
+        <div className="max-w-5xl mx-auto px-4 pb-10">
+          <div className="border-t border-dark-bg-foreground/10 pt-8">
             <h2 className="text-xl font-black text-dark-bg-foreground mb-4">Description</h2>
             {event.description ? (
               <p className="text-sm text-dark-bg-foreground/60 leading-relaxed whitespace-pre-wrap max-w-2xl">
@@ -465,31 +394,22 @@ const EventDetail = () => {
             ) : (
               <p className="text-sm text-dark-bg-foreground/50 italic">No description provided.</p>
             )}
-          </motion.div>
+          </div>
         </div>
 
-        {/* Organizer — slides in from right */}
+        {/* Organizer */}
         {organizer && (
-          <div ref={orgRef} className="max-w-5xl mx-auto px-4 pb-10">
-            <motion.div
-              className="border-t border-dark-bg-foreground/10 pt-8"
-              variants={slideRight}
-              initial="hidden"
-              animate={orgInView ? "show" : "hidden"}
-            >
+          <div className="max-w-5xl mx-auto px-4 pb-10">
+            <div className="border-t border-dark-bg-foreground/10 pt-8">
               <h2 className="text-xl font-black text-dark-bg-foreground mb-4">Organized By</h2>
               <Link
                 to={`/organizer/${organizer.id}`}
                 className="flex items-center gap-4 group"
               >
                 {organizer.avatar_url ? (
-                  <img
-                    src={organizer.avatar_url}
-                    alt=""
-                    className="h-14 w-14 rounded-full object-cover border-2 border-dark-bg-foreground/20 group-hover:border-primary group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.5)] transition-all duration-300"
-                  />
+                  <img src={organizer.avatar_url} alt="" className="h-14 w-14 rounded-full object-cover border-2 border-dark-bg-foreground/20 group-hover:border-primary transition-colors" />
                 ) : (
-                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border-2 border-dark-bg-foreground/20 group-hover:border-primary group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.5)] transition-all duration-300">
+                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border-2 border-dark-bg-foreground/20 group-hover:border-primary transition-colors">
                     <User size={24} className="text-primary" />
                   </div>
                 )}
@@ -497,39 +417,40 @@ const EventDetail = () => {
                   <p className="font-bold text-dark-bg-foreground group-hover:text-primary transition-colors">
                     {organizer.full_name ?? "Unknown Organizer"}
                   </p>
-                  <p className="text-xs text-dark-bg-foreground/50 group-hover:text-dark-bg-foreground/70 transition-colors">
-                    {organizer.pole ?? "Event Organizer"}
-                  </p>
+                  {organizer.pole && (
+                    <p className="text-xs text-dark-bg-foreground/50">{organizer.pole}</p>
+                  )}
                 </div>
               </Link>
-            </motion.div>
+            </div>
           </div>
         )}
 
-        {/* Up Next — Marquee slider */}
-        {marqueeItems.length > 0 && (
+        {/* Organizer's other events */}
+        {(upcomingOrgEvents.length > 0 || pastOrgEvents.length > 0) && (
           <div className="max-w-5xl mx-auto px-4 pb-16">
             <div className="border-t border-dark-bg-foreground/10 pt-8">
-              <h2 className="text-lg font-black uppercase tracking-wide text-dark-bg-foreground mb-6">Up Next</h2>
-              <div className="overflow-hidden">
-                <motion.div
-                  className="flex gap-6"
-                  animate={{ x: [0, -(marqueeEvents.length * 280)] }}
-                  transition={{
-                    x: {
-                      duration: marqueeEvents.length * 6,
-                      repeat: Infinity,
-                      ease: "linear",
-                    },
-                  }}
-                >
-                  {marqueeItems.map((e, i) => (
-                    <div key={`${e.id}-${i}`} className="flex-shrink-0 w-[260px]">
-                      <EventMiniCard event={e} />
-                    </div>
-                  ))}
-                </motion.div>
-              </div>
+              {upcomingOrgEvents.length > 0 && (
+                <div className="mb-10">
+                  <h2 className="text-lg font-black uppercase tracking-wide text-dark-bg-foreground mb-6">Upcoming Events</h2>
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {upcomingOrgEvents.map((e) => (
+                      <EventMiniCard key={e.id} event={e} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {pastOrgEvents.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-black uppercase tracking-wide text-dark-bg-foreground mb-6">Past Events</h2>
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {pastOrgEvents.map((e) => (
+                      <EventMiniCard key={e.id} event={e} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -573,9 +494,9 @@ const EventMiniCard = ({ event }: { event: EventFull }) => {
   const d = new Date(event.date);
   return (
     <Link to={`/events/${event.id}`} className="group block">
-      <div className="aspect-[4/3] overflow-hidden rounded-sm">
+      <div className="aspect-[4/3] overflow-hidden">
         {event.image_url ? (
-          <img src={event.image_url} alt={event.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <img src={event.image_url} alt={event.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
         ) : (
           <div className="h-full w-full bg-dark-bg-foreground/10 flex items-center justify-center">
             <CalendarDays className="h-8 w-8 text-dark-bg-foreground/30" />
