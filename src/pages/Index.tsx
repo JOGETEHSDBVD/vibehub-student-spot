@@ -36,7 +36,7 @@ const fadeUp = {
 };
 
 const Index = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
