@@ -71,6 +71,15 @@ html {
   to { width: 0%; }
 }
 
+@keyframes scanner-line {
+  0%, 100% { top: 10%; opacity: 0.4; }
+  50% { top: 85%; opacity: 1; }
+}
+
 .animate-shrink {
   animation: shrink 2s linear forwards;
+}
+
+.animate-scanner-line {
+  animation: scanner-line 2.5s ease-in-out infinite;
 }
