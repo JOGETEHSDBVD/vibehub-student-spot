@@ -400,11 +400,10 @@ const EventDetail = () => {
                     </Button>
                   ) : (
                     <MagneticButton
-                      onClick={handleParticipate}
-                      disabled={joining}
-                      className="rounded-full px-8 py-3 bg-primary text-primary-foreground font-bold shadow-[0_0_15px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.6)] animate-pulse-glow transition-shadow duration-300"
+                      onClick={joining ? undefined : handleParticipate}
+                      className="rounded-full px-8 py-3 bg-primary text-primary-foreground font-bold shadow-[0_0_15px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.6)] animate-cta-breathe transition-shadow duration-300"
                     >
-                      Participate
+                      {joining ? "Joining..." : "Participate"}
                     </MagneticButton>
                   )}
                 </motion.div>
