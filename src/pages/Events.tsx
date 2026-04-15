@@ -125,9 +125,12 @@ const Events = () => {
     setPastPage(1);
   }, [selectedCategory]);
 
+  const isPast = (e: PublicEvent) => new Date(e.date) < new Date();
+
   const renderEventCard = (e: PublicEvent) => {
     const dt = formatDateShort(e.date);
     const creator = e.created_by ? creators[e.created_by] : null;
+    const eventIsPast = isPast(e);
 
     return (
       <motion.div
@@ -136,7 +139,7 @@ const Events = () => {
         variants={fadeUp}
         className="group block relative"
       >
-        <Link to={`/events/${e.id}`} className="block">
+        <Link to={eventIsPast ? `/events/past/${e.id}` : `/events/${e.id}`} className="block">
           <div className="overflow-hidden rounded-none aspect-[4/3] relative">
             {e.image_url ? (
               <img
