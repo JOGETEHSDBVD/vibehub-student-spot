@@ -86,7 +86,6 @@ const AdminMembers = () => {
       const adminIds = new Set((adminRoles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id));
       const scannerIds = new Set((adminRoles ?? []).filter((r) => r.role === "scanner").map((r) => r.user_id));
       const adminIdArray = Array.from(adminIds);
-      const adminIdArray = Array.from(adminIds);
 
       let query = supabase
         .from("profiles")
