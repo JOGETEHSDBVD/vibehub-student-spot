@@ -62,6 +62,7 @@ const Index = () => {
       setEvents((data as EventItem[]) ?? []);
       setEventsLoading(false);
     };
+    fetchEvents();
   }, []);
 
   const formatDateRange = (date: string, endTime: string | null) => {
