@@ -24,7 +24,7 @@ const Navbar = () => {
 
   const navLinks = [
     { to: "/", label: t("nav.home") },
-    { to: "#about", label: t("nav.about") },
+    { to: "/about", label: t("nav.about") },
     { to: "/events", label: t("nav.events") },
     { to: "/mbti-test", label: t("nav.mbtiTest") },
   ];
