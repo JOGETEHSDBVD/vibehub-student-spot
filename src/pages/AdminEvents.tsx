@@ -43,6 +43,8 @@ const AdminEvents = () => {
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = useState<EventRow | null>(null);
+  const [sortBy, setSortBy] = useState<"event_date" | "created_at">("event_date");
+  const [sortDir, setSortDir] = useState<"latest" | "oldest">("latest");
 
   const eventIds = useMemo(() => events.map((e) => e.id), [events]);
   const participantCounts = useEventParticipantCounts(eventIds);
