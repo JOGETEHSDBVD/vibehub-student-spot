@@ -23,6 +23,7 @@ interface Member {
   avatar_url: string | null;
   created_at: string;
   isAdmin: boolean;
+  isScanner: boolean;
   is_banned: boolean;
   member_type: string | null;
   pole: string | null;
@@ -80,9 +81,11 @@ const AdminMembers = () => {
       setFetching(true);
       const { data: adminRoles } = await supabase
         .from("user_roles")
-        .select("user_id")
-        .eq("role", "admin");
-      const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
+        .select("user_id, role")
+        .in("role", ["admin", "scanner"] as any[]);
+      const adminIds = new Set((adminRoles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id));
+      const scannerIds = new Set((adminRoles ?? []).filter((r) => r.role === "scanner").map((r) => r.user_id));
+      const adminIdArray = Array.from(adminIds);
       const adminIdArray = Array.from(adminIds);
 
       let query = supabase
@@ -113,7 +116,7 @@ const AdminMembers = () => {
 
       const { data, count } = await query;
       setMembers(
-        (data ?? []).map((p: any) => ({ ...p, isAdmin: adminIds.has(p.id), is_banned: p.is_banned ?? false }))
+        (data ?? []).map((p: any) => ({ ...p, isAdmin: adminIds.has(p.id), isScanner: scannerIds.has(p.id), is_banned: p.is_banned ?? false }))
       );
       setTotal(count ?? 0);
       setFetching(false);
