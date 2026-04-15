@@ -32,6 +32,8 @@ interface EventFull {
   is_published: boolean | null;
   pole: string | null;
   target_annee: string | null;
+  requires_approval?: boolean;
+  seat_limit?: number | null;
 }
 
 interface OrganizerProfile {
@@ -56,6 +58,7 @@ const EventDetail = () => {
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [userProfile, setUserProfile] = useState<{ pole: string | null; member_type: string | null } | null>(null);
   const [qrEnabled, setQrEnabled] = useState(false);
+  const [participantStatus, setParticipantStatus] = useState<string | null>(null);
 
   // Fetch event
   useEffect(() => {
