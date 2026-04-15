@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 type ScanResult = {
   status: "valid" | "alreadyUsed" | "invalid";
   userName?: string;
+  userPole?: string;
   usedAt?: string;
   message: string;
 };
@@ -56,20 +57,14 @@ const StaffScanner = () => {
 
       let scanResult: ScanResult;
       if (res.valid) {
-        scanResult = { status: "valid", userName: res.userName, message: "Member Checked In" };
+        scanResult = { status: "valid", userName: res.userName, userPole: res.userPole, message: "Member Checked In" };
       } else if (res.alreadyUsed) {
-        scanResult = { status: "alreadyUsed", userName: res.userName, usedAt: res.usedAt, message: "Already Checked In" };
+        scanResult = { status: "alreadyUsed", userName: res.userName, userPole: res.userPole, usedAt: res.usedAt, message: "Already Checked In" };
       } else {
         scanResult = { status: "invalid", message: res.error || "Invalid Ticket" };
       }
 
       setResult(scanResult);
-
-      // Auto-close after 2 seconds
-      autoCloseTimer.current = setTimeout(() => {
-        setResult(null);
-        startScanning();
-      }, 2000);
     } catch {
       setResult({ status: "invalid", message: "Failed to verify ticket" });
     } finally {
@@ -215,6 +210,10 @@ const StaffScanner = () => {
                 <p className="text-white text-lg font-semibold">{result.userName}</p>
               )}
 
+              {result.userPole && (
+                <p className="text-white/50 text-sm">{result.userPole}</p>
+              )}
+
               {result.usedAt && (
                 <p className="text-white/60 text-sm">
                   Used at: {new Date(result.usedAt).toLocaleString()}
@@ -227,15 +226,6 @@ const StaffScanner = () => {
               >
                 Scan Next
               </button>
-
-              {/* Auto-close indicator */}
-              <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-2">
-                <div
-                  className={`h-full rounded-full animate-shrink ${
-                    result.status === "valid" ? "bg-green-400" : result.status === "alreadyUsed" ? "bg-yellow-400" : "bg-red-400"
-                  }`}
-                />
-              </div>
             </div>
           </div>
         )}
