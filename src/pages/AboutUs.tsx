@@ -93,7 +93,7 @@ const DesktopPanels = () => {
 
               {/* Text content */}
               <motion.div
-                className="absolute inset-0 flex items-center justify-center px-8"
+                className="absolute inset-0 flex items-end justify-center px-8 pb-16"
                 style={{ opacity: textOpacity, y: textY }}
               >
                 <div className="max-w-xl text-center">
