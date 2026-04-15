@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Shield, Filter } from "lucide-react";
+import { Search, Shield, Filter, Download } from "lucide-react";
 import MemberActionsMenu from "@/components/admin/MemberActionsMenu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
