@@ -62,6 +62,7 @@ const AppRoutes = () => (
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/events/past/:id" element={<PastEventDetail />} />
         <Route path="/organizer/:id" element={<OrganizerProfile />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/events" element={<AdminEvents />} />
