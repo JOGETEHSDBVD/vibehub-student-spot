@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreVertical, Shield, ShieldOff, Ban, Undo2, MessageSquare, Brain } from "lucide-react";
+import { MoreVertical, Shield, ShieldOff, Ban, Undo2, MessageSquare, Brain, QrCode, QrCodeIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +48,7 @@ interface Member {
   full_name: string | null;
   email: string | null;
   isAdmin: boolean;
+  isScanner?: boolean;
   is_banned?: boolean;
 }
 
@@ -60,6 +61,7 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
   const { user } = useAuth();
   const [banDialogOpen, setBanDialogOpen] = useState(false);
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
+  const [scannerDialogOpen, setScannerDialogOpen] = useState(false);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [mbtiDialogOpen, setMbtiDialogOpen] = useState(false);
   const [mbtiResult, setMbtiResult] = useState<any>(null);
@@ -210,6 +212,13 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
                   <><Shield size={14} className="mr-2" /> Make Admin</>
                 )}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setScannerDialogOpen(true)}>
+                {member.isScanner ? (
+                  <><QrCodeIcon size={14} className="mr-2" /> Remove QR Scanner</>
+                ) : (
+                  <><QrCode size={14} className="mr-2" /> Make QR Scanner</>
+                )}
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleViewMbti}>
                 <Brain size={14} className="mr-2" /> View MBTI Results
               </DropdownMenuItem>
@@ -273,6 +282,49 @@ const MemberActionsMenu = ({ member, onRefresh }: Props) => {
             <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleToggleAdmin} disabled={loading}>
               {loading ? "Processing..." : member.isAdmin ? "Remove Admin" : "Make Admin"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Scanner Role Confirmation Dialog */}
+      <AlertDialog open={scannerDialogOpen} onOpenChange={setScannerDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {member.isScanner ? "Remove QR Scanner role from" : "Make"} {displayName} {member.isScanner ? "" : "a QR Scanner"}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {member.isScanner
+                ? `${displayName} will lose access to the QR check-in scanner.`
+                : `${displayName} will be able to access the QR check-in scanner to verify event tickets.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => {
+              setLoading(true);
+              if (member.isScanner) {
+                const { error } = await supabase.from("user_roles").delete().eq("user_id", member.id).eq("role", "scanner" as any);
+                if (error) {
+                  toast({ title: "Failed to remove scanner role", description: error.message, variant: "destructive" });
+                } else {
+                  toast({ title: `${displayName} is no longer a QR Scanner` });
+                  onRefresh();
+                }
+              } else {
+                const { error } = await supabase.from("user_roles").insert({ user_id: member.id, role: "scanner" as any });
+                if (error) {
+                  toast({ title: "Failed to assign scanner role", description: error.message, variant: "destructive" });
+                } else {
+                  toast({ title: `${displayName} is now a QR Scanner` });
+                  onRefresh();
+                }
+              }
+              setLoading(false);
+              setScannerDialogOpen(false);
+            }} disabled={loading}>
+              {loading ? "Processing..." : member.isScanner ? "Remove Scanner" : "Make Scanner"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
