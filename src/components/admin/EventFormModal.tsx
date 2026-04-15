@@ -234,7 +234,7 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
         date: dateObj.toISOString(),
         end_time: endTimeIso,
         location: location.trim() || null,
-        category,
+        category: category === "__custom__" ? customCategory.trim() : category,
         pole: pole === "Not specified" ? null : pole,
         target_annee: targetAnnee === "Not specified" ? null : targetAnnee,
         image_url: mainImageUrl,
