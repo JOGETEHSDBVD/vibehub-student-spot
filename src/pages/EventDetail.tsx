@@ -67,19 +67,15 @@ const EventDetail = () => {
       setLoading(true);
       const { data } = await supabase
         .from("events")
-        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee")
+        .select("id, title, description, date, location, image_url, category, tags, created_by, is_published, pole, target_annee, qr_enabled, requires_approval, seat_limit")
         .eq("id", id)
         .single();
-      setEvent(data as EventFull | null);
-
-      // Fetch qr_enabled separately since it's not in the type
-      const { data: qrData } = await supabase
-        .from("events")
-        .select("qr_enabled")
-        .eq("id", id)
-        .single();
-      setQrEnabled((qrData as any)?.qr_enabled ?? false);
-
+      if (data) {
+        setEvent(data as any as EventFull);
+        setQrEnabled((data as any).qr_enabled ?? false);
+      } else {
+        setEvent(null);
+      }
       setLoading(false);
     };
     fetchEvent();
@@ -122,24 +118,27 @@ const EventDetail = () => {
     fetchProfile();
   }, [user]);
 
-  // Check participation + count
+  // Check participation + count + status
   useEffect(() => {
     if (!id) return;
     const fetchParticipation = async () => {
-      const { count } = await supabase
+      // Count only approved participants
+      const { data: allParts } = await supabase
         .from("event_participants")
-        .select("id", { count: "exact", head: true })
+        .select("user_id, status")
         .eq("event_id", id);
-      setParticipantCount(count ?? 0);
+      const approvedCount = (allParts ?? []).filter((p: any) => p.status === "approved").length;
+      setParticipantCount(approvedCount);
 
       if (user) {
         const { data } = await supabase
           .from("event_participants")
-          .select("id")
+          .select("id, status")
           .eq("event_id", id)
           .eq("user_id", user.id)
           .maybeSingle();
         setHasJoined(!!data);
+        setParticipantStatus((data as any)?.status ?? null);
       }
     };
     fetchParticipation();
