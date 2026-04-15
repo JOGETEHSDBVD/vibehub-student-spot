@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, CalendarDays, CalendarCheck, History, BarChart3, Megaphone, Settings, LogOut, QrCode } from "lucide-react";
+import { LayoutDashboard, Users, CalendarDays, CalendarCheck, History, BarChart3, Megaphone, Settings, LogOut, QrCode, Image } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import logoBlue from "@/assets/logo-blue.png";
@@ -12,6 +12,7 @@ const navItems = [
   { label: "QR Scanner", icon: QrCode, path: "/admin/scan-qr" },
   { label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
   { label: "Announcements", icon: Megaphone, path: "/admin/announcements" },
+  { label: "Gallery Manager", icon: Image, path: "/admin/gallery" },
 ];
 
 const AdminSidebar = () => {
