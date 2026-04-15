@@ -41,7 +41,7 @@ interface ImageItem {
   url: string;
 }
 
-const categories = ["Sports", "Culture", "Entrepreneurship"];
+const defaultCategories = ["Sports", "Culture", "Entrepreneurship"];
 const poles = [
   "Not specified",
   "Digital & IT",
@@ -89,7 +89,9 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [hasEndTime, setHasEndTime] = useState(!!event?.end_time);
   const [endTime, setEndTime] = useState(event?.end_time ? format(new Date(event.end_time), "HH:mm") : "14:00");
   const [location, setLocation] = useState(event?.location ?? "");
-  const isCustomInitial = event?.category ? !categories.includes(event.category) : false;
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const allCategories = [...defaultCategories, ...customCategories];
+  const isCustomInitial = event?.category ? !defaultCategories.includes(event.category) && !customCategories.includes(event.category) : false;
   const [category, setCategory] = useState(isCustomInitial ? "__custom__" : (event?.category ?? "Sports"));
   const [customCategory, setCustomCategory] = useState(isCustomInitial ? (event?.category ?? "") : "");
   const [pole, setPole] = useState(event?.pole ?? "Not specified");
@@ -98,6 +100,44 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
   const [tagInput, setTagInput] = useState("");
   const [qrEnabled, setQrEnabled] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Fetch custom categories from DB
+  useEffect(() => {
+    const fetchCustomCategories = async () => {
+      const { data } = await supabase.from("custom_categories").select("name").order("name");
+      if (data) {
+        setCustomCategories(data.map((c: any) => c.name));
+        // If editing and event category is now in the list, select it
+        if (event?.category && data.some((c: any) => c.name === event.category)) {
+          setCategory(event.category);
+          setCustomCategory("");
+        }
+      }
+    };
+    fetchCustomCategories();
+  }, []);
+
+  const handleCustomCategorySubmit = async () => {
+    const name = customCategory.trim();
+    if (!name) return;
+    if (allCategories.some(c => c.toLowerCase() === name.toLowerCase())) {
+      // Already exists, just select it
+      const existing = allCategories.find(c => c.toLowerCase() === name.toLowerCase())!;
+      setCategory(existing);
+      setCustomCategory("");
+      return;
+    }
+    // Save to DB
+    const { error } = await supabase.from("custom_categories").insert({ name });
+    if (error) {
+      toast({ title: "Failed to save category", description: error.message, variant: "destructive" });
+      return;
+    }
+    setCustomCategories(prev => [...prev, name].sort());
+    setCategory(name);
+    setCustomCategory("");
+    toast({ title: `Category "${name}" added` });
+  };
 
   // Multi-image state
   const [images, setImages] = useState<ImageItem[]>([]);
@@ -362,12 +402,18 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
             <Select value={category} onValueChange={(v) => { setCategory(v); if (v !== "__custom__") setCustomCategory(""); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                {allCategories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 <SelectItem value="__custom__">+ Custom</SelectItem>
               </SelectContent>
             </Select>
             {category === "__custom__" && (
-              <Input className="mt-2" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} placeholder="Enter category name" />
+              <Input
+                className="mt-2"
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                placeholder="Type and press Enter to add"
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleCustomCategorySubmit(); } }}
+              />
             )}
           </div>
 
