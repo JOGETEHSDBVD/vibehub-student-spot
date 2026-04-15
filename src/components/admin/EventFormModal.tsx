@@ -41,7 +41,7 @@ interface ImageItem {
   url: string;
 }
 
-const categories = ["Sports", "Culture", "Entrepreneurship"];
+const defaultCategories = ["Sports", "Culture", "Entrepreneurship"];
 const poles = [
   "Not specified",
   "Digital & IT",
