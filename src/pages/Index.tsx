@@ -45,9 +45,10 @@ const Index = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
 
-  const storiesRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const ctaRef = useRef<HTMLElement>(null);
 
   // Stats in-view
   const statsRef = useRef<HTMLElement>(null);
