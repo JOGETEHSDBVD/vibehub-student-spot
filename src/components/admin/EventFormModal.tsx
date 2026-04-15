@@ -359,12 +359,16 @@ const EventFormModal = ({ open, onClose, onSaved, event }: EventFormModalProps) 
 
           <div>
             <Label>Category</Label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select value={category} onValueChange={(v) => { setCategory(v); if (v !== "__custom__") setCustomCategory(""); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                <SelectItem value="__custom__">+ Custom</SelectItem>
               </SelectContent>
             </Select>
+            {category === "__custom__" && (
+              <Input className="mt-2" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} placeholder="Enter category name" />
+            )}
           </div>
 
           <div>
