@@ -147,12 +147,6 @@ const Events = () => {
               </div>
             )}
 
-            {/* Hover overlay with View Details */}
-            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors duration-300 flex items-end justify-center pb-6 pointer-events-none">
-              <span className="opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 pointer-events-auto">
-                View Details <ArrowRight size={14} />
-              </span>
-            </div>
           </div>
 
           <div className="mt-3 space-y-1">
