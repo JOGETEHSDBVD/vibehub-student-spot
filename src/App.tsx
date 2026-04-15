@@ -24,6 +24,7 @@ import MbtiTest from "./pages/MbtiTest.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import ScanQR from "./pages/ScanQR.tsx";
 import AdminGallery from "./pages/AdminGallery.tsx";
+import StaffScanner from "./pages/StaffScanner.tsx";
 import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
@@ -74,6 +75,7 @@ const AppRoutes = () => (
         <Route path="/mbti-test" element={<MbtiTest />} />
         <Route path="/admin/scan-qr" element={<ScanQR />} />
         <Route path="/admin/gallery" element={<AdminGallery />} />
+        <Route path="/my-account/scanner" element={<StaffScanner />} />
         <Route path="/checkin/:ticketId" element={<ScanQR />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

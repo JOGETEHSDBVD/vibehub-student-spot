@@ -23,6 +23,7 @@ interface Member {
   avatar_url: string | null;
   created_at: string;
   isAdmin: boolean;
+  isScanner: boolean;
   is_banned: boolean;
   member_type: string | null;
   pole: string | null;
@@ -80,9 +81,10 @@ const AdminMembers = () => {
       setFetching(true);
       const { data: adminRoles } = await supabase
         .from("user_roles")
-        .select("user_id")
-        .eq("role", "admin");
-      const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
+        .select("user_id, role")
+        .in("role", ["admin", "scanner"] as any[]);
+      const adminIds = new Set((adminRoles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id));
+      const scannerIds = new Set((adminRoles ?? []).filter((r) => r.role === "scanner").map((r) => r.user_id));
       const adminIdArray = Array.from(adminIds);
 
       let query = supabase
@@ -104,6 +106,10 @@ const AdminMembers = () => {
 
       if (filterRole === "admin" && adminIdArray.length > 0) {
         query = query.in("id", adminIdArray);
+      } else if (filterRole === "scanner") {
+        const scannerIdArray = Array.from(scannerIds);
+        if (scannerIdArray.length > 0) query = query.in("id", scannerIdArray);
+        else query = query.eq("id", "00000000-0000-0000-0000-000000000000");
       } else if (filterRole === "member" && adminIdArray.length > 0) {
         query = query.not("id", "in", `(${adminIdArray.join(",")})`);
       }
@@ -113,7 +119,7 @@ const AdminMembers = () => {
 
       const { data, count } = await query;
       setMembers(
-        (data ?? []).map((p: any) => ({ ...p, isAdmin: adminIds.has(p.id), is_banned: p.is_banned ?? false }))
+        (data ?? []).map((p: any) => ({ ...p, isAdmin: adminIds.has(p.id), isScanner: scannerIds.has(p.id), is_banned: p.is_banned ?? false }))
       );
       setTotal(count ?? 0);
       setFetching(false);
@@ -170,6 +176,7 @@ const AdminMembers = () => {
                 <SelectContent>
                   <SelectItem value="all">All Roles</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="scanner">QR Scanner</SelectItem>
                   <SelectItem value="member">Member</SelectItem>
                 </SelectContent>
               </Select>
@@ -245,6 +252,10 @@ const AdminMembers = () => {
                         {m.isAdmin ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">
                             <Shield size={10} /> Admin
+                          </span>
+                        ) : m.isScanner ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700">
+                            QR Scanner
                           </span>
                         ) : (
                           <span className="text-muted-foreground">Member</span>

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, User, LogOut, ExternalLink, Ticket } from "lucide-react";
+import { Menu, X, User, LogOut, ExternalLink, QrCode } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useScannerCheck } from "@/hooks/useScannerCheck";
 import logoBlue from "@/assets/logo-blue.png";
 import logoWhite from "@/assets/logo-white.png";
 
@@ -22,6 +23,7 @@ const Navbar = () => {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
+  const { isScanner } = useScannerCheck();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -103,6 +105,15 @@ const Navbar = () => {
                         <User size={18} />
                         My account
                       </button>
+                      {(isAdmin || isScanner) && (
+                        <button
+                          onClick={() => { setAvatarOpen(false); navigate("/my-account/scanner"); }}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
+                        >
+                          <QrCode size={18} />
+                          QR Scanner
+                        </button>
+                      )}
                       <button
                         onClick={() => { setAvatarOpen(false); signOut(); }}
                         className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
@@ -157,6 +168,12 @@ const Navbar = () => {
                     className="flex items-center gap-2 py-2 text-sm font-medium text-foreground">
                     <User size={16} /> My account
                   </button>
+                  {(isAdmin || isScanner) && (
+                    <button onClick={() => { setMobileOpen(false); navigate("/my-account/scanner"); }}
+                      className="flex items-center gap-2 py-2 text-sm font-medium text-foreground">
+                      <QrCode size={16} /> QR Scanner
+                    </button>
+                  )}
                   <button onClick={() => { setMobileOpen(false); signOut(); }}
                     className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted-foreground">Log out</button>
                 </>
