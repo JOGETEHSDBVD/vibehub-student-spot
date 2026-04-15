@@ -152,7 +152,7 @@ const BentoGallery = () => {
       <AnimatePresence>
         {selectedImage && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/90 backdrop-blur-sm cursor-pointer"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/80 backdrop-blur-md cursor-pointer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -161,7 +161,7 @@ const BentoGallery = () => {
             <motion.img
               src={selectedImage.src}
               alt={selectedImage.alt}
-              className="max-w-[90vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+              className="max-w-[90vw] max-h-[80vh] object-contain rounded-2xl shadow-2xl"
               initial={{ scale: 0.7, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.7, opacity: 0 }}
