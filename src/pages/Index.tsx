@@ -258,7 +258,7 @@ const Index = () => {
             <div className="flex flex-wrap justify-center gap-4">
               <MagneticButton
                 onClick={() => setAuthMode("signup")}
-                className="bg-white text-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-white/90 transition-all"
+                className="bg-amber-400 text-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-amber-300 transition-all"
               >
                 {t("cta.becomeHost")}
               </MagneticButton>
