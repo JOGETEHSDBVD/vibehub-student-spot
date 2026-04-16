@@ -22,7 +22,7 @@ const Footer = () => {
         <div>
           <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">{t("footer.quickLinks")}</h5>
           <ul className="flex flex-col gap-4 text-sm text-slate-400">
-            <li><Link className="hover:text-white transition-colors" to="#about">{t("footer.aboutUs")}</Link></li>
+            <li><Link className="hover:text-white transition-colors" to="/about">{t("footer.aboutUs")}</Link></li>
             <li><Link className="hover:text-white transition-colors" to="/events">{t("nav.events")}</Link></li>
             <li><Link className="hover:text-white transition-colors" to="/mbti-test">{t("nav.mbtiTest")}</Link></li>
           </ul>
