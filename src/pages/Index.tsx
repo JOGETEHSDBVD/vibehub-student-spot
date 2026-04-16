@@ -247,7 +247,7 @@ const Index = () => {
         </section>
 
         {/* CTA Section */}
-        <section ref={ctaRef} className="mx-6 lg:mx-20 my-16 rounded-3xl px-8 py-20 md:px-16 text-center relative overflow-hidden">
+        <section ref={ctaRef} className="mx-4 sm:mx-6 lg:mx-20 my-10 md:my-16 rounded-3xl px-6 py-14 sm:px-8 md:px-16 md:py-20 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-primary animate-cta-breathe" />
           <div className="relative mx-auto max-w-xl z-10">
             <Rocket className="mx-auto h-10 w-10 text-primary-foreground/80 mb-4" />
@@ -255,16 +255,16 @@ const Index = () => {
             <p className="text-primary-foreground/80 text-lg leading-relaxed mb-8">
               {t("cta.subtitle")}
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
               <MagneticButton
                 onClick={() => setAuthMode("signup")}
-                className="bg-amber-400 text-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-amber-300 transition-all"
+                className="bg-amber-400 text-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-amber-300 active:bg-amber-300 transition-all touch-target w-full sm:w-auto"
               >
                 {t("cta.becomeHost")}
               </MagneticButton>
               <Link
                 to="/events"
-                className="bg-primary-foreground/15 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-primary-foreground/25 transition-all"
+                className="bg-primary-foreground/15 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-primary-foreground/25 active:bg-primary-foreground/25 transition-all touch-target w-full sm:w-auto text-center"
               >
                 {t("cta.browseHandbook")}
               </Link>
