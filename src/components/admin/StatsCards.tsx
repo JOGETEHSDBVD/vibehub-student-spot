@@ -31,7 +31,7 @@ const StatsCards = () => {
       change: "",
       changeColor: "text-muted-foreground",
       icon: Users,
-      iconBg: "bg-primary/10 text-primary-foreground bg-primary",
+      iconBg: "bg-primary/10 text-primary",
     },
     {
       label: "Active Events",
