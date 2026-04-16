@@ -10,6 +10,7 @@ import TiltCard from "@/components/animations/TiltCard";
 import MagneticButton from "@/components/animations/MagneticButton";
 import heroBuilding from "@/assets/hero-building.png";
 import BentoGallery from "@/components/BentoGallery";
+import { loadGalleryConfig } from "@/stores/galleryStore";
 import { supabase } from "@/integrations/supabase/client";
 import { CalendarDays, MapPin, Rocket } from "lucide-react";
 
@@ -40,6 +41,7 @@ const Index = () => {
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
+  const heroConfig = loadGalleryConfig().hero;
 
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -82,7 +84,7 @@ const Index = () => {
         {/* Hero Section */}
         <section ref={heroRef} className="relative w-full h-[520px] md:h-[600px] overflow-hidden">
           <motion.img
-            src={heroBuilding}
+            src={heroConfig.backgroundImage || heroBuilding}
             alt="Campus building"
             className="absolute inset-0 w-full h-full object-cover"
             style={{ y: heroY }}
@@ -102,11 +104,11 @@ const Index = () => {
                 {t("hero.badge", { count: 249 })}
               </motion.div>
               <motion.h1 variants={fadeUp} className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.05] text-primary-foreground max-w-2xl">
-                {t("hero.title")}{" "}
-                <span className="italic text-primary">{t("hero.titleAccent")}</span>
+                {heroConfig.title || t("hero.title")}{" "}
+                <span className="italic text-primary">{heroConfig.titleAccent || t("hero.titleAccent")}</span>
               </motion.h1>
               <motion.p variants={fadeUp} className="mt-6 text-lg text-primary-foreground/80 max-w-md leading-relaxed">
-                {t("hero.subtitle")}
+                {heroConfig.subtitle || t("hero.subtitle")}
               </motion.p>
               <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-4">
                 <Link
