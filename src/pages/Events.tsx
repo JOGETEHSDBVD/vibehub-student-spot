@@ -218,10 +218,10 @@ const Events = () => {
           <button
             key={i + 1}
             onClick={() => setPage(i + 1)}
-            className={`w-9 h-9 rounded-full text-sm font-semibold transition-colors ${
+            className={`w-11 h-11 rounded-full text-sm font-semibold transition-colors ${
               currentPage === i + 1
                 ? "bg-primary text-primary-foreground"
-                : "text-dark-bg-foreground/60 hover:text-dark-bg-foreground"
+                : "text-dark-bg-foreground/60 active:text-dark-bg-foreground"
             }`}
           >
             {i + 1}
@@ -231,7 +231,7 @@ const Events = () => {
         {currentPage < totalPages && (
           <button
             onClick={() => setPage(currentPage + 1)}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-dark-bg-foreground/60 hover:text-dark-bg-foreground transition-colors"
+            className="w-11 h-11 rounded-full flex items-center justify-center text-dark-bg-foreground/60 active:text-dark-bg-foreground transition-colors"
           >
             <ChevronRight size={18} />
           </button>
@@ -313,7 +313,7 @@ const Events = () => {
 
         {/* Category Pills */}
         <motion.div
-          className="flex flex-wrap gap-2 mb-10"
+          className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2 -mx-2 px-2"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
@@ -322,10 +322,10 @@ const Events = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border touch-target ${
                 selectedCategory === cat
                   ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-transparent text-dark-bg-foreground/60 border-dark-bg-foreground/20 hover:border-primary hover:text-primary"
+                  : "bg-transparent text-dark-bg-foreground/60 border-dark-bg-foreground/20 active:border-primary active:text-primary"
               }`}
             >
               {cat}

@@ -90,7 +90,7 @@ const Index = () => {
             style={{ y: heroY }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/85 via-foreground/60 to-foreground/30" />
-          <div className="absolute bottom-12 right-12 w-10 h-10 bg-primary/40 rounded-full hidden lg:block" />
+          <div className="absolute bottom-12 right-12 w-10 h-10 bg-primary/40 rounded-full hidden lg:block" aria-hidden="true" />
 
           <div className="relative z-10 h-full flex items-center px-6 lg:px-20">
             <motion.div
@@ -103,23 +103,23 @@ const Index = () => {
                 <span className="w-2 h-2 rounded-full bg-primary-foreground animate-pulse" />
                 {t("hero.badge", { count: 249 })}
               </motion.div>
-              <motion.h1 variants={fadeUp} className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.05] text-primary-foreground max-w-2xl">
+              <motion.h1 variants={fadeUp} className="font-display text-3xl sm:text-5xl md:text-7xl lg:text-8xl leading-[1.05] text-primary-foreground max-w-2xl">
                 {heroConfig.title || t("hero.title")}{" "}
                 <span className="italic text-primary">{heroConfig.titleAccent || t("hero.titleAccent")}</span>
               </motion.h1>
               <motion.p variants={fadeUp} className="mt-6 text-lg text-primary-foreground/80 max-w-md leading-relaxed">
                 {heroConfig.subtitle || t("hero.subtitle")}
               </motion.p>
-              <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-4">
+              <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
                 <Link
                   to="/events"
-                  className="bg-foreground text-primary-foreground px-8 py-4 rounded-xl font-bold text-base hover:bg-foreground/90 transition-all"
+                  className="bg-foreground text-primary-foreground px-6 sm:px-8 py-4 rounded-xl font-bold text-base hover:bg-foreground/90 active:bg-foreground/90 transition-all touch-target w-full sm:w-auto text-center"
                 >
                   {t("hero.exploreSchedule")}
                 </Link>
                 <button
                   onClick={() => setAuthMode("signup")}
-                  className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-xl font-bold text-base hover:bg-primary-foreground/20 transition-all"
+                  className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-6 sm:px-8 py-4 rounded-xl font-bold text-base hover:bg-primary-foreground/20 active:bg-primary-foreground/20 transition-all touch-target w-full sm:w-auto text-center"
                 >
                   {t("hero.hostEvent")}
                 </button>
@@ -247,7 +247,7 @@ const Index = () => {
         </section>
 
         {/* CTA Section */}
-        <section ref={ctaRef} className="mx-6 lg:mx-20 my-16 rounded-3xl px-8 py-20 md:px-16 text-center relative overflow-hidden">
+        <section ref={ctaRef} className="mx-4 sm:mx-6 lg:mx-20 my-10 md:my-16 rounded-3xl px-6 py-14 sm:px-8 md:px-16 md:py-20 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-primary animate-cta-breathe" />
           <div className="relative mx-auto max-w-xl z-10">
             <Rocket className="mx-auto h-10 w-10 text-primary-foreground/80 mb-4" />
@@ -255,16 +255,16 @@ const Index = () => {
             <p className="text-primary-foreground/80 text-lg leading-relaxed mb-8">
               {t("cta.subtitle")}
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
               <MagneticButton
                 onClick={() => setAuthMode("signup")}
-                className="bg-amber-400 text-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-amber-300 transition-all"
+                className="bg-amber-400 text-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-amber-300 active:bg-amber-300 transition-all touch-target w-full sm:w-auto"
               >
                 {t("cta.becomeHost")}
               </MagneticButton>
               <Link
                 to="/events"
-                className="bg-primary-foreground/15 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-primary-foreground/25 transition-all"
+                className="bg-primary-foreground/15 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-full font-bold text-base hover:bg-primary-foreground/25 active:bg-primary-foreground/25 transition-all touch-target w-full sm:w-auto text-center"
               >
                 {t("cta.browseHandbook")}
               </Link>

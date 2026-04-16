@@ -233,7 +233,7 @@ const AboutUs = () => (
         </p>
         <a
           href="/events"
-          className="inline-block mt-8 px-8 py-3 rounded-full bg-primary text-primary-foreground font-bold hover:shadow-[0_0_24px_hsl(var(--primary)/0.4)] transition-shadow"
+          className="inline-block mt-8 px-8 py-3.5 rounded-full bg-primary text-primary-foreground font-bold active:shadow-[0_0_24px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_24px_hsl(var(--primary)/0.4)] transition-shadow touch-target"
         >
           Explore Events
         </a>
