@@ -2,6 +2,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 @tailwind base;
@@ -63,6 +64,52 @@ html {
 
   body {
     @apply bg-background text-foreground font-sans;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent iOS auto-zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
+
+  /* Global image responsiveness */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ── Touch-friendly utilities ── */
+@layer utilities {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Replace hover with active/pressed states on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .hover\:bg-primary\/10:active {
+      background-color: hsl(var(--primary) / 0.1);
+    }
+    .hover\:bg-muted:active {
+      background-color: hsl(var(--muted));
+    }
+    .hover\:bg-muted\/50:active {
+      background-color: hsl(var(--muted) / 0.5);
+    }
+    .hover\:text-primary:active {
+      color: hsl(var(--primary));
+    }
+  }
+}
+
+/* ── Mobile bottom nav spacing ── */
+@media (max-width: 767px) {
+  /* Add padding at bottom for the fixed bottom nav */
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
