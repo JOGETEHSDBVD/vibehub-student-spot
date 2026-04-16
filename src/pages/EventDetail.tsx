@@ -291,7 +291,7 @@ const EventDetail = () => {
 
         {/* Hero section */}
         <div className="max-w-5xl mx-auto px-4 pt-6 pb-10">
-          <div className="grid md:grid-cols-[1fr_1.2fr] gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-6 md:gap-8 items-start">
             <div className="space-y-5">
               <div>
                 <h1 className="text-3xl md:text-4xl font-black text-dark-bg-foreground">{event.title}</h1>
@@ -407,7 +407,7 @@ const EventDetail = () => {
             </div>
 
             {/* Right image */}
-            <div className="aspect-[4/3] overflow-hidden">
+            <div className="aspect-[4/3] overflow-hidden order-first md:order-last">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="h-full w-full object-cover" />
               ) : (
