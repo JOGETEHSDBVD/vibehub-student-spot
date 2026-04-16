@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pencil, Upload, Save, Image as ImageIcon } from "lucide-react";
+import { Pencil, Upload, Save, Image as ImageIcon, Type } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -27,6 +28,7 @@ const AdminGallery = () => {
   const [previewHoveredId, setPreviewHoveredId] = useState<number | null>(null);
   const [dirty, setDirty] = useState(false);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const heroFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!loading && !authLoading) {
