@@ -52,7 +52,7 @@ const BentoGallery = () => {
               onClick={() => setSelectedImage(tile)}
               animate={{
                 scale: hoveredId === tile.id ? 1.03 : 1,
-                opacity: hoveredId !== null && hoveredId !== tile.id ? 0.6 : 1,
+                opacity: 1,
               }}
               transition={{ duration: 0.3 }}
               whileTap={{ scale: 0.98 }}
