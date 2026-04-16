@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pencil, Upload, Save, Image as ImageIcon } from "lucide-react";
+import { Pencil, Upload, Save, Image as ImageIcon, Type } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -27,6 +28,7 @@ const AdminGallery = () => {
   const [previewHoveredId, setPreviewHoveredId] = useState<number | null>(null);
   const [dirty, setDirty] = useState(false);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const heroFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!loading && !authLoading) {
@@ -243,6 +245,104 @@ const AdminGallery = () => {
             </Card>
           </div>
         </div>
+
+        {/* Hero Section Editor */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Type size={18} />
+              Hero Section
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {/* Hero Preview */}
+              <div
+                className="relative h-56 rounded-xl overflow-hidden cursor-pointer group border border-border"
+                onClick={() => heroFileInputRef.current?.click()}
+              >
+                {config.hero.backgroundImage ? (
+                  <img src={config.hero.backgroundImage} alt="Hero background" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <ImageIcon size={40} className="text-muted-foreground/40" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 via-foreground/40 to-transparent" />
+                <div className="absolute bottom-4 left-4 space-y-1">
+                  <p className="text-lg font-display font-bold text-primary-foreground">
+                    {config.hero.title} <span className="italic text-primary">{config.hero.titleAccent}</span>
+                  </p>
+                  <p className="text-xs text-primary-foreground/70 max-w-xs line-clamp-2">{config.hero.subtitle}</p>
+                </div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  className="absolute inset-0 bg-foreground/40 flex items-center justify-center"
+                >
+                  <div className="bg-background rounded-full p-2 shadow-lg">
+                    <Upload size={16} className="text-primary" />
+                  </div>
+                </motion.div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={heroFileInputRef}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setConfig((prev) => prev ? { ...prev, hero: { ...prev.hero, backgroundImage: url } } : prev);
+                      setDirty(true);
+                    }
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+
+              {/* Hero Text Fields */}
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Title (line 1)</Label>
+                  <Input
+                    value={config.hero.title}
+                    onChange={(e) => {
+                      setConfig((prev) => prev ? { ...prev, hero: { ...prev.hero, title: e.target.value } } : prev);
+                      setDirty(true);
+                    }}
+                    placeholder="Ignite Your"
+                    className="h-9"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Title Accent (highlighted text)</Label>
+                  <Input
+                    value={config.hero.titleAccent}
+                    onChange={(e) => {
+                      setConfig((prev) => prev ? { ...prev, hero: { ...prev.hero, titleAccent: e.target.value } } : prev);
+                      setDirty(true);
+                    }}
+                    placeholder="Campus Life!"
+                    className="h-9"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Description</Label>
+                  <Textarea
+                    value={config.hero.subtitle}
+                    onChange={(e) => {
+                      setConfig((prev) => prev ? { ...prev, hero: { ...prev.hero, subtitle: e.target.value } } : prev);
+                      setDirty(true);
+                    }}
+                    placeholder="Experience the pulse of campus..."
+                    className="min-h-[80px] text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Floating Save Button */}
         {dirty && (
