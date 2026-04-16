@@ -93,9 +93,28 @@ const AdminSettings = () => {
     setUploadingCover(false);
   };
 
+  const isValidUrl = (url: string) => {
+    if (!url) return true;
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "https:" || parsed.protocol === "http:";
+    } catch { return false; }
+  };
+
   const handleSave = async () => {
     if (!user) return;
     if (!fullName.trim()) { toast({ title: "Name is required", variant: "destructive" }); return; }
+    const urls = [
+      { label: "LinkedIn", value: linkedinUrl.trim() },
+      { label: "Instagram", value: instagramUrl.trim() },
+      { label: "Facebook", value: facebookUrl.trim() },
+    ];
+    for (const u of urls) {
+      if (u.value && !isValidUrl(u.value)) {
+        toast({ title: `Invalid ${u.label} URL`, description: "URLs must start with https:// or http://", variant: "destructive" });
+        return;
+      }
+    }
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
       full_name: fullName.trim(),

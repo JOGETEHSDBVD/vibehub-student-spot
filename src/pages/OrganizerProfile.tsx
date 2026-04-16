@@ -115,25 +115,27 @@ const OrganizerProfile = () => {
               <p className="text-sm text-muted-foreground mt-1">{organizer.pole}</p>
             )}
             <p className="text-xs text-muted-foreground mt-1">{events.length} event{events.length !== 1 ? "s" : ""}</p>
-            {(organizer.linkedin_url || organizer.instagram_url || organizer.facebook_url) && (
-              <div className="flex items-center gap-2 mt-3">
-                {organizer.linkedin_url && (
-                  <a href={organizer.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
-                    <Linkedin size={14} className="text-[#0A66C2]" /> LinkedIn
-                  </a>
-                )}
-                {organizer.instagram_url && (
-                  <a href={organizer.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
-                    <Instagram size={14} className="text-[#E4405F]" /> Instagram
-                  </a>
-                )}
-                {organizer.facebook_url && (
-                  <a href={organizer.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
-                    <Facebook size={14} className="text-[#1877F2]" /> Facebook
-                  </a>
-                )}
-              </div>
-            )}
+            {(() => {
+              const isSafe = (url: string | null) => {
+                if (!url) return false;
+                try { const p = new URL(url); return p.protocol === "https:" || p.protocol === "http:"; } catch { return false; }
+              };
+              const links = [
+                { url: organizer.linkedin_url, icon: <Linkedin size={14} className="text-[#0A66C2]" />, label: "LinkedIn" },
+                { url: organizer.instagram_url, icon: <Instagram size={14} className="text-[#E4405F]" />, label: "Instagram" },
+                { url: organizer.facebook_url, icon: <Facebook size={14} className="text-[#1877F2]" />, label: "Facebook" },
+              ].filter(l => isSafe(l.url));
+              if (!links.length) return null;
+              return (
+                <div className="flex items-center gap-2 mt-3">
+                  {links.map(l => (
+                    <a key={l.label} href={l.url!} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground transition-colors">
+                      {l.icon} {l.label}
+                    </a>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
 
