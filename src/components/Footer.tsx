@@ -10,18 +10,18 @@ const Footer = () => {
   const isDarkPage = location.pathname === "/events" || location.pathname.startsWith("/events/");
 
   return (
-    <footer className="bg-slate-900 text-white py-16 px-6 lg:px-20">
+    <footer className="bg-black text-white py-16 px-6 lg:px-20">
       <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="col-span-1 md:col-span-1 flex flex-col gap-6">
           <Link to="/" className="flex items-center gap-3">
             <img src={isDarkPage ? logoWhite : logoBlue} alt="VibeHub Logo" className="h-10 w-auto object-contain" />
             <h2 className="font-display text-2xl font-black tracking-tight">VibeHub</h2>
           </Link>
-          <p className="text-slate-400 text-sm leading-relaxed">{t("footer.tagline")}</p>
+          <p className="text-white/60 text-sm leading-relaxed">{t("footer.tagline")}</p>
         </div>
         <div>
           <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">{t("footer.quickLinks")}</h5>
-          <ul className="flex flex-col gap-4 text-sm text-slate-400">
+          <ul className="flex flex-col gap-4 text-sm text-white/60">
             <li><Link className="hover:text-white transition-colors" to="#about">{t("footer.aboutUs")}</Link></li>
             <li><Link className="hover:text-white transition-colors" to="/events">{t("nav.events")}</Link></li>
             <li><Link className="hover:text-white transition-colors" to="/mbti-test">{t("nav.mbtiTest")}</Link></li>
@@ -29,7 +29,7 @@ const Footer = () => {
         </div>
         <div>
           <h5 className="font-bold mb-6 uppercase text-xs tracking-widest text-primary">{t("footer.support")}</h5>
-          <ul className="flex flex-col gap-4 text-sm text-slate-400">
+          <ul className="flex flex-col gap-4 text-sm text-white/60">
             <li><a className="hover:text-white transition-colors" href="#">{t("footer.faq")}</a></li>
             <li><a className="hover:text-white transition-colors" href="#">{t("footer.contactSupport")}</a></li>
             <li><a className="hover:text-white transition-colors" href="#">{t("footer.privacyPolicy")}</a></li>
@@ -50,7 +50,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-7xl mt-12 pt-8 border-t border-slate-800 text-slate-500 text-sm text-center">
+      <div className="mx-auto max-w-7xl mt-12 pt-8 border-t border-white/10 text-white/50 text-sm text-center">
         {t("footer.copyright")}
       </div>
     </footer>

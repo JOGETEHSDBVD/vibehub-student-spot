@@ -39,7 +39,7 @@ const StatsCards = () => {
       change: "",
       changeColor: "text-muted-foreground",
       icon: CalendarCheck,
-      iconBg: "bg-amber-100 text-amber-600",
+      iconBg: "bg-primary/10 text-primary",
     },
     {
       label: "Total Participation",
@@ -47,7 +47,7 @@ const StatsCards = () => {
       change: "",
       changeColor: "text-muted-foreground",
       icon: TrendingUp,
-      iconBg: "bg-emerald-100 text-emerald-600",
+      iconBg: "bg-primary/10 text-primary",
     },
     {
       label: "Engagement Rate",
@@ -55,7 +55,7 @@ const StatsCards = () => {
       change: "",
       changeColor: "text-muted-foreground",
       icon: Zap,
-      iconBg: "bg-purple-100 text-purple-500",
+      iconBg: "bg-primary/10 text-primary",
     },
   ];
 
