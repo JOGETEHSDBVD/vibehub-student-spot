@@ -12,13 +12,28 @@ export interface GalleryTile {
   className: string;
 }
 
+export interface HeroConfig {
+  backgroundImage: string;
+  title: string;
+  titleAccent: string;
+  subtitle: string;
+}
+
 export interface GalleryConfig {
   tiles: GalleryTile[];
   liveBaseNumber: number;
   autoFluctuate: boolean;
+  hero: HeroConfig;
 }
 
 const STORAGE_KEY = "vibehub_gallery_config";
+
+const defaultHero: HeroConfig = {
+  backgroundImage: "",
+  title: "Ignite Your",
+  titleAccent: "Campus Life!",
+  subtitle: "Experience the pulse of campus. From midnight hackathons to sunrise hikes, find your tribe and make every moment count.",
+};
 
 const defaultTiles: GalleryTile[] = [
   { id: 1, src: bentoHackathon, alt: "Hackathon in progress", label: "Hackathon Night", className: "col-span-2 row-span-2" },
@@ -42,16 +57,17 @@ export function loadGalleryConfig(): GalleryConfig {
         tiles,
         liveBaseNumber: parsed.liveBaseNumber ?? 249,
         autoFluctuate: parsed.autoFluctuate ?? true,
+        hero: parsed.hero ? { ...defaultHero, ...parsed.hero } : defaultHero,
       };
     }
   } catch {
     // ignore
   }
-  return { tiles: defaultTiles, liveBaseNumber: 249, autoFluctuate: true };
+  return { tiles: defaultTiles, liveBaseNumber: 249, autoFluctuate: true, hero: defaultHero };
 }
 
 export function saveGalleryConfig(config: GalleryConfig) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
 }
 
-export { defaultTiles };
+export { defaultTiles, defaultHero };
