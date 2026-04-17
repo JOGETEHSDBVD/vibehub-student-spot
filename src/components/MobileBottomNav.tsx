@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Calendar, Info, Brain, User, LogIn, LogOut } from "lucide-react";
+import { Home, Calendar, Info, Brain, User, LogIn, LogOut, QrCode } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
+import { useScannerCheck } from "@/hooks/useScannerCheck";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 
 interface MobileBottomNavProps {
   onAuthClick: (mode: "signin" | "signup") => void;
@@ -12,6 +14,8 @@ const MobileBottomNav = ({ onAuthClick }: MobileBottomNavProps) => {
   const { t } = useTranslation();
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { isScanner } = useScannerCheck();
+  const { isAdmin } = useAdminCheck();
   const [showMenu, setShowMenu] = useState(false);
 
   const navItems = [
@@ -46,6 +50,16 @@ const MobileBottomNav = ({ onAuthClick }: MobileBottomNavProps) => {
               <User size={18} />
               {t("nav.myAccount")}
             </Link>
+            {(isScanner || isAdmin) && (
+              <Link
+                to={isAdmin ? "/admin/scan-qr" : "/my-account/scanner"}
+                onClick={() => setShowMenu(false)}
+                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground active:bg-muted transition-colors touch-target"
+              >
+                <QrCode size={18} />
+                {t("nav.qrScanner")}
+              </Link>
+            )}
             <div className="mx-3 border-t border-border" />
             <button
               onClick={() => {
