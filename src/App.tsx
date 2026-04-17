@@ -29,6 +29,7 @@ import AdminGallery from "./pages/AdminGallery.tsx";
 import StaffScanner from "./pages/StaffScanner.tsx";
 import AboutUs from "./pages/AboutUs.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ScrollToTop from "./components/ScrollToTop";
 const queryClient = new QueryClient();
 
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
@@ -57,6 +58,7 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
 
 const AppRoutes = () => (
   <BrowserRouter>
+    <ScrollToTop />
     <OnboardingGuard>
       <Routes>
         <Route path="/" element={<Index />} />
