@@ -14,6 +14,8 @@ const MobileBottomNav = ({ onAuthClick }: MobileBottomNavProps) => {
   const { t } = useTranslation();
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { isScanner } = useScannerCheck();
+  const { isAdmin } = useAdminCheck();
   const [showMenu, setShowMenu] = useState(false);
 
   const navItems = [
