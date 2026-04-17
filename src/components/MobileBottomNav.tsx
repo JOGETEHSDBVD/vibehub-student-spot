@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Calendar, Info, Brain, User, LogIn, LogOut } from "lucide-react";
+import { Home, Calendar, Info, Brain, User, LogIn, LogOut, QrCode } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
+import { useScannerCheck } from "@/hooks/useScannerCheck";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 
 interface MobileBottomNavProps {
   onAuthClick: (mode: "signin" | "signup") => void;
